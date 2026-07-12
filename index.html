@@ -1156,7 +1156,7 @@ GameState.saveSlot = "save1"; // varsayılan slot
             
         const path = d3.geoPath().projection(projection);
 
-        d3.json("map.json").then(world => {
+        d3.json("https://unpkg.com/world-atlas@2.0.2/countries-50m.json").then(world => {
             const countries = topojson.feature(world, world.objects.countries);
             
             g.selectAll("path")
