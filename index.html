@@ -1088,7 +1088,7 @@
 "New Zealand": "NZL", "Austria": "AUT", "Portugal": "PRT", "Ireland": "IRL", "Slovakia": "SVK",
 "Croatia": "HRV", "Serbia": "SRB", "Bulgaria": "BGR", "Cuba": "CUB", "Panama": "PAN",
 "Mongolia": "MNG", "Luxembourg": "LUX", "Iceland": "ISL", "Bolivia": "BOL", "Ecuador": "ECU", "Ghana": "GHA", "Albania": "ALB", "Estonia": "EST", "Latvia": "LVA", "Lithuania": "LTU",
-"Uruguay": "URY", "Paraguay": "PRY", "Guatemala": "GTM", "Costa Rica": "CRI", "Dominican Republic": "DOM", "Senegal": "SEN", "Ivory Coast": "CIV", "South Sudan": "SSD", "Uganda": "UGA", "Tanzania": "TZA", "Zambia": "ZMB", "Mozambique": "MOZ", "Madagascar": "MDG", "Liberia": "LBR", "Slovenia": "SVN", "Macedonia": "MKD", "Bosnia & Herzegovina": "BIH", "Moldova": "MDA", "Cambodia": "KHM", "Laos": "LAO"
+"Uruguay": "URY", "Paraguay": "PRY", "Guatemala": "GTM", "Costa Rica": "CRI", "Dominican Republic": "DOM", "Senegal": "SEN", "Ivory Coast": "CIV", "South Sudan": "SSD", "Uganda": "UGA", "Tanzania": "TZA", "Zambia": "ZMB", "Mozambique": "MOZ", "Madagascar": "MDG", "Liberia": "LBR", "Slovenia": "SVN", "Macedonia": "MKD", "Bosnia and Herz.": "BIH", "Moldova": "MDA", "Cambodia": "KHM", "Laos": "LAO"
 
         };
 
@@ -1156,7 +1156,7 @@ GameState.saveSlot = "save1"; // varsayılan slot
             
         const path = d3.geoPath().projection(projection);
 
-        d3.json("https://unpkg.com/world-atlas@2.0.2/countries-110m.json").then(world => {
+        d3.json("https://unpkg.com/world-atlas@2.0.2/countries-50m.json").then(world => {
             const countries = topojson.feature(world, world.objects.countries);
             
             g.selectAll("path")
