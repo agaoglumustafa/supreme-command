@@ -178,7 +178,7 @@
 <body class="h-screen w-screen flex flex-col overflow-hidden">
 
 <input type="checkbox" id="sidebar-toggle-check">
-<label for="sidebar-toggle-check" class="kapat-ac-butonu">◀▶ PANEL</label>
+<label for="sidebar-toggle-check" class="kapat-ac-butonu">◀▶ SOL PANEL</label>
 
     <!-- STRATEJİK SEÇİM LOBİSİ -->
     <div id="lobby-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
@@ -317,7 +317,7 @@
 
                     <!-- Lobi İstatistik Kartı -->
                     <div class="mt-6 bg-slate-950/80 border border-slate-800 rounded p-4 space-y-3">
-                        <h3 class="text-xs text-yellow-500 uppercase tracking-widest border-b border-slate-800 pb-1 font-bold font-mono">Günümüz Verileri</h3>
+                        <h3 class="text-xs text-yellow-500 uppercase tracking-widest border-b border-slate-800 pb-1 font-bold font-mono">Ülke Bilgisi</h3>
                         <div class="grid grid-cols-2 gap-3 text-xs font-semibold">
                             <div>Toplam Nüfus: <span id="lobby-stat-pop" class="text-slate-200 font-mono">-</span></div>
                             <div>Ordu Gücü: <span id="lobby-stat-div" class="text-slate-200 font-mono">-</span></div>
@@ -369,10 +369,10 @@
         <!-- Taktik Kaynak Barları -->
         <div class="flex items-center gap-6 text-xs font-semibold tracking-wider">
             <div class="flex items-center gap-1.5" title="Hazine">
-                <span>🪙</span><span id="hud-gold" class="text-yellow-500 font-mono">1,200</span>
+                <span>💲</span><span id="hud-gold" class="text-yellow-500 font-mono">1,200</span>
             </div>
             <div class="flex items-center gap-1.5" title="İnsan Gücü">
-                <span>🪖</span><span id="hud-manpower" class="text-slate-200 font-mono">150K</span>
+                <span>👤</span><span id="hud-manpower" class="text-slate-200 font-mono">150K</span>
             </div>
             <div class="flex items-center gap-1.5" title="Fabrikalar (Sivil / Askeri)">
                 <span>🏭</span><span id="hud-factories" class="text-slate-200 font-mono">10 / 5</span>
@@ -472,7 +472,7 @@
                             <!-- Tüfek Hattı -->
                             <div class="space-y-1">
                                 <div class="flex justify-between text-xs font-bold">
-                                    <span>🔫 Piyade Tüfeği</span>
+                                    <span>🎯 Saldırı Tüfeği</span>
                                     <span id="prod-guns-factories" class="text-cyan-400">0 Fabrika</span>
                                 </div>
                                 <div class="flex items-center gap-3">
@@ -484,7 +484,7 @@
                             <!-- Topçu Hattı -->
                             <div class="space-y-1">
                                 <div class="flex justify-between text-xs font-bold">
-                                    <span>🚀 Ağır Sahra Topu</span>
+                                    <span>🚀 Ağır Obüs</span>
                                     <span id="prod-artillery-factories" class="text-cyan-400">0 Fabrika</span>
                                 </div>
                                 <div class="flex items-center gap-3">
@@ -512,11 +512,11 @@
                         <h3 class="text-xs text-yellow-500 uppercase tracking-widest font-black">Sanayi & Altyapı Yatırımları</h3>
                         <div class="grid grid-cols-2 gap-3">
                             <button onclick="buildFactory('civ')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-left flex flex-col justify-between transition-all active:scale-95">
-                                <span class="text-xs font-bold text-slate-200">🏭 Sivil Fabrika</span>
+                                <span class="text-xs font-bold text-slate-200">⚙ Sivil Fabrika</span>
                                 <span class="text-[10px] text-slate-400 mt-1">Maliyet: 800 Hazine</span>
                             </button>
                             <button onclick="buildFactory('mil')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-left flex flex-col justify-between transition-all active:scale-95">
-                                <span class="text-xs font-bold text-slate-200">⚙️ Askeri Fabrika</span>
+                                <span class="text-xs font-bold text-slate-200">🛠️ Askeri Fabrika</span>
                                 <span class="text-[10px] text-slate-400 mt-1">Maliyet: 1000 Hazine</span>
                             </button>
                         </div>
@@ -689,378 +689,750 @@
             date: new Date(2026, 0, 1),
             running: false,
             speed: 1000, // tick başına ms (1 tick = 1 hafta)
+            focusPrerequisites: {},   // Yeni: Odak önkoşulları
             countries: {
-                "TUR": { name: "Türkiye", flag: "tr", color: "#dc2626", ideology: "Cumhuriyet", pop: 85000000, civFactories: 25, milFactories: 20, money: 1200, manpower: 450000, divisions: { inf: 12, art: 4, arm: 3 }, stockpile: { guns: 12000, artillery: 150, tanks: 120 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"DEU": { name: "Almanya", flag: "de", color: "#333333", ideology: "Demokrasi", pop: 84000000, civFactories: 60, milFactories: 12, money: 3000, manpower: 1500000, divisions: { inf: 8, art: 3, arm: 2 }, stockpile: { guns: 15000, artillery: 200, tanks: 80 }, prodAllocation: { guns: 12, artillery: 8, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"USA": { name: "Amerika Birleşik Devletleri", flag: "us", color: "#1b32b6", ideology: "Demokrasi", pop: 340000000, civFactories: 150, milFactories: 130, money: 45000, manpower: 300000, divisions: { inf: 45, art: 15, arm: 12 }, stockpile: { guns: 120000, artillery: 2500, tanks: 1200 }, prodAllocation: { guns: 8, artillery: 4, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"RUS": { name: "Rusya Federasyonu", flag: "ru", color: "#1e3a8a", ideology: "Federal", pop: 145000000, civFactories: 25, milFactories: 35, money: 1000, manpower: 2700000, divisions: { inf: 45, art: 18, arm: 6 }, stockpile: { guns: 80000, artillery: 2000, tanks: 600 }, prodAllocation: { guns: 20, artillery: 15, tanks: 10 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"GBR": { name: "Birleşik Krallık", flag: "gb", color: "#dc2939", ideology: "Parlamenter", pop: 67000000, civFactories: 50, milFactories: 20, money: 6000, manpower: 750000, divisions: { inf: 16, art: 6, arm: 3 }, stockpile: { guns: 30000, artillery: 600, tanks: 150 }, prodAllocation: { guns: 10, artillery: 5, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"FRA": { name: "Fransa", flag: "fr", color: "#1382f6", ideology: "Cumhuriyet", pop: 68000000, civFactories: 40, milFactories: 15, money: 4000, manpower: 600000, divisions: { inf: 20, art: 8, arm: 2 }, stockpile: { guns: 28000, artillery: 800, tanks: 100 }, prodAllocation: { guns: 8, artillery: 5, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ITA": { name: "İtalya", flag: "it", color: "#16a34a", ideology: "Cumhuriyet", pop: 59000000, civFactories: 30, milFactories: 15, money: 1800, manpower: 540000, divisions: { inf: 15, art: 4, arm: 2 }, stockpile: { guns: 20000, artillery: 400, tanks: 120 }, prodAllocation: { guns: 7, artillery: 5, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"JPN": { name: "Japonya", flag: "jp", color: "#881337", ideology: "Parlamenter", pop: 125000000, civFactories: 50, milFactories: 25, money: 4000, manpower: 900000, divisions: { inf: 22, art: 6, arm: 3 }, stockpile: { guns: 35000, artillery: 700, tanks: 180 }, prodAllocation: { guns: 10, artillery: 6, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"POL": { name: "Polonya", flag: "pl", color: "#db2555", ideology: "Cumhuriyet", pop: 37000000, civFactories: 15, milFactories: 18, money: 1000, manpower: 460000, divisions: { inf: 16, art: 6, arm: 4 }, stockpile: { guns: 30000, artillery: 450, tanks: 180 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AUT": { name: "Avusturya", flag: "at", color: "#f8fafc", ideology: "Federal", pop: 9000000, civFactories: 5, milFactories: 2, money: 500, manpower: 120000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 6000, artillery: 50, tanks: 10 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AUS": { name: "Avustralya", flag: "au", color: "#fbbf24", ideology: "Demokrasi", pop: 26000000, civFactories: 20, milFactories: 8, money: 3000, manpower: 150000, divisions: { inf: 6, art: 2, arm: 1 }, stockpile: { guns: 10000, artillery: 100, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CAN": { name: "Kanada", flag: "ca", color: "#dc2626", ideology: "Demokrasi", pop: 40000000, civFactories: 30, milFactories: 12, money: 4000, manpower: 200000, divisions: { inf: 8, art: 3, arm: 1 }, stockpile: { guns: 15000, artillery: 200, tanks: 50 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CHN": { name: "Çin Halk Cumhuriyeti", flag: "cn", color: "#b91c1c", ideology: "Komünizm", pop: 1400000000, civFactories: 120, milFactories: 80, money: 15000, manpower: 2500000, divisions: { inf: 60, art: 20, arm: 10 }, stockpile: { guns: 140000, artillery: 3000, tanks: 900 }, prodAllocation: { guns: 40, artillery: 25, tanks: 15 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"IND": { name: "Hindistan", flag: "in", color: "#f97316", ideology: "Demokrasi", pop: 1400000000, civFactories: 80, milFactories: 40, money: 5000, manpower: 2000000, divisions: { inf: 70, art: 20, arm: 10 }, stockpile: { guns: 100000, artillery: 2000, tanks: 600 }, prodAllocation: { guns: 25, artillery: 15, tanks: 8 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"BRA": { name: "Brezilya", flag: "br", color: "#16a34a", ideology: "Demokrasi", pop: 215000000, civFactories: 30, milFactories: 15, money: 2500, manpower: 600000, divisions: { inf: 20, art: 6, arm: 3 }, stockpile: { guns: 30000, artillery: 500, tanks: 150 }, prodAllocation: { guns: 8, artillery: 4, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"KOR": { name: "Güney Kore", flag: "kr", color: "#3b82f6", ideology: "Demokrasi", pop: 51000000, civFactories: 40, milFactories: 20, money: 5000, manpower: 600000, divisions: { inf: 25, art: 10, arm: 5 }, stockpile: { guns: 40000, artillery: 800, tanks: 250 }, prodAllocation: { guns: 12, artillery: 6, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ESP": { name: "İspanya", flag: "es", color: "#eab308", ideology: "Demokrasi", pop: 48000000, civFactories: 20, milFactories: 10, money: 2000, manpower: 300000, divisions: { inf: 12, art: 4, arm: 2 }, stockpile: { guns: 20000, artillery: 300, tanks: 80 }, prodAllocation: { guns: 5, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SAU": { name: "Suudi Arabistan", flag: "sa", color: "#065f46", ideology: "Monarşi", pop: 36000000, civFactories: 25, milFactories: 12, money: 8000, manpower: 250000, divisions: { inf: 10, art: 4, arm: 3 }, stockpile: { guns: 25000, artillery: 400, tanks: 150 }, prodAllocation: { guns: 6, artillery: 3, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MEX": { name: "Meksika", flag: "mx", color: "#15803d", ideology: "Demokrasi", pop: 130000000, civFactories: 25, milFactories: 10, money: 2000, manpower: 400000, divisions: { inf: 15, art: 4, arm: 1 }, stockpile: { guns: 22000, artillery: 300, tanks: 10 }, prodAllocation: { guns: 6, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ZAF": { name: "Güney Afrika", flag: "za", color: "#d97706", ideology: "Demokrasi", pop: 60000000, civFactories: 15, milFactories: 8, money: 1500, manpower: 200000, divisions: { inf: 8, art: 2, arm: 1 }, stockpile: { guns: 12000, artillery: 150, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"UKR": { name: "Ukrayna", flag: "ua", color: "#eab308", ideology: "Cumhuriyet", pop: 38000000, civFactories: 10, milFactories: 45, money: 500, manpower: 1200000, divisions: { inf: 50, art: 20, arm: 5 }, stockpile: { guns: 90000, artillery: 1500, tanks: 400 }, prodAllocation: { guns: 25, artillery: 15, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"GRC": { name: "Yunanistan", flag: "gr", color: "#2563eb", ideology: "Demokrasi", pop: 10400000, civFactories: 15, milFactories: 12, money: 1100, manpower: 140000, divisions: { inf: 10, art: 3, arm: 3 }, stockpile: { guns: 20000, artillery: 350, tanks: 350 }, prodAllocation: { guns: 4, artillery: 2, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"NLD": { name: "Hollanda", flag: "nl", color: "#f97316", ideology: "Demokrasi", pop: 18000000, civFactories: 35, milFactories: 8, money: 5000, manpower: 45000, divisions: { inf: 4, art: 2, arm: 1 }, stockpile: { guns: 12000, artillery: 100, tanks: 40 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SWE": { name: "İsveç", flag: "se", color: "#0ea5e9", ideology: "Demokrasi", pop: 10500000, civFactories: 25, milFactories: 15, money: 3500, manpower: 60000, divisions: { inf: 6, art: 2, arm: 2 }, stockpile: { guns: 15000, artillery: 150, tanks: 110 }, prodAllocation: { guns: 5, artillery: 4, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"FIN": { name: "Finlandiya", flag: "fi", color: "#ffffff", ideology: "Demokrasi", pop: 5600000, civFactories: 15, milFactories: 10, money: 1500, manpower: 280000, divisions: { inf: 12, art: 6, arm: 1 }, stockpile: { guns: 35000, artillery: 700, tanks: 100 }, prodAllocation: { guns: 4, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"NOR": { name: "Norveç", flag: "no", color: "#ef4444", ideology: "Demokrasi", pop: 5500000, civFactories: 25, milFactories: 8, money: 12000, manpower: 40000, divisions: { inf: 4, art: 1, arm: 1 }, stockpile: { guns: 10000, artillery: 80, tanks: 50 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"DNK": { name: "Danimarka", flag: "dk", color: "#be123c", ideology: "Demokrasi", pop: 6000000, civFactories: 20, milFactories: 5, money: 4000, manpower: 35000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 50, tanks: 15 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CHE": { name: "İsviçre", flag: "ch", color: "#991b1b", ideology: "Federal", pop: 8900000, civFactories: 30, milFactories: 10, money: 9000, manpower: 150000, divisions: { inf: 8, art: 3, arm: 1 }, stockpile: { guns: 25000, artillery: 200, tanks: 120 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"BEL": { name: "Belçika", flag: "be", color: "#1e293b", ideology: "Demokrasi", pop: 11800000, civFactories: 25, milFactories: 6, money: 2500, manpower: 40000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 10000, artillery: 60, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ROU": { name: "Romanya", flag: "ro", color: "#facc15", ideology: "Cumhuriyet", pop: 19000000, civFactories: 18, milFactories: 10, money: 1200, manpower: 180000, divisions: { inf: 12, art: 4, arm: 2 }, stockpile: { guns: 22000, artillery: 300, tanks: 140 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CZE": { name: "Çekya", flag: "cz", color: "#3b82f6", ideology: "Demokrasi", pop: 10800000, civFactories: 18, milFactories: 12, money: 1800, manpower: 70000, divisions: { inf: 6, art: 2, arm: 1 }, stockpile: { guns: 18000, artillery: 150, tanks: 60 }, prodAllocation: { guns: 4, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"HUN": { name: "Macaristan", flag: "hu", color: "#15803d", ideology: "Cumhuriyet", pop: 9600000, civFactories: 12, milFactories: 6, money: 800, manpower: 65000, divisions: { inf: 5, art: 1, arm: 1 }, stockpile: { guns: 12000, artillery: 100, tanks: 40 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ISR": { name: "İsrail", flag: "il", color: "#1d4ed8", ideology: "Demokrasi", pop: 980000, civFactories: 25, milFactories: 30, money: 4000, manpower: 450000, divisions: { inf: 15, art: 6, arm: 8 }, stockpile: { guns: 40000, artillery: 600, tanks: 500 }, prodAllocation: { guns: 10, artillery: 5, tanks: 6 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"IRN": { name: "İran", flag: "ir", color: "#047857", ideology: "Teokrasi", pop: 89000000, civFactories: 25, milFactories: 25, money: 1500, manpower: 1100000, divisions: { inf: 45, art: 12, arm: 5 }, stockpile: { guns: 70000, artillery: 1200, tanks: 450 }, prodAllocation: { guns: 15, artillery: 8, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"EGY": { name: "Mısır", flag: "eg", color: "#f59e0b", ideology: "Cumhuriyet", pop: 112000000, civFactories: 22, milFactories: 15, money: 1000, manpower: 800000, divisions: { inf: 30, art: 10, arm: 6 }, stockpile: { guns: 50000, artillery: 800, tanks: 600 }, prodAllocation: { guns: 8, artillery: 4, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PAK": { name: "Pakistan", flag: "pk", color: "#14532d", ideology: "Cumhuriyet", pop: 240000000, civFactories: 20, milFactories: 25, money: 1200, manpower: 1500000, divisions: { inf: 55, art: 15, arm: 8 }, stockpile: { guns: 80000, artillery: 1400, tanks: 500 }, prodAllocation: { guns: 12, artillery: 6, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"IDN": { name: "Endonezya", flag: "id", color: "#b91c1c", ideology: "Demokrasi", pop: 278000000, civFactories: 35, milFactories: 12, money: 3500, manpower: 800000, divisions: { inf: 22, art: 4, arm: 2 }, stockpile: { guns: 30000, artillery: 300, tanks: 100 }, prodAllocation: { guns: 6, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"TWN": { name: "Tayvan", flag: "tw", color: "#0284c7", ideology: "Demokrasi", pop: 23500000, civFactories: 40, milFactories: 18, money: 5000, manpower: 300000, divisions: { inf: 14, art: 4, arm: 2 }, stockpile: { guns: 25000, artillery: 400, tanks: 200 }, prodAllocation: { guns: 8, artillery: 4, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PRK": { name: "Kuzey Kore", flag: "kp", color: "#991b1b", ideology: "Komünizm", pop: 26000000, civFactories: 8, milFactories: 35, money: 300, manpower: 1300000, divisions: { inf: 60, art: 25, arm: 6 }, stockpile: { guns: 100000, artillery: 3000, tanks: 700 }, prodAllocation: { guns: 20, artillery: 15, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ARG": { name: "Arjantin", flag: "ar", color: "#38bdf8", ideology: "Cumhuriyet", pop: 46000000, civFactories: 18, milFactories: 6, money: 900, manpower: 120000, divisions: { inf: 8, art: 2, arm: 1 }, stockpile: { guns: 15000, artillery: 120, tanks: 50 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"COL": { name: "Kolombiya", flag: "co", color: "#1e3a8a", ideology: "Demokrasi", pop: 52000000, civFactories: 14, milFactories: 5, money: 3500, manpower: 180000, divisions: { inf: 8, art: 2, arm: 0 }, stockpile: { guns: 15000, artillery: 150, tanks: 0 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"VEN": { name: "Venezuela", flag: "ve", color: "#b91c1c", ideology: "Sosyalizm", pop: 29000000, civFactories: 10, milFactories: 7, money: 1500, manpower: 220000, divisions: { inf: 10, art: 3, arm: 2 }, stockpile: { guns: 20000, artillery: 200, tanks: 60 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CHL": { name: "Şili", flag: "cl", color: "#0369a1", ideology: "Demokrasi", pop: 20000000, civFactories: 16, milFactories: 6, money: 5000, manpower: 90000, divisions: { inf: 6, art: 3, arm: 1 }, stockpile: { guns: 12000, artillery: 180, tanks: 30 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PER": { name: "Peru", flag: "pe", color: "#991b1b", ideology: "Demokrasi", pop: 34000000, civFactories: 11, milFactories: 4, money: 3000, manpower: 110000, divisions: { inf: 7, art: 2, arm: 0 }, stockpile: { guns: 14000, artillery: 120, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"NGA": { name: "Nijerya", flag: "ng", color: "#15803d", ideology: "Demokrasi", pop: 224000000, civFactories: 15, milFactories: 6, money: 4000, manpower: 600000, divisions: { inf: 14, art: 2, arm: 0 }, stockpile: { guns: 25000, artillery: 100, tanks: 10 }, prodAllocation: { guns: 4, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"DZA": { name: "Cezayir", flag: "dz", color: "#065f46", ideology: "Milliyetçilik", pop: 46000000, civFactories: 18, milFactories: 11, money: 7000, manpower: 300000, divisions: { inf: 12, art: 5, arm: 3 }, stockpile: { guns: 24000, artillery: 350, tanks: 180 }, prodAllocation: { guns: 5, artillery: 3, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MAR": { name: "Fas", flag: "ma", color: "#9a3412", ideology: "Monarşi", pop: 38000000, civFactories: 15, milFactories: 8, money: 4500, manpower: 250000, divisions: { inf: 11, art: 4, arm: 2 }, stockpile: { guns: 20000, artillery: 250, tanks: 110 }, prodAllocation: { guns: 4, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"TUN": { name: "Tunus", flag: "tn", color: "#dc2626", ideology: "Demokrasi", pop: 12000000, civFactories: 8, milFactories: 3, money: 2000, manpower: 60000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 50, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LBY": { name: "Libya", flag: "ly", color: "#166534", ideology: "Geçici Hükümet", pop: 7000000, civFactories: 7, milFactories: 5, money: 5000, manpower: 80000, divisions: { inf: 6, art: 2, arm: 1 }, stockpile: { guns: 15000, artillery: 120, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SDN": { name: "Sudan", flag: "sd", color: "#374151", ideology: "Cunta", pop: 48000000, civFactories: 5, milFactories: 6, money: 1000, manpower: 280000, divisions: { inf: 10, art: 2, arm: 1 }, stockpile: { guns: 18000, artillery: 90, tanks: 30 }, prodAllocation: { guns: 4, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ETH": { name: "Etiyopya", flag: "et", color: "#16a34a", ideology: "Demokrasi", pop: 126000000, civFactories: 9, milFactories: 5, money: 1800, manpower: 450000, divisions: { inf: 12, art: 2, arm: 0 }, stockpile: { guns: 22000, artillery: 80, tanks: 10 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"KEN": { name: "Kenya", flag: "ke", color: "#854d0e", ideology: "Demokrasi", pop: 55000000, civFactories: 12, milFactories: 3, money: 3000, manpower: 130000, divisions: { inf: 5, art: 1, arm: 0 }, stockpile: { guns: 10000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AGO": { name: "Angola", flag: "ao", color: "#7f1d1d", ideology: "Milliyetçilik", pop: 36000000, civFactories: 8, milFactories: 4, money: 2500, manpower: 140000, divisions: { inf: 7, art: 1, arm: 1 }, stockpile: { guns: 12000, artillery: 60, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"IRQ": { name: "Irak", flag: "iq", color: "#065f46", ideology: "Demokrasi", pop: 45000000, civFactories: 11, milFactories: 6, money: 4000, manpower: 250000, divisions: { inf: 9, art: 3, arm: 1 }, stockpile: { guns: 18000, artillery: 150, tanks: 40 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SYR": { name: "Suriye", flag: "sy", color: "#15803d", ideology: "Otokrasi", pop: 23000000, civFactories: 4, milFactories: 7, money: 800, manpower: 190000, divisions: { inf: 11, art: 4, arm: 2 }, stockpile: { guns: 20000, artillery: 220, tanks: 90 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"JOR": { name: "Ürdün", flag: "jo", color: "#0f766e", ideology: "Monarşi", pop: 11000000, civFactories: 9, milFactories: 4, money: 2200, manpower: 80000, divisions: { inf: 5, art: 2, arm: 1 }, stockpile: { guns: 10000, artillery: 80, tanks: 25 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LBN": { name: "Lübnan", flag: "lb", color: "#b91c1c", ideology: "Demokrasi", pop: 55000000, civFactories: 5, milFactories: 2, money: 1000, manpower: 40000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 6000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"OMN": { name: "Umman", flag: "om", color: "#047857", ideology: "Monarşi", pop: 5000000, civFactories: 11, milFactories: 4, money: 4500, manpower: 60000, divisions: { inf: 4, art: 1, arm: 1 }, stockpile: { guns: 9000, artillery: 70, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"YEM": { name: "Yemen", flag: "ye", color: "#4b5563", ideology: "Askeri Rejim", pop: 34000000, civFactories: 2, milFactories: 4, money: 400, manpower: 200000, divisions: { inf: 8, art: 1, arm: 0 }, stockpile: { guns: 14000, artillery: 40, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"KWT": { name: "Kuveyt", flag: "kw", color: "#0d9488", ideology: "Monarşi", pop: 43000000, civFactories: 14, milFactories: 3, money: 9000, manpower: 40000, divisions: { inf: 3, art: 1, arm: 1 }, stockpile: { guns: 8000, artillery: 60, tanks: 35 }, prodAllocation: { guns: 1, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"QAT": { name: "Katar", flag: "qa", color: "#701a75", ideology: "Monarşi", pop: 2700000, civFactories: 15, milFactories: 4, money: 15000, manpower: 30000, divisions: { inf: 2, art: 1, arm: 1 }, stockpile: { guns: 6000, artillery: 50, tanks: 40 }, prodAllocation: { guns: 1, artillery: 1, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ARE": { name: "Birleşik Arap Emirlikleri", flag: "ae", color: "#0f766e", ideology: "Monarşi", pop: 9500000, civFactories: 24, milFactories: 8, money: 14000, manpower: 80000, divisions: { inf: 5, art: 2, arm: 2 }, stockpile: { guns: 12000, artillery: 140, tanks: 90 }, prodAllocation: { guns: 3, artillery: 2, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AZE": { name: "Azerbaycan", flag: "az", color: "#0369a1", ideology: "Milliyetçilik", pop: 10000000, civFactories: 16, milFactories: 12, money: 6500, manpower: 180000, divisions: { inf: 10, art: 4, arm: 3 }, stockpile: { guns: 22000, artillery: 300, tanks: 140 }, prodAllocation: { guns: 4, artillery: 4, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"GEO": { name: "Gürcistan", flag: "ge", color: "#991b1b", ideology: "Demokrasi", pop: 3700000, civFactories: 7, milFactories: 3, money: 1500, manpower: 50000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 40, tanks: 10 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ARM": { name: "Ermenistan", flag: "am", color: "#b45309", ideology: "Demokrasi", pop: 2800000, civFactories: 5, milFactories: 3, money: 1000, manpower: 45000, divisions: { inf: 4, art: 2, arm: 0 }, stockpile: { guns: 7000, artillery: 60, tanks: 8 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"KAZ": { name: "Kazakistan", flag: "kz", color: "#0284c7", ideology: "Otokrasi", pop: 20000000, civFactories: 20, milFactories: 8, money: 8000, manpower: 200000, divisions: { inf: 8, art: 3, arm: 2 }, stockpile: { guns: 18000, artillery: 200, tanks: 120 }, prodAllocation: { guns: 3, artillery: 2, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"UZB": { name: "Özbekistan", flag: "uz", color: "#0d9488", ideology: "Otokrasi", pop: 36000000, civFactories: 15, milFactories: 6, money: 3500, manpower: 250000, divisions: { inf: 9, art: 2, arm: 1 }, stockpile: { guns: 16000, artillery: 110, tanks: 30 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"TKM": { name: "Türkmenistan", flag: "tm", color: "#166534", ideology: "Mutlakıyet", pop: 6500000, civFactories: 11, milFactories: 5, money: 4000, manpower: 70000, divisions: { inf: 5, art: 2, arm: 1 }, stockpile: { guns: 10000, artillery: 90, tanks: 40 }, prodAllocation: { guns: 2, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"KGZ": { name: "Kırgızistan", flag: "kg", color: "#dc2626", ideology: "Demokrasi", pop: 7000000, civFactories: 6, milFactories: 3, money: 1200, manpower: 65000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 40, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"TJK": { name: "Tacikistan", flag: "tj", color: "#991b1b", ideology: "Otokrasi", pop: 10000000, civFactories: 5, milFactories: 3, money: 9000, manpower: 80000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 30, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AFG": { name: "Afganistan", flag: "af", color: "#1f2937", ideology: "Teokrasi", pop: 42000000, civFactories: 2, milFactories: 5, money: 500, manpower: 350000, divisions: { inf: 12, art: 1, arm: 0 }, stockpile: { guns: 25000, artillery: 50, tanks: 15 }, prodAllocation: { guns: 4, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"BGD": { name: "Bangladeş", flag: "bd", color: "#065f46", ideology: "Demokrasi", pop: 173000000, civFactories: 16, milFactories: 5, money: 3800, manpower: 500000, divisions: { inf: 11, art: 2, arm: 1 }, stockpile: { guns: 20000, artillery: 80, tanks: 20 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LKA": { name: "Sri Lanka", flag: "lk", color: "#854d0e", ideology: "Demokrasi", pop: 22000000, civFactories: 9, milFactories: 3, money: 1800, manpower: 75000, divisions: { inf: 5, art: 1, arm: 0 }, stockpile: { guns: 9000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MMR": { name: "Myanmar", flag: "mm", color: "#eab308", ideology: "Cunta", pop: 54000000, civFactories: 6, milFactories: 7, money: 1200, manpower: 240000, divisions: { inf: 10, art: 2, arm: 1 }, stockpile: { guns: 18000, artillery: 100, tanks: 30 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"THA": { name: "Tayland", flag: "th", color: "#1e3a8a", ideology: "Monarşi", pop: 71000000, civFactories: 25, milFactories: 9, money: 7500, manpower: 280000, divisions: { inf: 10, art: 3, arm: 2 }, stockpile: { guns: 22000, artillery: 180, tanks: 60 }, prodAllocation: { guns: 4, artillery: 3, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"VNM": { name: "Vietnam", flag: "vn", color: "#cc2525", ideology: "Sosyalizm", pop: 98000000, civFactories: 24, milFactories: 11, money: 6000, manpower: 450000, divisions: { inf: 13, art: 5, arm: 2 }, stockpile: { guns: 26000, artillery: 280, tanks: 90 }, prodAllocation: { guns: 5, artillery: 3, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MYS": { name: "Malezya", flag: "my", color: "#1e40af", ideology: "Demokrasi", pop: 34000000, civFactories: 20, milFactories: 6, money: 5500, manpower: 120000, divisions: { inf: 7, art: 2, arm: 1 }, stockpile: { guns: 14000, artillery: 90, tanks: 25 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SGP": { name: "Singapur", flag: "sg", color: "#ef4444", ideology: "Demokrasi", pop: 6000000, civFactories: 26, milFactories: 8, money: 18000, manpower: 50000, divisions: { inf: 4, art: 3, arm: 2 }, stockpile: { guns: 10000, artillery: 150, tanks: 80 }, prodAllocation: { guns: 2, artillery: 3, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PHL": { name: "Filipinler", flag: "ph", color: "#1d4ed8", ideology: "Demokrasi", pop: 115000000, civFactories: 18, milFactories: 6, money: 4500, manpower: 350000, divisions: { inf: 9, art: 2, arm: 0 }, stockpile: { guns: 16000, artillery: 80, tanks: 10 }, prodAllocation: { guns: 4, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"NZL": { name: "Yeni Zelanda", flag: "nz", color: "#0f172a", ideology: "Demokrasi", pop: 5200000, civFactories: 14, milFactories: 4, money: 4000, manpower: 45000, divisions: { inf: 4, art: 2, arm: 0 }, stockpile: { guns: 9000, artillery: 80, tanks: 10 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PRT": { name: "Portekiz", flag: "pt", color: "#15803d", ideology: "Demokrasi", pop: 10000000, civFactories: 16, milFactories: 5, money: 3800, manpower: 80000, divisions: { inf: 6, art: 2, arm: 1 }, stockpile: { guns: 12000, artillery: 100, tanks: 20 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"IRL": { name: "İrlanda", flag: "ie", color: "#166534", ideology: "Demokrasi", pop: 5200000, civFactories: 15, milFactories: 2, money: 5000, manpower: 30000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 6000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SVK": { name: "Slovakya", flag: "sk", color: "#1e40af", ideology: "Demokrasi", pop: 5400000, civFactories: 12, milFactories: 4, money: 2500, manpower: 45000, divisions: { inf: 4, art: 2, arm: 1 }, stockpile: { guns: 9000, artillery: 70, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"HRV": { name: "Hırvatistan", flag: "hr", color: "#991b1b", ideology: "Demokrasi", pop: 3800000, civFactories: 11, milFactories: 4, money: 2800, manpower: 40000, divisions: { inf: 4, art: 2, arm: 1 }, stockpile: { guns: 8000, artillery: 60, tanks: 15 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SRB": { name: "Sırbistan", flag: "rs", color: "#1e3a8a", ideology: "Milliyetçilik", pop: 6600000, civFactories: 10, milFactories: 6, money: 2000, manpower: 90000, divisions: { inf: 6, art: 3, arm: 1 }, stockpile: { guns: 14000, artillery: 140, tanks: 45 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"BGR": { name: "Bulgaristan", flag: "bg", color: "#047857", ideology: "Demokrasi", pop: 6400000, civFactories: 12, milFactories: 5, money: 2400, manpower: 70000, divisions: { inf: 5, art: 2, arm: 1 }, stockpile: { guns: 11000, artillery: 100, tanks: 30 }, prodAllocation: { guns: 2, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CUB": { name: "Küba", flag: "cu", color: "#1d4ed8", ideology: "Sosyalizm", pop: 11000000, civFactories: 6, milFactories: 4, money: 800, manpower: 120000, divisions: { inf: 7, art: 2, arm: 1 }, stockpile: { guns: 14000, artillery: 90, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PAN": { name: "Panama", flag: "pa", color: "#dc2626", ideology: "Demokrasi", pop: 4500000, civFactories: 13, milFactories: 1, money: 4500, manpower: 20000, divisions: { inf: 2, art: 0, arm: 0 }, stockpile: { guns: 4000, artillery: 10, tanks: 0 }, prodAllocation: { guns: 1, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MNG": { name: "Moğolistan", flag: "mn", color: "#b91c1c", ideology: "Komünizm", pop: 3500000, civFactories: 6, milFactories: 3, money: 500, manpower: 60000, divisions: { inf: 4, art: 1, arm: 1 }, stockpile: { guns: 8000, artillery: 50, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LUX": { name: "Lüksemburg", flag: "lu", color: "#06b6d4", ideology: "Demokrasi", pop: 650000, civFactories: 14, milFactories: 2, money: 6000, manpower: 15000, divisions: { inf: 2, art: 1, arm: 0 }, stockpile: { guns: 4000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ISL": { name: "İzlanda", flag: "is", color: "#1e3a8a", ideology: "Demokrasi", pop: 390000, civFactories: 8, milFactories: 1, money: 4000, manpower: 10000, divisions: { inf: 1, art: 0, arm: 0 }, stockpile: { guns: 2000, artillery: 0, tanks: 0 }, prodAllocation: { guns: 1, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"BOL": { name: "Bolivya", flag: "bo", color: "#16a34a", ideology: "Demokrasi", pop: 12000000, civFactories: 9, milFactories: 4, money: 800, manpower: 90000, divisions: { inf: 6, art: 2, arm: 0 }, stockpile: { guns: 11000, artillery: 80, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ECU": { name: "Ekvador", flag: "ec", color: "#ea580c", ideology: "Demokrasi", pop: 18000000, civFactories: 10, milFactories: 4, money: 900, manpower: 100000, divisions: { inf: 7, art: 2, arm: 0 }, stockpile: { guns: 12000, artillery: 90, tanks: 5 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"GHA": { name: "Gana", flag: "gh", color: "#eab308", ideology: "Demokrasi", pop: 33000000, civFactories: 12, milFactories: 4, money: 1200, manpower: 140000, divisions: { inf: 8, art: 2, arm: 1 }, stockpile: { guns: 14000, artillery: 100, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ALB": { name: "Arnavutluk", flag: "al", color: "#991b1b", ideology: "Otokrasi", pop: 2800000, civFactories: 6, milFactories: 3, money: 600, manpower: 40000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 6000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"EST": { name: "Estonya", flag: "ee", color: "#2563eb", ideology: "Demokrasi", pop: 1300000, civFactories: 8, milFactories: 3, money: 1500, manpower: 30000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 7000, artillery: 40, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LVA": { name: "Letonya", flag: "lv", color: "#991b1b", ideology: "Demokrasi", pop: 1900000, civFactories: 9, milFactories: 3, money: 1400, manpower: 35000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 50, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LTU": { name: "Litvanya", flag: "lt", color: "#854d0e", ideology: "Demokrasi", pop: 2800000, civFactories: 10, milFactories: 4, money: 1600, manpower: 45000, divisions: { inf: 5, art: 2, arm: 1 }, stockpile: { guns: 10000, artillery: 60, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"URY": { name: "Uruguay", flag: "uy", color: "#0284c7", ideology: "Demokrasi", pop: 3500000, civFactories: 10, milFactories: 3, money: 2500, manpower: 40000, divisions: { inf: 4, art: 1, arm: 0 }, stockpile: { guns: 6000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"PRY": { name: "Paraguay", flag: "py", color: "#b91c1c", ideology: "Otokrasi", pop: 7000000, civFactories: 8, milFactories: 4, money: 1000, manpower: 75000, divisions: { inf: 6, art: 2, arm: 0 }, stockpile: { guns: 9000, artillery: 60, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"GTM": { name: "Guatemala", flag: "gt", color: "#06b6d4", ideology: "Demokrasi", pop: 18000000, civFactories: 9, milFactories: 3, money: 1200, manpower: 90000, divisions: { inf: 6, art: 1, arm: 0 }, stockpile: { guns: 10000, artillery: 50, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CRI": { name: "Kosta Rika", flag: "cr", color: "#1e3a8a", ideology: "Demokrasi", pop: 5000000, civFactories: 11, milFactories: 1, money: 3000, manpower: 15000, divisions: { inf: 2, art: 0, arm: 0 }, stockpile: { guns: 3000, artillery: 0, tanks: 0 }, prodAllocation: { guns: 1, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"DOM": { name: "Dominik Cumhuriyeti", flag: "do", color: "#3b82f6", ideology: "Demokrasi", pop: 11000000, civFactories: 9, milFactories: 3, money: 1400, manpower: 60000, divisions: { inf: 5, art: 1, arm: 0 }, stockpile: { guns: 8000, artillery: 40, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SEN": { name: "Senegal", flag: "sn", color: "#15803d", ideology: "Demokrasi", pop: 17000000, civFactories: 10, milFactories: 4, money: 1100, manpower: 80000, divisions: { inf: 6, art: 2, arm: 0 }, stockpile: { guns: 10000, artillery: 60, tanks: 0 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"CIV": { name: "Fildişi Sahili", flag: "ci", color: "#ea580c", ideology: "Demokrasi", pop: 28000000, civFactories: 12, milFactories: 4, money: 1800, manpower: 110000, divisions: { inf: 7, art: 2, arm: 1 }, stockpile: { guns: 12000, artillery: 70, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SSD": { name: "Güney Sudan", flag: "ss", color: "#7c2d12", ideology: "Otokrasi", pop: 11000000, civFactories: 5, milFactories: 5, money: 400, manpower: 130000, divisions: { inf: 9, art: 2, arm: 0 }, stockpile: { guns: 14000, artillery: 50, tanks: 5 }, prodAllocation: { guns: 4, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"UGA": { name: "Uganda", flag: "ug", color: "#eab308", ideology: "Otokrasi", pop: 48000000, civFactories: 11, milFactories: 6, money: 900, manpower: 190000, divisions: { inf: 10, art: 3, arm: 1 }, stockpile: { guns: 16000, artillery: 80, tanks: 15 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"TZA": { name: "Tanzanya", flag: "tz", color: "#0d9488", ideology: "Demokrasi", pop: 65000000, civFactories: 14, milFactories: 5, money: 1500, manpower: 220000, divisions: { inf: 12, art: 3, arm: 0 }, stockpile: { guns: 18000, artillery: 90, tanks: 10 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"ZMB": { name: "Zambiya", flag: "zm", color: "#16a34a", ideology: "Demokrasi", pop: 20000000, civFactories: 10, milFactories: 3, money: 1300, manpower: 85000, divisions: { inf: 6, art: 1, arm: 0 }, stockpile: { guns: 9000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MOZ": { name: "Mozambik", flag: "mz", color: "#047857", ideology: "Demokrasi", pop: 32000000, civFactories: 9, milFactories: 4, money: 800, manpower: 120000, divisions: { inf: 8, art: 2, arm: 0 }, stockpile: { guns: 11000, artillery: 60, tanks: 5 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MDG": { name: "Madagaskar", flag: "mg", color: "#dc2626", ideology: "Demokrasi", pop: 29000000, civFactories: 8, milFactories: 3, money: 700, manpower: 95000, divisions: { inf: 6, art: 1, arm: 0 }, stockpile: { guns: 9000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LBR": { name: "Liberya", flag: "lr", color: "#1e40af", ideology: "Demokrasi", pop: 5000000, civFactories: 6, milFactories: 2, money: 600, manpower: 30000, divisions: { inf: 3, art: 0, arm: 0 }, stockpile: { guns: 4000, artillery: 10, tanks: 0 }, prodAllocation: { guns: 2, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"SVN": { name: "Slovenya", flag: "si", color: "#2563eb", ideology: "Demokrasi", pop: 2100000, civFactories: 12, milFactories: 4, money: 2000, manpower: 30000, divisions: { inf: 4, art: 2, arm: 1 }, stockpile: { guns: 7000, artillery: 50, tanks: 15 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MKD": { name: "Kuzey Makedonya", flag: "mk", color: "#b45309", ideology: "Demokrasi", pop: 2000000, civFactories: 8, milFactories: 3, money: 900, manpower: 25000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 5000, artillery: 30, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"BIH": { name: "Bosna Hersek", flag: "ba", color: "#1d4ed8", ideology: "Demokrasi", pop: 3200000, civFactories: 9, milFactories: 5, money: 1100, manpower: 50000, divisions: { inf: 5, art: 2, arm: 1 }, stockpile: { guns: 8000, artillery: 60, tanks: 10 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"MDA": { name: "Moldova", flag: "md", color: "#7f1d1d", ideology: "Demokrasi", pop: 2600000, civFactories: 7, milFactories: 2, money: 600, manpower: 25000, divisions: { inf: 3, art: 1, arm: 0 }, stockpile: { guns: 4500, artillery: 25, tanks: 0 }, prodAllocation: { guns: 2, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"KHM": { name: "Kamboçya", flag: "kh", color: "#991b1b", ideology: "Otokrasi", pop: 16000000, civFactories: 9, milFactories: 4, money: 800, manpower: 100000, divisions: { inf: 7, art: 2, arm: 0 }, stockpile: { guns: 11000, artillery: 60, tanks: 5 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"LAO": { name: "Laos", flag: "la", color: "#065f46", ideology: "Komünizm", pop: 7500000, civFactories: 7, milFactories: 4, money: 500, manpower: 65000, divisions: { inf: 5, art: 2, arm: 0 }, stockpile: { guns: 8500, artillery: 50, tanks: 8 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"TUR": {name: "Türkiye", flag: "tr", color: "#dc2626", ideology: "Cumhuriyet", pop: 85000000, civFactories: 25, milFactories: 20, money: 1200, manpower: 450000, divisions: { inf: 12, art: 4, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 150, tanks: 120 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"DEU": {name: "Almanya", flag: "de", color: "#333333", ideology: "Demokrasi", pop: 84000000, civFactories: 60, milFactories: 12, money: 3000, manpower: 1500000, divisions: { inf: 8, art: 3, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 15000, artillery: 200, tanks: 80 }, prodAllocation: { guns: 12, artillery: 8, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"USA": {name: "Amerika Birleşik Devletleri", flag: "us", color: "#1b32b6", ideology: "Demokrasi", pop: 340000000, civFactories: 150, milFactories: 130, money: 45000, manpower: 300000, divisions: { inf: 45, art: 15, arm: 12 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 120000, artillery: 2500, tanks: 1200 }, prodAllocation: { guns: 8, artillery: 4, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"RUS": {name: "Rusya Federasyonu", flag: "ru", color: "#1e3a8a", ideology: "Federal", pop: 145000000, civFactories: 25, milFactories: 35, money: 1000, manpower: 2700000, divisions: { inf: 45, art: 18, arm: 6 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 80000, artillery: 2000, tanks: 600 }, prodAllocation: { guns: 20, artillery: 15, tanks: 10 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"GBR": {name: "Birleşik Krallık", flag: "gb", color: "#dc2939", ideology: "Parlamenter", pop: 67000000, civFactories: 50, milFactories: 20, money: 6000, manpower: 750000, divisions: { inf: 16, art: 6, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 30000, artillery: 600, tanks: 150 }, prodAllocation: { guns: 10, artillery: 5, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"FRA": {name: "Fransa", flag: "fr", color: "#1382f6", ideology: "Cumhuriyet", pop: 68000000, civFactories: 40, milFactories: 15, money: 4000, manpower: 600000, divisions: { inf: 20, art: 8, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 28000, artillery: 800, tanks: 100 }, prodAllocation: { guns: 8, artillery: 5, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ITA": {name: "İtalya", flag: "it", color: "#16a34a", ideology: "Cumhuriyet", pop: 59000000, civFactories: 30, milFactories: 15, money: 1800, manpower: 540000, divisions: { inf: 15, art: 4, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 20000, artillery: 400, tanks: 120 }, prodAllocation: { guns: 7, artillery: 5, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"JPN": {name: "Japonya", flag: "jp", color: "#881337", ideology: "Parlamenter", pop: 125000000, civFactories: 50, milFactories: 25, money: 4000, manpower: 900000, divisions: { inf: 22, art: 6, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 35000, artillery: 700, tanks: 180 }, prodAllocation: { guns: 10, artillery: 6, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"POL": {name: "Polonya", flag: "pl", color: "#db2555", ideology: "Cumhuriyet", pop: 37000000, civFactories: 15, milFactories: 18, money: 1000, manpower: 460000, divisions: { inf: 16, art: 6, arm: 4 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 30000, artillery: 450, tanks: 180 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"AUT": {name: "Avusturya", flag: "at", color: "#f8fafc", ideology: "Federal", pop: 9000000, civFactories: 5, milFactories: 2, money: 500, manpower: 120000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 6000, artillery: 50, tanks: 10 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"AUS": {name: "Avustralya", flag: "au", color: "#fbbf24", ideology: "Demokrasi", pop: 26000000, civFactories: 20, milFactories: 8, money: 3000, manpower: 150000, divisions: { inf: 6, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 10000, artillery: 100, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CAN": {name: "Kanada", flag: "ca", color: "#dc2626", ideology: "Demokrasi", pop: 40000000, civFactories: 30, milFactories: 12, money: 4000, manpower: 200000, divisions: { inf: 8, art: 3, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 15000, artillery: 200, tanks: 50 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CHN": {name: "Çin Halk Cumhuriyeti", flag: "cn", color: "#b91c1c", ideology: "Komünizm", pop: 1400000000, civFactories: 120, milFactories: 80, money: 15000, manpower: 2500000, divisions: { inf: 60, art: 20, arm: 10 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 140000, artillery: 3000, tanks: 900 }, prodAllocation: { guns: 40, artillery: 25, tanks: 15 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"IND": {name: "Hindistan", flag: "in", color: "#f97316", ideology: "Demokrasi", pop: 1400000000, civFactories: 80, milFactories: 40, money: 5000, manpower: 2000000, divisions: { inf: 70, art: 20, arm: 10 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 100000, artillery: 2000, tanks: 600 }, prodAllocation: { guns: 25, artillery: 15, tanks: 8 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"BRA": {name: "Brezilya", flag: "br", color: "#16a34a", ideology: "Demokrasi", pop: 215000000, civFactories: 30, milFactories: 15, money: 2500, manpower: 600000, divisions: { inf: 20, art: 6, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 30000, artillery: 500, tanks: 150 }, prodAllocation: { guns: 8, artillery: 4, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"KOR": {name: "Güney Kore", flag: "kr", color: "#3b82f6", ideology: "Demokrasi", pop: 51000000, civFactories: 40, milFactories: 20, money: 5000, manpower: 600000, divisions: { inf: 25, art: 10, arm: 5 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 40000, artillery: 800, tanks: 250 }, prodAllocation: { guns: 12, artillery: 6, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ESP": {name: "İspanya", flag: "es", color: "#eab308", ideology: "Demokrasi", pop: 48000000, civFactories: 20, milFactories: 10, money: 2000, manpower: 300000, divisions: { inf: 12, art: 4, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 20000, artillery: 300, tanks: 80 }, prodAllocation: { guns: 5, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SAU": {name: "Suudi Arabistan", flag: "sa", color: "#065f46", ideology: "Monarşi", pop: 36000000, civFactories: 25, milFactories: 12, money: 8000, manpower: 250000, divisions: { inf: 10, art: 4, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 25000, artillery: 400, tanks: 150 }, prodAllocation: { guns: 6, artillery: 3, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MEX": {name: "Meksika", flag: "mx", color: "#15803d", ideology: "Demokrasi", pop: 130000000, civFactories: 25, milFactories: 10, money: 2000, manpower: 400000, divisions: { inf: 15, art: 4, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 22000, artillery: 300, tanks: 10 }, prodAllocation: { guns: 6, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ZAF": {name: "Güney Afrika", flag: "za", color: "#d97706", ideology: "Demokrasi", pop: 60000000, civFactories: 15, milFactories: 8, money: 1500, manpower: 200000, divisions: { inf: 8, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 150, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"UKR": {name: "Ukrayna", flag: "ua", color: "#eab308", ideology: "Cumhuriyet", pop: 38000000, civFactories: 10, milFactories: 45, money: 500, manpower: 1200000, divisions: { inf: 50, art: 20, arm: 5 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 90000, artillery: 1500, tanks: 400 }, prodAllocation: { guns: 25, artillery: 15, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"GRC": {name: "Yunanistan", flag: "gr", color: "#2563eb", ideology: "Demokrasi", pop: 10400000, civFactories: 15, milFactories: 12, money: 1100, manpower: 140000, divisions: { inf: 10, art: 3, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 20000, artillery: 350, tanks: 350 }, prodAllocation: { guns: 4, artillery: 2, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"NLD": {name: "Hollanda", flag: "nl", color: "#f97316", ideology: "Demokrasi", pop: 18000000, civFactories: 35, milFactories: 8, money: 5000, manpower: 45000, divisions: { inf: 4, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 100, tanks: 40 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SWE": {name: "İsveç", flag: "se", color: "#0ea5e9", ideology: "Demokrasi", pop: 10500000, civFactories: 25, milFactories: 15, money: 3500, manpower: 60000, divisions: { inf: 6, art: 2, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 15000, artillery: 150, tanks: 110 }, prodAllocation: { guns: 5, artillery: 4, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"FIN": {name: "Finlandiya", flag: "fi", color: "#ffffff", ideology: "Demokrasi", pop: 5600000, civFactories: 15, milFactories: 10, money: 1500, manpower: 280000, divisions: { inf: 12, art: 6, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 35000, artillery: 700, tanks: 100 }, prodAllocation: { guns: 4, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"NOR": {name: "Norveç", flag: "no", color: "#ef4444", ideology: "Demokrasi", pop: 5500000, civFactories: 25, milFactories: 8, money: 12000, manpower: 40000, divisions: { inf: 4, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 10000, artillery: 80, tanks: 50 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"DNK": {name: "Danimarka", flag: "dk", color: "#be123c", ideology: "Demokrasi", pop: 6000000, civFactories: 20, milFactories: 5, money: 4000, manpower: 35000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 8000, artillery: 50, tanks: 15 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CHE": {name: "İsviçre", flag: "ch", color: "#991b1b", ideology: "Federal", pop: 8900000, civFactories: 30, milFactories: 10, money: 9000, manpower: 150000, divisions: { inf: 8, art: 3, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 25000, artillery: 200, tanks: 120 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"BEL": {name: "Belçika", flag: "be", color: "#1e293b", ideology: "Demokrasi", pop: 11800000, civFactories: 25, milFactories: 6, money: 2500, manpower: 40000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 10000, artillery: 60, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ROU": {name: "Romanya", flag: "ro", color: "#facc15", ideology: "Cumhuriyet", pop: 19000000, civFactories: 18, milFactories: 10, money: 1200, manpower: 180000, divisions: { inf: 12, art: 4, arm: 2  },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 22000, artillery: 300, tanks: 140 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CZE": {name: "Çekya", flag: "cz", color: "#3b82f6", ideology: "Demokrasi", pop: 10800000, civFactories: 18, milFactories: 12, money: 1800, manpower: 70000, divisions: { inf: 6, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 18000, artillery: 150, tanks: 60 }, prodAllocation: { guns: 4, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"HUN": {name: "Macaristan", flag: "hu", color: "#15803d", ideology: "Cumhuriyet", pop: 9600000, civFactories: 12, milFactories: 6, money: 800, manpower: 65000, divisions: { inf: 5, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 100, tanks: 40 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ISR": {name: "İsrail", flag: "il", color: "#1d4ed8", ideology: "Demokrasi", pop: 980000, civFactories: 25, milFactories: 30, money: 4000, manpower: 450000, divisions: { inf: 15, art: 6, arm: 8 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 40000, artillery: 600, tanks: 500 }, prodAllocation: { guns: 10, artillery: 5, tanks: 6 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"IRN": {name: "İran", flag: "ir", color: "#047857", ideology: "Teokrasi", pop: 89000000, civFactories: 25, milFactories: 25, money: 1500, manpower: 1100000, divisions: { inf: 45, art: 12, arm: 5 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 70000, artillery: 1200, tanks: 450 }, prodAllocation: { guns: 15, artillery: 8, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"EGY": {name: "Mısır", flag: "eg", color: "#f59e0b", ideology: "Cumhuriyet", pop: 112000000, civFactories: 22, milFactories: 15, money: 1000, manpower: 800000, divisions: { inf: 30, art: 10, arm: 6 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 50000, artillery: 800, tanks: 600 }, prodAllocation: { guns: 8, artillery: 4, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PAK": {name: "Pakistan", flag: "pk", color: "#14532d", ideology: "Cumhuriyet", pop: 240000000, civFactories: 20, milFactories: 25, money: 1200, manpower: 1500000, divisions: { inf: 55, art: 15, arm: 8 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 80000, artillery: 1400, tanks: 500 }, prodAllocation: { guns: 12, artillery: 6, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"IDN": {name: "Endonezya", flag: "id", color: "#b91c1c", ideology: "Demokrasi", pop: 278000000, civFactories: 35, milFactories: 12, money: 3500, manpower: 800000, divisions: { inf: 22, art: 4, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 30000, artillery: 300, tanks: 100 }, prodAllocation: { guns: 6, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"TWN": {name: "Tayvan", flag: "tw", color: "#0284c7", ideology: "Demokrasi", pop: 23500000, civFactories: 40, milFactories: 18, money: 5000, manpower: 300000, divisions: { inf: 14, art: 4, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 25000, artillery: 400, tanks: 200 }, prodAllocation: { guns: 8, artillery: 4, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PRK": {name: "Kuzey Kore", flag: "kp", color: "#991b1b", ideology: "Komünizm", pop: 26000000, civFactories: 8, milFactories: 35, money: 300, manpower: 1300000, divisions: { inf: 60, art: 25, arm: 6 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 100000, artillery: 3000, tanks: 700 }, prodAllocation: { guns: 20, artillery: 15, tanks: 5 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ARG": {name: "Arjantin", flag: "ar", color: "#38bdf8", ideology: "Cumhuriyet", pop: 46000000, civFactories: 18, milFactories: 6, money: 900, manpower: 120000, divisions: { inf: 8, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 15000, artillery: 120, tanks: 50 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"COL": {name: "Kolombiya", flag: "co", color: "#1e3a8a", ideology: "Demokrasi", pop: 52000000, civFactories: 14, milFactories: 5, money: 3500, manpower: 180000, divisions: { inf: 8, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 15000, artillery: 150, tanks: 0 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"VEN": {name: "Venezuela", flag: "ve", color: "#b91c1c", ideology: "Sosyalizm", pop: 29000000, civFactories: 10, milFactories: 7, money: 1500, manpower: 220000, divisions: { inf: 10, art: 3, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 20000, artillery: 200, tanks: 60 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CHL": {name: "Şili", flag: "cl", color: "#0369a1", ideology: "Demokrasi", pop: 20000000, civFactories: 16, milFactories: 6, money: 5000, manpower: 90000, divisions: { inf: 6, art: 3, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 180, tanks: 30 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PER": {name: "Peru", flag: "pe", color: "#991b1b", ideology: "Demokrasi", pop: 34000000, civFactories: 11, milFactories: 4, money: 3000, manpower: 110000, divisions: { inf: 7, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 14000, artillery: 120, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"NGA": {name: "Nijerya", flag: "ng", color: "#15803d", ideology: "Demokrasi", pop: 224000000, civFactories: 15, milFactories: 6, money: 4000, manpower: 600000, divisions: { inf: 14, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 25000, artillery: 100, tanks: 10 }, prodAllocation: { guns: 4, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"DZA": {name: "Cezayir", flag: "dz", color: "#065f46", ideology: "Milliyetçilik", pop: 46000000, civFactories: 18, milFactories: 11, money: 7000, manpower: 300000, divisions: { inf: 12, art: 5, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 24000, artillery: 350, tanks: 180 }, prodAllocation: { guns: 5, artillery: 3, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MAR": {name: "Fas", flag: "ma", color: "#9a3412", ideology: "Monarşi", pop: 38000000, civFactories: 15, milFactories: 8, money: 4500, manpower: 250000, divisions: { inf: 11, art: 4, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 20000, artillery: 250, tanks: 110 }, prodAllocation: { guns: 4, artillery: 3, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"TUN": {name: "Tunus", flag: "tn", color: "#dc2626", ideology: "Demokrasi", pop: 12000000, civFactories: 8, milFactories: 3, money: 2000, manpower: 60000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 8000, artillery: 50, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LBY": {name: "Libya", flag: "ly", color: "#166534", ideology: "Geçici Hükümet", pop: 7000000, civFactories: 7, milFactories: 5, money: 5000, manpower: 80000, divisions: { inf: 6, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 15000, artillery: 120, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SDN": {name: "Sudan", flag: "sd", color: "#374151", ideology: "Cunta", pop: 48000000, civFactories: 5, milFactories: 6, money: 1000, manpower: 280000, divisions: { inf: 10, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 18000, artillery: 90, tanks: 30 }, prodAllocation: { guns: 4, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ETH": {name: "Etiyopya", flag: "et", color: "#16a34a", ideology: "Demokrasi", pop: 126000000, civFactories: 9, milFactories: 5, money: 1800, manpower: 450000, divisions: { inf: 12, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 22000, artillery: 80, tanks: 10 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"KEN": {name: "Kenya", flag: "ke", color: "#854d0e", ideology: "Demokrasi", pop: 55000000, civFactories: 12, milFactories: 3, money: 3000, manpower: 130000, divisions: { inf: 5, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 10000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"AGO": {name: "Angola", flag: "ao", color: "#7f1d1d", ideology: "Milliyetçilik", pop: 36000000, civFactories: 8, milFactories: 4, money: 2500, manpower: 140000, divisions: { inf: 7, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 60, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"IRQ": {name: "Irak", flag: "iq", color: "#065f46", ideology: "Demokrasi", pop: 45000000, civFactories: 11, milFactories: 6, money: 4000, manpower: 250000, divisions: { inf: 9, art: 3, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 18000, artillery: 150, tanks: 40 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SYR": {name: "Suriye", flag: "sy", color: "#15803d", ideology: "Otokrasi", pop: 23000000, civFactories: 4, milFactories: 7, money: 800, manpower: 190000, divisions: { inf: 11, art: 4, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 20000, artillery: 220, tanks: 90 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"JOR": {name: "Ürdün", flag: "jo", color: "#0f766e", ideology: "Monarşi", pop: 11000000, civFactories: 9, milFactories: 4, money: 2200, manpower: 80000, divisions: { inf: 5, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+             productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 10000, artillery: 80, tanks: 25 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LBN": {name: "Lübnan", flag: "lb", color: "#b91c1c", ideology: "Demokrasi", pop: 55000000, civFactories: 5, milFactories: 2, money: 1000, manpower: 40000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 6000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"OMN": {name: "Umman", flag: "om", color: "#047857", ideology: "Monarşi", pop: 5000000, civFactories: 11, milFactories: 4, money: 4500, manpower: 60000, divisions: { inf: 4, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 9000, artillery: 70, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"YEM": {name: "Yemen", flag: "ye", color: "#4b5563", ideology: "Askeri Rejim", pop: 34000000, civFactories: 2, milFactories: 4, money: 400, manpower: 200000, divisions: { inf: 8, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 14000, artillery: 40, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"KWT": {name: "Kuveyt", flag: "kw", color: "#0d9488", ideology: "Monarşi", pop: 43000000, civFactories: 14, milFactories: 3, money: 9000, manpower: 40000, divisions: { inf: 3, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 60, tanks: 35 }, prodAllocation: { guns: 1, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"QAT": {name: "Katar", flag: "qa", color: "#701a75", ideology: "Monarşi", pop: 2700000, civFactories: 15, milFactories: 4, money: 15000, manpower: 30000, divisions: { inf: 2, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 6000, artillery: 50, tanks: 40 }, prodAllocation: { guns: 1, artillery: 1, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ARE": {name: "Birleşik Arap Emirlikleri", flag: "ae", color: "#0f766e", ideology: "Monarşi", pop: 9500000, civFactories: 24, milFactories: 8, money: 14000, manpower: 80000, divisions: { inf: 5, art: 2, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 12000, artillery: 140, tanks: 90 }, prodAllocation: { guns: 3, artillery: 2, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"AZE": {name: "Azerbaycan", flag: "az", color: "#0369a1", ideology: "Milliyetçilik", pop: 10000000, civFactories: 16, milFactories: 12, money: 6500, manpower: 180000, divisions: { inf: 10, art: 4, arm: 3 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 22000, artillery: 300, tanks: 140 }, prodAllocation: { guns: 4, artillery: 4, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"GEO": {name: "Gürcistan", flag: "ge", color: "#991b1b", ideology: "Demokrasi", pop: 3700000, civFactories: 7, milFactories: 3, money: 1500, manpower: 50000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 40, tanks: 10 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ARM": {name: "Ermenistan", flag: "am", color: "#b45309", ideology: "Demokrasi", pop: 2800000, civFactories: 5, milFactories: 3, money: 1000, manpower: 45000, divisions: { inf: 4, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 7000, artillery: 60, tanks: 8 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"KAZ": {name: "Kazakistan", flag: "kz", color: "#0284c7", ideology: "Otokrasi", pop: 20000000, civFactories: 20, milFactories: 8, money: 8000, manpower: 200000, divisions: { inf: 8, art: 3, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 18000, artillery: 200, tanks: 120 }, prodAllocation: { guns: 3, artillery: 2, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"UZB": {name: "Özbekistan", flag: "uz", color: "#0d9488", ideology: "Otokrasi", pop: 36000000, civFactories: 15, milFactories: 6, money: 3500, manpower: 250000, divisions: { inf: 9, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 16000, artillery: 110, tanks: 30 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"TKM": {name: "Türkmenistan", flag: "tm", color: "#166534", ideology: "Mutlakıyet", pop: 6500000, civFactories: 11, milFactories: 5, money: 4000, manpower: 70000, divisions: { inf: 5, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 10000, artillery: 90, tanks: 40 }, prodAllocation: { guns: 2, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"KGZ": {name: "Kırgızistan", flag: "kg", color: "#dc2626", ideology: "Demokrasi", pop: 7000000, civFactories: 6, milFactories: 3, money: 1200, manpower: 65000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 40, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"TJK": {name: "Tacikistan", flag: "tj", color: "#991b1b", ideology: "Otokrasi", pop: 10000000, civFactories: 5, milFactories: 3, money: 9000, manpower: 80000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 30, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"AFG": {name: "Afganistan", flag: "af", color: "#1f2937", ideology: "Teokrasi", pop: 42000000, civFactories: 2, milFactories: 5, money: 500, manpower: 350000, divisions: { inf: 12, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 25000, artillery: 50, tanks: 15 }, prodAllocation: { guns: 4, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"BGD": {name: "Bangladeş", flag: "bd", color: "#065f46", ideology: "Demokrasi", pop: 173000000, civFactories: 16, milFactories: 5, money: 3800, manpower: 500000, divisions: { inf: 11, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 20000, artillery: 80, tanks: 20 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LKA": {name: "Sri Lanka", flag: "lk", color: "#854d0e", ideology: "Demokrasi", pop: 22000000, civFactories: 9, milFactories: 3, money: 1800, manpower: 75000, divisions: { inf: 5, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 9000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MMR": {name: "Myanmar", flag: "mm", color: "#eab308", ideology: "Cunta", pop: 54000000, civFactories: 6, milFactories: 7, money: 1200, manpower: 240000, divisions: { inf: 10, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 18000, artillery: 100, tanks: 30 }, prodAllocation: { guns: 4, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"THA": {name: "Tayland", flag: "th", color: "#1e3a8a", ideology: "Monarşi", pop: 71000000, civFactories: 25, milFactories: 9, money: 7500, manpower: 280000, divisions: { inf: 10, art: 3, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 22000, artillery: 180, tanks: 60 }, prodAllocation: { guns: 4, artillery: 3, tanks: 2 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"VNM": {name: "Vietnam", flag: "vn", color: "#cc2525", ideology: "Sosyalizm", pop: 98000000, civFactories: 24, milFactories: 11, money: 6000, manpower: 450000, divisions: { inf: 13, art: 5, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 26000, artillery: 280, tanks: 90 }, prodAllocation: { guns: 5, artillery: 3, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MYS": {name: "Malezya", flag: "my", color: "#1e40af", ideology: "Demokrasi", pop: 34000000, civFactories: 20, milFactories: 6, money: 5500, manpower: 120000, divisions: { inf: 7, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 14000, artillery: 90, tanks: 25 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SGP": {name: "Singapur", flag: "sg", color: "#ef4444", ideology: "Demokrasi", pop: 6000000, civFactories: 26, milFactories: 8, money: 18000, manpower: 50000, divisions: { inf: 4, art: 3, arm: 2 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 10000, artillery: 150, tanks: 80 }, prodAllocation: { guns: 2, artillery: 3, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PHL": {name: "Filipinler", flag: "ph", color: "#1d4ed8", ideology: "Demokrasi", pop: 115000000, civFactories: 18, milFactories: 6, money: 4500, manpower: 350000, divisions: { inf: 9, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 16000, artillery: 80, tanks: 10 }, prodAllocation: { guns: 4, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"NZL": {name: "Yeni Zelanda", flag: "nz", color: "#0f172a", ideology: "Demokrasi", pop: 5200000, civFactories: 14, milFactories: 4, money: 4000, manpower: 45000, divisions: { inf: 4, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 9000, artillery: 80, tanks: 10 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PRT": {name: "Portekiz", flag: "pt", color: "#15803d", ideology: "Demokrasi", pop: 10000000, civFactories: 16, milFactories: 5, money: 3800, manpower: 80000, divisions: { inf: 6, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 12000, artillery: 100, tanks: 20 }, prodAllocation: { guns: 3, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"IRL": {name: "İrlanda", flag: "ie", color: "#166534", ideology: "Demokrasi", pop: 5200000, civFactories: 15, milFactories: 2, money: 5000, manpower: 30000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 6000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SVK": {name: "Slovakya", flag: "sk", color: "#1e40af", ideology: "Demokrasi", pop: 5400000, civFactories: 12, milFactories: 4, money: 2500, manpower: 45000, divisions: { inf: 4, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 9000, artillery: 70, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"HRV": {name: "Hırvatistan", flag: "hr", color: "#991b1b", ideology: "Demokrasi", pop: 3800000, civFactories: 11, milFactories: 4, money: 2800, manpower: 40000, divisions: { inf: 4, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 60, tanks: 15 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SRB": {name: "Sırbistan", flag: "rs", color: "#1e3a8a", ideology: "Milliyetçilik", pop: 6600000, civFactories: 10, milFactories: 6, money: 2000, manpower: 90000, divisions: { inf: 6, art: 3, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 14000, artillery: 140, tanks: 45 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"BGR": {name: "Bulgaristan", flag: "bg", color: "#047857", ideology: "Demokrasi", pop: 6400000, civFactories: 12, milFactories: 5, money: 2400, manpower: 70000, divisions: { inf: 5, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 11000, artillery: 100, tanks: 30 }, prodAllocation: { guns: 2, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CUB": {name: "Küba", flag: "cu", color: "#1d4ed8", ideology: "Sosyalizm", pop: 11000000, civFactories: 6, milFactories: 4, money: 800, manpower: 120000, divisions: { inf: 7, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 14000, artillery: 90, tanks: 40 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PAN": {name: "Panama", flag: "pa", color: "#dc2626", ideology: "Demokrasi", pop: 4500000, civFactories: 13, milFactories: 1, money: 4500, manpower: 20000, divisions: { inf: 2, art: 0, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 4000, artillery: 10, tanks: 0 }, prodAllocation: { guns: 1, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MNG": {name: "Moğolistan", flag: "mn", color: "#b91c1c", ideology: "Komünizm", pop: 3500000, civFactories: 6, milFactories: 3, money: 500, manpower: 60000, divisions: { inf: 4, art: 1, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 50, tanks: 20 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LUX": {name: "Lüksemburg", flag: "lu", color: "#06b6d4", ideology: "Demokrasi", pop: 650000, civFactories: 14, milFactories: 2, money: 6000, manpower: 15000, divisions: { inf: 2, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 4000, artillery: 30, tanks: 0 }, prodAllocation: { guns: 1, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ISL": {name: "İzlanda", flag: "is", color: "#1e3a8a", ideology: "Demokrasi", pop: 390000, civFactories: 8, milFactories: 1, money: 4000, manpower: 10000, divisions: { inf: 1, art: 0, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 2000, artillery: 0, tanks: 0 }, prodAllocation: { guns: 1, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"BOL": {name: "Bolivya", flag: "bo", color: "#16a34a", ideology: "Demokrasi", pop: 12000000, civFactories: 9, milFactories: 4, money: 800, manpower: 90000, divisions: { inf: 6, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 11000, artillery: 80, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ECU": {name: "Ekvador", flag: "ec", color: "#ea580c", ideology: "Demokrasi", pop: 18000000, civFactories: 10, milFactories: 4, money: 900, manpower: 100000, divisions: { inf: 7, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 12000, artillery: 90, tanks: 5 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"GHA": {name: "Gana", flag: "gh", color: "#eab308", ideology: "Demokrasi", pop: 33000000, civFactories: 12, milFactories: 4, money: 1200, manpower: 140000, divisions: { inf: 8, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 14000, artillery: 100, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ALB": {name: "Arnavutluk", flag: "al", color: "#991b1b", ideology: "Otokrasi", pop: 2800000, civFactories: 6, milFactories: 3, money: 600, manpower: 40000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 6000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"EST": {name: "Estonya", flag: "ee", color: "#2563eb", ideology: "Demokrasi", pop: 1300000, civFactories: 8, milFactories: 3, money: 1500, manpower: 30000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 7000, artillery: 40, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LVA": {name: "Letonya", flag: "lv", color: "#991b1b", ideology: "Demokrasi", pop: 1900000, civFactories: 9, milFactories: 3, money: 1400, manpower: 35000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 8000, artillery: 50, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LTU": {name: "Litvanya", flag: "lt", color: "#854d0e", ideology: "Demokrasi", pop: 2800000, civFactories: 10, milFactories: 4, money: 1600, manpower: 45000, divisions: { inf: 5, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 10000, artillery: 60, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"URY": {name: "Uruguay", flag: "uy", color: "#0284c7", ideology: "Demokrasi", pop: 3500000, civFactories: 10, milFactories: 3, money: 2500, manpower: 40000, divisions: { inf: 4, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 6000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"PRY": {name: "Paraguay", flag: "py", color: "#b91c1c", ideology: "Otokrasi", pop: 7000000, civFactories: 8, milFactories: 4, money: 1000, manpower: 75000, divisions: { inf: 6, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 9000, artillery: 60, tanks: 0 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"GTM": {name: "Guatemala", flag: "gt", color: "#06b6d4", ideology: "Demokrasi", pop: 18000000, civFactories: 9, milFactories: 3, money: 1200, manpower: 90000, divisions: { inf: 6, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 10000, artillery: 50, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CRI": {name: "Kosta Rika", flag: "cr", color: "#1e3a8a", ideology: "Demokrasi", pop: 5000000, civFactories: 11, milFactories: 1, money: 3000, manpower: 15000, divisions: { inf: 2, art: 0, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 3000, artillery: 0, tanks: 0 }, prodAllocation: { guns: 1, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"DOM": {name: "Dominik Cumhuriyeti", flag: "do", color: "#3b82f6", ideology: "Demokrasi", pop: 11000000, civFactories: 9, milFactories: 3, money: 1400, manpower: 60000, divisions: { inf: 5, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 8000, artillery: 40, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SEN": {name: "Senegal", flag: "sn", color: "#15803d", ideology: "Demokrasi", pop: 17000000, civFactories: 10, milFactories: 4, money: 1100, manpower: 80000, divisions: { inf: 6, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 10000, artillery: 60, tanks: 0 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"CIV": {name: "Fildişi Sahili", flag: "ci", color: "#ea580c", ideology: "Demokrasi", pop: 28000000, civFactories: 12, milFactories: 4, money: 1800, manpower: 110000, divisions: { inf: 7, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 12000, artillery: 70, tanks: 10 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SSD": {name: "Güney Sudan", flag: "ss", color: "#7c2d12", ideology: "Otokrasi", pop: 11000000, civFactories: 5, milFactories: 5, money: 400, manpower: 130000, divisions: { inf: 9, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 14000, artillery: 50, tanks: 5 }, prodAllocation: { guns: 4, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"UGA": {name: "Uganda", flag: "ug", color: "#eab308", ideology: "Otokrasi", pop: 48000000, civFactories: 11, milFactories: 6, money: 900, manpower: 190000, divisions: { inf: 10, art: 3, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 16000, artillery: 80, tanks: 15 }, prodAllocation: { guns: 3, artillery: 2, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"TZA": {name: "Tanzanya", flag: "tz", color: "#0d9488", ideology: "Demokrasi", pop: 65000000, civFactories: 14, milFactories: 5, money: 1500, manpower: 220000, divisions: { inf: 12, art: 3, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 18000, artillery: 90, tanks: 10 }, prodAllocation: { guns: 3, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"ZMB": {name: "Zambiya", flag: "zm", color: "#16a34a", ideology: "Demokrasi", pop: 20000000, civFactories: 10, milFactories: 3, money: 1300, manpower: 85000, divisions: { inf: 6, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 9000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MOZ": {name: "Mozambik", flag: "mz", color: "#047857", ideology: "Demokrasi", pop: 32000000, civFactories: 9, milFactories: 4, money: 800, manpower: 120000, divisions: { inf: 8, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 11000, artillery: 60, tanks: 5 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MDG": {name: "Madagaskar", flag: "mg", color: "#dc2626", ideology: "Demokrasi", pop: 29000000, civFactories: 8, milFactories: 3, money: 700, manpower: 95000, divisions: { inf: 6, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 9000, artillery: 40, tanks: 0 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LBR": {name: "Liberya", flag: "lr", color: "#1e40af", ideology: "Demokrasi", pop: 5000000, civFactories: 6, milFactories: 2, money: 600, manpower: 30000, divisions: { inf: 3, art: 0, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 4000, artillery: 10, tanks: 0 }, prodAllocation: { guns: 2, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"SVN": {name: "Slovenya", flag: "si", color: "#2563eb", ideology: "Demokrasi", pop: 2100000, civFactories: 12, milFactories: 4, money: 2000, manpower: 30000, divisions: { inf: 4, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 7000, artillery: 50, tanks: 15 }, prodAllocation: { guns: 2, artillery: 1, tanks: 1 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MKD": {name: "Kuzey Makedonya", flag: "mk", color: "#b45309", ideology: "Demokrasi", pop: 2000000, civFactories: 8, milFactories: 3, money: 900, manpower: 25000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 5000, artillery: 30, tanks: 5 }, prodAllocation: { guns: 2, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"BIH": {name: "Bosna Hersek", flag: "ba", color: "#1d4ed8", ideology: "Demokrasi", pop: 3200000, civFactories: 9, milFactories: 5, money: 1100, manpower: 50000, divisions: { inf: 5, art: 2, arm: 1 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 8000, artillery: 60, tanks: 10 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"MDA": {name: "Moldova", flag: "md", color: "#7f1d1d", ideology: "Demokrasi", pop: 2600000, civFactories: 7, milFactories: 2, money: 600, manpower: 25000, divisions: { inf: 3, art: 1, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 4500, artillery: 25, tanks: 0 }, prodAllocation: { guns: 2, artillery: 0, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"KHM": {name: "Kamboçya", flag: "kh", color: "#991b1b", ideology: "Otokrasi", pop: 16000000, civFactories: 9, milFactories: 4, money: 800, manpower: 100000, divisions: { inf: 7, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 11000, artillery: 60, tanks: 5 }, prodAllocation: { guns: 3, artillery: 1, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
+"LAO": {name: "Laos", flag: "la", color: "#065f46", ideology: "Komünizm", pop: 7500000, civFactories: 7, milFactories: 4, money: 500, manpower: 65000, divisions: { inf: 5, art: 2, arm: 0 },
+            factoryEfficiency: 1.0,
+            productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 }, stockpile: { guns: 8500, artillery: 50, tanks: 8 }, prodAllocation: { guns: 2, artillery: 2, tanks: 0 }, completedFocuses: [], activeFocus: null, focusProgress: 0 }
 },
-            activeFocusTree: {
-    "TUR": [
-        { id: "mavi_vatan", title: "Mavi Vatan Doktrini", desc: "+5 Askeri Fabrika.", reward: () => { GameState.countries.TUR.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.TUR.name} - Mavi Vatan tamamlandı.`, "text-emerald-400"); } },
-        { id: "brics_uyeligi", title: "BRICS+ Tam Üyelik", desc: "+2000 Hazine.", reward: () => { GameState.countries.TUR.money += 2000; log(`MİLLİ ODAK: ${GameState.countries.TUR.name} - BRICS+ entegrasyonu sağlandı.`, "text-emerald-400"); } }
-    ],
-    "DEU": [
-        { id: "avrupa_ordusu", title: "Avrupa Savunma Birliği", desc: "+5 Askeri Fabrika.", reward: () => { GameState.countries.DEU.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.DEU.name} - Avrupa savunması güçlendi.`, "text-emerald-400"); } },
-        { id: "yesil_enerji", title: "Yenilenebilir Enerji Hamlesi", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.DEU.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.DEU.name} - Yeşil enerjiye geçiş yapıldı.`, "text-emerald-400"); } }
-    ],
-    "USA": [
-        { id: "pasifik_kalkanı", title: "Pasifik Kalkanı", desc: "+5 Askeri Fabrika.", reward: () => { GameState.countries.USA.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.USA.name} - Pasifik'te savunma hattı kuruldu.`, "text-emerald-400"); } },
-        { id: "silikon_vadisi", title: "Silikon Vadisi Destek Paketi", desc: "+1000 Hazine.", reward: () => { GameState.countries.USA.money += 1000; log(`MİLLİ ODAK: ${GameState.countries.USA.name} - Teknoloji devleri yatırıma başladı.`, "text-emerald-400"); } }
-    ],
-    "RUS": [
-        { id: "kuzey_guney", title: "Kuzey-Güney Koridoru", desc: "+5 Sivil Fabrika.", reward: () => { GameState.countries.RUS.civFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.RUS.name} - Lojistik hattı açıldı.`, "text-emerald-400"); } },
-        { id: "arktik", title: "Arktik Hakimiyeti", desc: "+50K İnsan Gücü.", reward: () => { GameState.countries.RUS.manpower += 50000; log(`MİLLİ ODAK: ${GameState.countries.RUS.name} - Arktik bölgesi kontrol altına alındı.`, "text-emerald-400"); } }
-    ],
-    "GBR": [
-        { id: "aukus", title: "AUKUS İttifakı", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.GBR.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.GBR.name} - AUKUS ortaklığı onaylandı.`, "text-emerald-400"); } },
-        { id: "kuresel_ingiltere", title: "Küresel İngiltere Vizyonu", desc: "+500 Hazine.", reward: () => { GameState.countries.GBR.money += 500; log(`MİLLİ ODAK: ${GameState.countries.GBR.name} - Ticari ağ genişletildi.`, "text-emerald-400"); } }
-    ],
-    "FRA": [
-        { id: "stratejik_ozerklik", title: "Stratejik Özerklik", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.FRA.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.FRA.name} - Savunma sanayii özerkleşti.`, "text-emerald-400"); } },
-        { id: "afrika_etki", title: "Afrika Etki Alanı", desc: "+500 Hazine.", reward: () => { GameState.countries.FRA.money += 500; log(`MİLLİ ODAK: ${GameState.countries.FRA.name} - Bölgesel nüfuz artırıldı.`, "text-emerald-400"); } }
-    ],
-    "ITA": [
-        { id: "akdeniz_enerji", title: "Akdeniz Enerji Merkezi", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.ITA.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ITA.name} - Akdeniz'de enerji üssü kuruldu.`, "text-emerald-400"); } },
-        { id: "goc_reformu", title: "Göç Yönetimi Reformu", desc: "+10K İnsan Gücü.", reward: () => { GameState.countries.ITA.manpower += 10000; log(`MİLLİ ODAK: ${GameState.countries.ITA.name} - Göç politikası güncellendi.`, "text-emerald-400"); } }
-    ],
-    "JPN": [
-        { id: "pasifik_paktı", title: "Pasifik Savunma Paktı", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.JPN.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.JPN.name} - Pasifik güvenliği sağlandı.`, "text-emerald-400"); } },
-        { id: "yüksek_teknoloji", title: "Yüksek Teknoloji Yatırımı", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.JPN.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.JPN.name} - Teknoloji atılımı gerçekleşti.`, "text-emerald-400"); } }
-    ],
-    "POL": [
-        { id: "dogu_kalkanı", title: "Doğu Kalkanı (Tahkimat)", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.POL.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.POL.name} - Doğu sınırı tahkim edildi.`, "text-emerald-400"); } },
-        { id: "nükleer_enerji", title: "Nükleer Enerji Geçişi", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.POL.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.POL.name} - Nükleer enerji yatırımı başladı.`, "text-emerald-400"); } }
-    ],
-    "AUT": [
-        { id: "tarafsızlık", title: "Avrupa Tarafsızlık Yasası", desc: "+200 Hazine.", reward: () => { GameState.countries.AUT.money += 200; log(`MİLLİ ODAK: ${GameState.countries.AUT.name} - Tarafsızlık politikası güçlendi.`, "text-emerald-400"); } },
-        { id: "ticaret_blogu", title: "Orta Avrupa Ticaret Bloğu", desc: "+1 Sivil Fabrika.", reward: () => { GameState.countries.AUT.civFactories += 1; log(`MİLLİ ODAK: ${GameState.countries.AUT.name} - Ticari birlik kuruldu.`, "text-emerald-400"); } },
-        { id: "aut_1", title: "Viyana Ağır Sanayii", desc: "+2 Askeri.", reward: () => { GameState.countries.AUT.milFactories += 2; } }
-    ],
-    "AUS": [
-        { id: "aukus_modernizasyon", title: "AUKUS Donanma Modernizasyonu", desc: "+2 Askeri Fabrika.", reward: () => { GameState.countries.AUS.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.AUS.name} - Donanma modernize edildi.`, "text-emerald-400"); } },
-        { id: "indopasifik_guvenlik", title: "Indo-Pasifik Güvenlik", desc: "+10K İnsan Gücü.", reward: () => { GameState.countries.AUS.manpower += 10000; log(`MİLLİ ODAK: ${GameState.countries.AUS.name} - Pasifik güvenliği sağlandı.`, "text-emerald-400"); } }
-    ],
-    "CAN": [
-        { id: "arktik_devriyesi", title: "Kuzey Arktik Devriyesi", desc: "+2 Askeri Fabrika.", reward: () => { GameState.countries.CAN.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.CAN.name} - Kuzey hattı koruma altına alındı.`, "text-emerald-400"); } },
-        { id: "yesil_hidrojen", title: "Yeşil Hidrojen Üretimi", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.CAN.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.CAN.name} - Hidrojen yatırımı başladı.`, "text-emerald-400"); } }
-    ],
-    "CHN": [
-        { id: "kusak_yol", title: "Kuşak ve Yol İnisiyatifi", desc: "+10 Sivil Fabrika.", reward: () => { GameState.countries.CHN.civFactories += 10; log(`MİLLİ ODAK: ${GameState.countries.CHN.name} - Global lojistik ağı genişledi.`, "text-emerald-400"); } },
-        { id: "yari_iletken", title: "Yarı İletken Yerlileştirme", desc: "+5 Askeri Fabrika.", reward: () => { GameState.countries.CHN.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.CHN.name} - Yerli çip üretimi başladı.`, "text-emerald-400"); } }
-    ],
-    "IND": [
-        { id: "make_in_india", title: "Make in India Atılımı", desc: "+5 Askeri Fabrika.", reward: () => { GameState.countries.IND.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.IND.name} - Yerli üretim devrimi başladı.`, "text-emerald-400"); } },
-        { id: "guney_asya_liderlik", title: "Güney Asya Liderliği", desc: "+1000 Hazine.", reward: () => { GameState.countries.IND.money += 1000; log(`MİLLİ ODAK: ${GameState.countries.IND.name} - Bölgesel güç pozisyonu güçlendi.`, "text-emerald-400"); } }
-    ],
-    "BRA": [
-        { id: "amazon_koruma", title: "Amazon Koruma ve Kalkınma", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.BRA.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.BRA.name} - Amazon koruma alanı genişledi.`, "text-emerald-400"); } },
-        { id: "brics_kopru", title: "BRICS+ Ticaret Köprüsü", desc: "+500 Hazine.", reward: () => { GameState.countries.BRA.money += 500; log(`MİLLİ ODAK: ${GameState.countries.BRA.name} - BRICS ile ticaret köprüsü kuruldu.`, "text-emerald-400"); } }
-    ],
-    "KOR": [
-        { id: "kalkan_kalkan", title: "Kalkan Kalkan (Füze Savunma)", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.KOR.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.KOR.name} - Hava savunma kalkanı tamamlandı.`, "text-emerald-400"); } },
-        { id: "yari_iletken_devrim", title: "Yarı İletken Devrim", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.KOR.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.KOR.name} - Çip teknolojisinde atılım yapıldı.`, "text-emerald-400"); } }
-    ],
-    "ESP": [
-        { id: "akdeniz_lojistik", title: "Akdeniz Lojistik Merkezi", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.ESP.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ESP.name} - Akdeniz lojistiği güçlendi.`, "text-emerald-400"); } },
-        { id: "ab_yesil_mutabakat", title: "AB Yeşil Mutabakatı", desc: "+300 Hazine.", reward: () => { GameState.countries.ESP.money += 300; log(`MİLLİ ODAK: ${GameState.countries.ESP.name} - Yeşil mutabakata katılım sağlandı.`, "text-emerald-400"); } }
-    ],
-    "SAU": [
-        { id: "vizyon_2030", title: "Vizyon 2030 Hamlesi", desc: "+5 Sivil Fabrika.", reward: () => { GameState.countries.SAU.civFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.SAU.name} - Vizyon 2030 hedeflerine ulaşıldı.`, "text-emerald-400"); } },
-        { id: "bolgesel_baris", title: "Bölgesel Barış Diplomasisi", desc: "+1000 Hazine.", reward: () => { GameState.countries.SAU.money += 1000; log(`MİLLİ ODAK: ${GameState.countries.SAU.name} - Diplomatik başarı elde edildi.`, "text-emerald-400"); } }
-    ],
-    "MEX": [
-        { id: "nearshoring", title: "Nearshoring (Üretim Üssü)", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.MEX.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.MEX.name} - Üretim üssü olma süreci başladı.`, "text-emerald-400"); } },
-        { id: "kuzey_amerika_entegrasyonu", title: "Kuzey Amerika Entegrasyonu", desc: "+500 Hazine.", reward: () => { GameState.countries.MEX.money += 500; log(`MİLLİ ODAK: ${GameState.countries.MEX.name} - Ticari entegrasyon tamamlandı.`, "text-emerald-400"); } }
-    ],
-    "ZAF": [
-        { id: "afrika_serbest_ticaret", title: "Afrika Serbest Ticaret Bölgesi", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.ZAF.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ZAF.name} - Afrika pazarına erişim arttı.`, "text-emerald-400"); } },
-        { id: "maden_isleme", title: "Maden İşleme Kapasitesi", desc: "+2 Askeri Fabrika.", reward: () => { GameState.countries.ZAF.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ZAF.name} - Maden işleme teknolojisi modernize edildi.`, "text-emerald-400"); } }
-    ],
-    "UKR": [
-        { id: "batı_entegrasyonu", title: "Avrupa Entegrasyonu", desc: "+4 Sivil Fabrika.", reward: () => { GameState.countries.UKR.civFactories += 4; log(`MİLLİ ODAK: Ukrayna - Avrupa fonları sivil sanayiyi büyüttü.`, "text-emerald-400"); } },
-        { id: "savunma_hattı", title: "Dinyeper Savunma Doktrini", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.UKR.milFactories += 3; log(`MİLLİ ODAK: Ukrayna - Savunma sanayii üretime hız verdi.`, "text-emerald-400"); } }
-    ],
-    "GRC": [
-        { id: "ege_kalkınma", title: "Ege Deniz Ticareti", desc: "+1500 Hazine.", reward: () => { GameState.countries.GRC.money += 1500; log(`MİLLİ ODAK: Yunanistan - Deniz ticaret filoları modernize edildi.`, "text-emerald-400"); } },
-        { id: "ordu_modernizasyon", title: "Sparta Doktrini", desc: "+50,000 İnsan Gücü.", reward: () => { GameState.countries.GRC.manpower += 50000; log(`MİLLİ ODAK: Yunanistan - Seferberlik yasaları genişletildi.`, "text-emerald-400"); } }
-    ],
-    "NLD": [
-        { id: "liman_genisletme", title: "Rotterdam Genişletmesi", desc: "+6 Sivil Fabrika.", reward: () => { GameState.countries.NLD.civFactories += 6; log(`MİLLİ ODAK: Hollanda - Rotterdam limanı Avrupa'nın kalbi oldu.`, "text-emerald-400"); } }
-    ],
-    "SWE": [
-        { id: "skandinav_endustri", title: "Scania Ağır Sanayii", desc: "+4 Askeri Fabrika.", reward: () => { GameState.countries.SWE.milFactories += 4; log(`MİLLİ ODAK: İsveç - Yerli çelik ve silah sanayii zirvede.`, "text-emerald-400"); } }
-    ],
-    "FIN": [
-        { id: "mannerheim_hattı", title: "Sisu Savunma İstihkamı", desc: "+40,000 İnsan Gücü.", reward: () => { GameState.countries.FIN.manpower += 40000; log(`MİLLİ ODAK: Finlandiya - Zorlu kış doktrini orduyu güçlendirdi.`, "text-emerald-400"); } }
-    ],
-    "NOR": [
-        { id: "petrol_fonu", title: "Kuzey Denizi Petrol Fonu", desc: "+3000 Hazine.", reward: () => { GameState.countries.NOR.money += 3000; log(`MİLLİ ODAK: Norveç - Devlet fonları rekor seviyeye ulaştı.`, "text-emerald-400"); } }
-    ],
-    "DNK": [
-        { id: "bogaz_kontrolu", title: "Baltık Geçiş Rejimi", desc: "+1000 Hazine.", reward: () => { GameState.countries.DNK.money += 1000; log(`MİLLİ ODAK: Danimarka - Deniz ticaret vergileri artırıldı.`, "text-emerald-400"); } }
-    ],
-    "CHE": [
-        { id: "alp_kalesi", title: "Alp Reduıt Tahkimatı", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.CHE.civFactories += 2; log(`MİLLİ ODAK: İsviçre - Alp sığınakları ve bankacılık altyapısı güçlendirildi.`, "text-emerald-400"); } }
-    ],
-    "BEL": [
-        { id: "avrupa_kalbi", title: "Brüksel Bürokrasisi", desc: "+1200 Hazine.", reward: () => { GameState.countries.BEL.money += 1200; log(`MİLLİ ODAK: Belçika - Uluslararası ticaret anlaşmaları yapıldı.`, "text-emerald-400"); } }
-    ],
-    "ROU": [
-        { id: "karpat_savunması", title: "Karpat Sanayileşmesi", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.ROU.milFactories += 3; log(`MİLLİ ODAK: Romanya - Karpat lojistik hatları kuruldu.`, "text-emerald-400"); } }
-    ],
-    "CZE": [
-        { id: "skoda_uretim", title: "Skoda Silah Fabrikaları", desc: "+4 Askeri Fabrika.", reward: () => { GameState.countries.CZE.milFactories += 4; log(`MİLLİ ODAK: Çekya - Ağır mühimmat üretimi tavan yaptı.`, "text-emerald-400"); } }
-    ],
-    "HUN": [
-        { id: "budapeste_savunma", title: "Tuna Savunma Planı", desc: "+30,000 İnsan Gücü.", reward: () => { GameState.countries.HUN.manpower += 30000; log(`MİLLİ ODAK: Macaristan - Ulusal muhafız birlikleri kuruldu.`, "text-emerald-400"); } }
-    ],
-    "ISR": [
-        { id: "demir_kubbe", title: "Teknolojik Üstünlük", desc: "+4 Askeri Fabrika.", reward: () => { GameState.countries.ISR.milFactories += 4; log(`MİLLİ ODAK: İsrail - Askeri teknoloji ve siber savunma yatırımları.`, "text-emerald-400"); } },
-        { id: "hazineler", title: "Yüksek Teknoloji İhracatı", desc: "+2000 Hazine.", reward: () => { GameState.countries.ISR.money += 2000; log(`MİLLİ ODAK: İsrail - Silikon Vadisi yatırımları meyvesini verdi.`, "text-emerald-400"); } }
-    ],
-    "IRN": [
-        { id: "pers_koridoru", title: "Körfez Lojistik Üstünlüğü", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.IRN.milFactories += 3; log(`MİLLİ ODAK: İran - Hürmüz Boğazı istihkamları artırıldı.`, "text-emerald-400"); } },
-        { id: "seferberlik", title: "Besic Seferberliği", desc: "+120,000 İnsan Gücü.", reward: () => { GameState.countries.IRN.manpower += 120000; log(`MİLLİ ODAK: İran - Devrim muhafızları yeni tugaylar kurdu.`, "text-emerald-400"); } }
-    ],
-    "EGY": [
-        { id: "suveys_kanalı", title: "Süveyş Kanalı Genişletmesi", desc: "+2500 Hazine.", reward: () => { GameState.countries.EGY.money += 2500; log(`MİLLİ ODAK: Mısır - Kanal geçiş ücretleri hazineyi doldurdu.`, "text-emerald-400"); } },
-        { id: "sinai_hattı", title: "Kahire Ağır Sanayii", desc: "+4 Sivil Fabrika.", reward: () => { GameState.countries.EGY.civFactories += 4; log(`MİLLİ ODAK: Mısır - Nil deltası endüstri merkezleri kuruldu.`, "text-emerald-400"); } }
-    ],
-    "PAK": [
-        { id: "oruz_savunma", title: "Keşmir Doktrini", desc: "+4 Askeri Fabrika.", reward: () => { GameState.countries.PAK.milFactories += 4; log(`MİLLİ ODAK: Pakistan - Stratejik savunma ve mühimmat fabrikaları açıldı.`, "text-emerald-400"); } },
-        { id: "nufus_gucu", title: "İndus Seferberliği", desc: "+150,000 İnsan Gücü.", reward: () => { GameState.countries.PAK.manpower += 150000; log(`MİLLİ ODAK: Pakistan - Ordu kadroları genişletildi.`, "text-emerald-400"); } }
-    ],
-    "IDN": [
-        { id: "takımada_ticareti", title: "Cakarta Endüstri Bölgesi", desc: "+5 Sivil Fabrika.", reward: () => { GameState.countries.IDN.civFactories += 5; log(`MİLLİ ODAK: Endonezya - Adalar arası ticaret ve lojistik ağı.`, "text-emerald-400"); } }
-    ],
-    "TWN": [
-        { id: "tsmc_fabrikaları", title: "Yarı İletken Tekeli", desc: "+6 Sivil Fabrika.", reward: () => { GameState.countries.TWN.civFactories += 6; log(`MİLLİ ODAK: Tayvan - Çip üretimi küresel pazarı domine etti.`, "text-emerald-400"); } }
-    ],
-    "PRK": [
-        { id: "juche_doktrini", title: "Juche Ağır Sanayii", desc: "+5 Askeri Fabrika.", reward: () => { GameState.countries.PRK.milFactories += 5; log(`MİLLİ ODAK: Kuzey Kore - Fabrikalar tamamen ordu üretimine ayrıldı.`, "text-emerald-400"); } },
-        { id: "toplu_askerlik", title: "Yüce Lider Seferberliği", desc: "+200,000 İnsan Gücü.", reward: () => { GameState.countries.PRK.manpower += 200000; log(`MİLLİ ODAK: Kuzey Kore - Devrim ordusu safları sıklaştırdı.`, "text-emerald-400"); } }
-    ],
-    "ARG": [
-        { id: "pampa_tarım", title: "Pampa Tarım Reformu", desc: "+1800 Hazine.", reward: () => { GameState.countries.ARG.money += 1800; log(`MİLLİ ODAK: Arjantin - Tarım ihracatı ekonomiyi kurtarıyor.`, "text-emerald-400"); } },
-],
-"AZE": [
-        { id: "baku_petrol", title: "Hazar Enerji Koridoru", desc: "+4 Sivil Fabrika, +1500 Hazine.", reward: () => { GameState.countries.AZE.civFactories += 4; GameState.countries.AZE.money += 1500; log(`MİLLİ ODAK: Azerbaycan - Şahdeniz ve Bakü hatları tam kapasite çalışıyor.`, "text-emerald-400"); } },
-        { id: "modern_ordu", title: "Karabağ Doktrini", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.AZE.milFactories += 3; log(`MİLLİ ODAK: Azerbaycan - İHA ve mühimmat üretim hatları kuruldu.`, "text-emerald-400"); } }
-    ],
-    "COL": [{ id: "col_1", title: "Bogota Sanayii", desc: "+3 Sivil.", reward: () => { GameState.countries.COL.civFactories += 3; } }],
-    "VEN": [{ id: "ven_1", title: "Orinoco Petrolü", desc: "+2000 Hazine.", reward: () => { GameState.countries.VEN.money += 2000; } }],
-    "CHL": [{ id: "chl_1", title: "And Çeliği", desc: "+3 Askeri.", reward: () => { GameState.countries.CHL.milFactories += 3; } }],
-    "PER": [{ id: "per_1", title: "Lima Ticareti", desc: "+1000 Hazine.", reward: () => { GameState.countries.PER.money += 1000; } }],
-    "ZAF": [{ id: "zaf_1", title: "Pretoria Madenleri", desc: "+4 Sivil.", reward: () => { GameState.countries.ZAF.civFactories += 4; } }],
-    "NGA": [{ id: "nga_1", title: "Lagos Endüstrisi", desc: "+80k İnsan Gücü.", reward: () => { GameState.countries.NGA.manpower += 80000; } }],
-    "DZA": [{ id: "dza_1", title: "Sahra Gazı", desc: "+3 Askeri.", reward: () => { GameState.countries.DZA.milFactories += 3; } }],
-    "MAR": [{ id: "mar_1", title: "Kazablanka Limanı", desc: "+1200 Hazine.", reward: () => { GameState.countries.MAR.money += 1200; } }],
-    "TUN": [{ id: "tun_1", title: "Kartaca Turizmi", desc: "+800 Hazine.", reward: () => { GameState.countries.TUN.money += 800; } }],
-    "LBY": [{ id: "lby_1", title: "Trablus Tahkimatı", desc: "+2 Askeri.", reward: () => { GameState.countries.LBY.milFactories += 2; } }],
-    "SDN": [{ id: "sdn_1", title: "Hartum Seferberliği", desc: "+40k İnsan Gücü.", reward: () => { GameState.countries.SDN.manpower += 40000; } }],
-    "ETH": [{ id: "eth_1", title: "Rönesans Barajı", desc: "+3 Sivil.", reward: () => { GameState.countries.ETH.civFactories += 3; } }],
-    "KEN": [{ id: "ken_1", title: "Nairobi Altyapısı", desc: "+1000 Hazine.", reward: () => { GameState.countries.KEN.money += 1000; } }],
-    "AGO": [{ id: "ago_1", title: "Luanda Madenleri", desc: "+2 Askeri.", reward: () => { GameState.countries.AGO.milFactories += 2; } }],
-    "IRQ": [{ id: "irq_1", title: "Bağdat Yeniden İnşa", desc: "+3 Sivil.", reward: () => { GameState.countries.IRQ.civFactories += 3; } }],
-    "SYR": [{ id: "syr_1", title: "Şam İstihkamları", desc: "+3 Askeri.", reward: () => { GameState.countries.SYR.milFactories += 3; } }],
-    "JOR": [{ id: "jor_1", title: "Akabe Koridoru", desc: "+1000 Hazine.", reward: () => { GameState.countries.JOR.money += 1000; } }],
-    "LBN": [{ id: "lbn_1", title: "Beyrut Limanı", desc: "+500 Hazine.", reward: () => { GameState.countries.LBN.money += 500; } }],
-    "OMN": [{ id: "omn_1", title: "Maskat Dokları", desc: "+2 Sivil.", reward: () => { GameState.countries.OMN.civFactories += 2; } }],
-    "YEM": [{ id: "yem_1", title: "Aden Direnişi", desc: "+30k İnsan Gücü.", reward: () => { GameState.countries.YEM.manpower += 30000; } }],
-    "KWT": [{ id: "kwt_1", title: "Kuveyt Yatırım Fonu", desc: "+3000 Hazine.", reward: () => { GameState.countries.KWT.money += 3000; } }],
-    "QAT": [{ id: "qat_1", title: "Doha Sıvı Gaz (LNG)", desc: "+4000 Hazine.", reward: () => { GameState.countries.QAT.money += 4000; } }],
-    "ARE": [{ id: "are_1", title: "Burç Halife Finans", desc: "+4 Sivil.", reward: () => { GameState.countries.ARE.civFactories += 4; } }],
-    "GEO": [{ id: "geo_1", title: "Tiflis Altyapısı", desc: "+1 Sivil.", reward: () => { GameState.countries.GEO.civFactories += 1; } }],
-    "ARM": [{ id: "arm_1", title: "Erivan Savunması", desc: "+1 Askeri.", reward: () => { GameState.countries.ARM.milFactories += 1; } }],
-    "KAZ": [{ id: "kaz_1", title: "Astana Ağır Sanayii", desc: "+4 Sivil.", reward: () => { GameState.countries.KAZ.civFactories += 4; } }],
-    "UZB": [{ id: "uzb_1", title: "Taşkent Pamuk ve Tekstil", desc: "+3 Sivil.", reward: () => { GameState.countries.UZB.civFactories += 3; } }],
-    "TKM": [{ id: "tkm_1", title: "Cehennem Kapısı Gazı", desc: "+1500 Hazine.", reward: () => { GameState.countries.TKM.money += 1500; } }],
-    "KGZ": [{ id: "kgz_1", title: "Tanrı Dağları İstihkamı", desc: "+1 Askeri.", reward: () => { GameState.countries.KGZ.milFactories += 1; } }],
-    "TJK": [{ id: "tjk_1", title: "Pamir Savunması", desc: "+15k İnsan Gücü.", reward: () => { GameState.countries.TJK.manpower += 15000; } }],
-    "AFG": [{ id: "afg_1", title: "Kabil Direnişi", desc: "+50k İnsan Gücü.", reward: () => { GameState.countries.AFG.manpower += 50000; } }],
-    "BGD": [{ id: "bgd_1", title: "Dakka Tekstil Sanayii", desc: "+3 Sivil.", reward: () => { GameState.countries.BGD.civFactories += 3; } }],
-    "LKA": [{ id: "lka_1", title: "Kolombo Limanı", desc: "+800 Hazine.", reward: () => { GameState.countries.LKA.money += 800; } }],
-    "MMR": [{ id: "mmr_1", title: "Cunta Tahkimatı", desc: "+2 Askeri.", reward: () => { GameState.countries.MMR.milFactories += 2; } }],
-    "THA": [{ id: "tha_1", title: "Bangkok Serbest Ticaret", desc: "+3 Sivil.", reward: () => { GameState.countries.THA.civFactories += 3; } }],
-    "VNM": [{ id: "vnm_1", title: "Hanoi Silah Sanayii", desc: "+4 Askeri.", reward: () => { GameState.countries.VNM.milFactories += 4; } }],
-    "MYS": [{ id: "mys_1", title: "Kuala Lumpur Çip Üretimi", desc: "+3 Sivil.", reward: () => { GameState.countries.MYS.civFactories += 3; } }],
-    "SGP": [{ id: "sgp_1", title: "Malakka Boğazı Tekeli", desc: "+3000 Hazine.", reward: () => { GameState.countries.SGP.money += 3000; } }],
-    "PHL": [{ id: "phl_1", title: "Manila Tersaneleri", desc: "+2 Sivil.", reward: () => { GameState.countries.PHL.civFactories += 2; } }],
-    "NZL": [{ id: "nzl_1", title: "Auckland Lojistiği", desc: "+1000 Hazine.", reward: () => { GameState.countries.NZL.money += 1000; } }],
-    "PRT": [{ id: "prt_1", title: "Lizbon Liman Gelişimi", desc: "+1200 Hazine.", reward: () => { GameState.countries.PRT.money += 1200; } }],
-    "IRL": [{ id: "irl_1", title: "Dublin Teknoloji Üssü", desc: "+2 Sivil.", reward: () => { GameState.countries.IRL.civFactories += 2; } }],
-    "SVK": [{ id: "svk_1", title: "Bratislava Otomotiv", desc: "+2 Askeri.", reward: () => { GameState.countries.SVK.milFactories += 2; } }],
-    "HRV": [{ id: "hrv_1", title: "Adriyatik Donanma Üssü", desc: "+1000 Hazine.", reward: () => { GameState.countries.HRV.money += 1000; } }],
-    "SRB": [{ id: "srb_1", title: "Belgrad Fabrikaları", desc: "+2 Askeri.", reward: () => { GameState.countries.SRB.milFactories += 2; } }],
-    "BGR": [{ id: "bgr_1", title: "Sofya Savunma Hattı", desc: "+20k İnsan Gücü.", reward: () => { GameState.countries.BGR.manpower += 20000; } }],
-    "CUB": [{ id: "cub_1", title: "Havana Devrim Hattı", desc: "+2 Askeri.", reward: () => { GameState.countries.CUB.milFactories += 2; } }],
-    "PAN": [{ id: "pan_1", title: "Panama Kanalı Geliri", desc: "+2000 Hazine.", reward: () => { GameState.countries.PAN.money += 2000; } }],
-"MNG": [
-    { id: "bozkir_suvarileri", title: "Bozkır Süvarileri", desc: "+2 Askeri Fabrika.", reward: () => { GameState.countries.MNG.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.MNG.name} - Mobil birlikler güçlendirildi.`, "text-emerald-400"); } }
-],
-"LUX": [
-    { id: "celik_devleri", title: "ARBED Çelik Sanayii", desc: "+6 Sivil Fabrika.", reward: () => { GameState.countries.LUX.civFactories += 6; log(`MİLLİ ODAK: ${GameState.countries.LUX.name} - Küçük dev üretim atağına kalktı.`, "text-emerald-400"); } }
-],
-"ISL": [
-    { id: "jeotermal_enerji", title: "Jeotermal Altyapı", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.ISL.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.ISL.name} - Enerji üretimi optimize edildi.`, "text-emerald-400"); } }
-],
-"BOL": [
-    { id: "andin_maden", title: "Kalay Madenleri", desc: "+4 Sivil Fabrika.", reward: () => { GameState.countries.BOL.civFactories += 4; log(`MİLLİ ODAK: ${GameState.countries.BOL.name} - Madencilik sektörü büyüyor.`, "text-emerald-400"); } }
-],
-"ECU": [
-    { id: "galapagos_ussu", title: "Galapagos İkmal Üssü", desc: "+1500 Hazine.", reward: () => { GameState.countries.ECU.money += 1500; log(`MİLLİ ODAK: ${GameState.countries.ECU.name} - Liman gelirleri kasada.`, "text-emerald-400"); } }
-],
-"GHA": [
-    { id: "altin_sahili", title: "Altın Sahili Ticareti", desc: "+5 Sivil Fabrika.", reward: () => { GameState.countries.GHA.civFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.GHA.name} - Maden ihracatı artırıldı.`, "text-emerald-400"); } }
-],
-"ALB": [
-    { id: "adriyatik_tahkimat", title: "Adriyatik Savunma Hattı", desc: "+2 Askeri Fabrika.", reward: () => { GameState.countries.ALB.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ALB.name} - Kıyı savunması güçlendirildi.`, "text-emerald-400"); } }
-],
-"EST": [
-    { id: "baltik_dijital", title: "Baltık Ticaret Ağı", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.EST.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.EST.name} - Ticaret ağları modernize edildi.`, "text-emerald-400"); } }
-],
-"LVA": [
-    { id: "riga_tersaneleri", title: "Riga Endüstri Bölgesi", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.LVA.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.LVA.name} - Üretim hatları genişletildi.`, "text-emerald-400"); } }
-],
-"LTU": [
-    { id: "vilnius_savunma", title: "Demir Kurt Seferberliği", desc: "+20K İnsan Gücü.", reward: () => { GameState.countries.LTU.manpower += 20000; log(`MİLLİ ODAK: ${GameState.countries.LTU.name} - Savunma tugayları kuruldu!`, "text-emerald-400"); } }
-],
-"URY": [{ id: "latin_finans", title: "Montevideo Serbest Bölgesi", desc: "+3 Sivil Fabrika, +2000 Hazine.", reward: () => { GameState.countries.URY.civFactories += 3; GameState.countries.URY.money += 2000; log(`MİLLİ ODAK: Uruguay finans merkezi haline geldi.`, "text-emerald-400"); } }],
-"PRY": [{ id: "chaco_tahkimat", title: "Chaco Sınır Hattı", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.PRY.milFactories += 3; log(`MİLLİ ODAK: Paraguay savunma sanayisini kurdu.`, "text-emerald-400"); } }],
-"GTM": [{ id: "maya_tarim", title: "Tarım Reformu", desc: "+4 Sivil Fabrika.", reward: () => { GameState.countries.GTM.civFactories += 4; log(`MİLLİ ODAK: Guatemala tarımsal üretimi artırdı.`, "text-emerald-400"); } }],
-"CRI": [{ id: "ordu_silahsizlanma", title: "Barışçıl Bütçe", desc: "+6 Sivil Fabrika, +4000 Hazine.", reward: () => { GameState.countries.CRI.civFactories += 6; GameState.countries.CRI.money += 4000; log(`MİLLİ ODAK: Kosta Rika bütçesini kalkınmaya harcıyor.`, "text-emerald-400"); } }],
-"DOM": [{ id: "karayip_ticareti", title: "Karayip Liman Ağı", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.DOM.civFactories += 3; log(`MİLLİ ODAK: Dominik lojistik merkez oldu.`, "text-emerald-400"); } }],
-"SEN": [{ id: "dakar_limani", title: "Dakar Stratejik Üssü", desc: "+4 Sivil Fabrika.", reward: () => { GameState.countries.SEN.civFactories += 4; log(`MİLLİ ODAK: Senegal ticaret hacmini büyüttü.`, "text-emerald-400"); } }],
-"CIV": [{ id: "kakao_monopol", title: "Küresel Kakao İhracatı", desc: "+5 Sivil Fabrika, +2000 Hazine.", reward: () => { GameState.countries.CIV.civFactories += 5; GameState.countries.CIV.money += 2000; log(`MİLLİ ODAK: Fildişi Sahili kasayı dolduruyor.`, "text-emerald-400"); } }],
-"SSD": [{ id: "petrol_korumasi", title: "Nile Petrol Sahaları", desc: "+3000 Hazine.", reward: () => { GameState.countries.SSD.money += 3000; log(`MİLLİ ODAK: Güney Sudan petrol gelirlerini güvenceye aldı.`, "text-emerald-400"); } }],
-"UGA": [{ id: "viktorya_sanayi", title: "Viktorya Gölü Projeleri", desc: "+4 Askeri Fabrika.", reward: () => { GameState.countries.UGA.milFactories += 4; log(`MİLLİ ODAK: Uganda askeri üretime yüklendi.`, "text-emerald-400"); } }],
-"TZA": [{ id: "darüsselam_lojistik", title: "Doğu Afrika Kapısı", desc: "+5 Sivil Fabrika.", reward: () => { GameState.countries.TZA.civFactories += 5; log(`MİLLİ ODAK: Tanzanya altyapısını güçlendirdi.`, "text-emerald-400"); } }],
-"ZMB": [{ id: "bakir_madenleri", title: "Bakır Kuşağı Yatırımları", desc: "+5 Sivil Fabrika.", reward: () => { GameState.countries.ZMB.civFactories += 5; log(`MİLLİ ODAK: Zambiya madencilik atağı başlattı.`, "text-emerald-400"); } }],
-"MOZ": [{ id: "hint_denizi_ticaret", title: "Kıyı Lojistiği", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.MOZ.civFactories += 3; log(`MİLLİ ODAK: Mozambik limanları genişletildi.`, "text-emerald-400"); } }],
-"MDG": [{ id: "ada_izolasyonu", title: "Kendi Kendine Yeten Ada", desc: "+4 Sivil Fabrika.", reward: () => { GameState.countries.MDG.civFactories += 4; log(`MİLLİ ODAK: Madagaskar sanayi altyapısı kurdu.`, "text-emerald-400"); } }],
-"LBR": [{ id: "kauçuk_anlasmasi", title: "Firestone Kauçuk Anlaşması", desc: "+2 Sivil, +2 Askeri Fabrika.", reward: () => { GameState.countries.LBR.civFactories += 2; GameState.countries.LBR.milFactories += 2; log(`MİLLİ ODAK: Liberya hammadde ticaretini açtı.`, "text-emerald-400"); } }],
-"SVN": [{ id: "alp_endüstrisi", title: "Hassas Sanayi Atölyeleri", desc: "+3 Askeri Fabrika.", reward: () => { GameState.countries.SVN.milFactories += 3; log(`MİLLİ ODAK: Slovenya askeri teknoloji üretiyor.`, "text-emerald-400"); } }],
-"MKD": [{ id: "vardar_koridoru", title: "Vardar Lojistik Hattı", desc: "+2 Sivil Fabrika.", reward: () => { GameState.countries.MKD.civFactories += 2; log(`MİLLİ ODAK: Kuzey Makedonya transit geçişleri güçlendirdi.`, "text-emerald-400"); } }],
-"BIH": [{ id: "bosna_cephanelik", title: "Dağlık Bölge Fabrikaları", desc: "+4 Askeri Fabrika.", reward: () => { GameState.countries.BIH.milFactories += 4; log(`MİLLİ ODAK: Bosna Hersek mühimmat üretimini artırdı.`, "text-emerald-400"); } }],
-"MDA": [{ id: "tarim_sanayi", title: "Dinyester Havzası Tarımı", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.MDA.civFactories += 3; log(`MİLLİ ODAK: Moldova iç sanayiyi canlandırdı.`, "text-emerald-400"); } }],
-"KHM": [{ id: "mekong_altyapi", title: "Mekong Havzası Gelişimi", desc: "+3 Sivil Fabrika.", reward: () => { GameState.countries.KHM.civFactories += 3; log(`MİLLİ ODAK: Kamboçya lojistik hatları kurdu.`, "text-emerald-400"); } }],
-"LAO": [{ id: "dag_tahkimat", title: "Dağlık Bölge Direnişi", desc: "+30K İnsan Gücü.", reward: () => { GameState.countries.LAO.manpower += 30000; log(`MİLLİ ODAK: Laos zorlu dağ birliklerini topladı.`, "text-emerald-400"); } }]
-    },
+                        activeFocusTree: {
+                "TUR": [
+                    { id: "mavi_vatan", title: "Mavi Vatan Doktrini", desc: "+5 Askeri Fabrika", reward: () => { GameState.countries.TUR.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.TUR.name} - Mavi Vatan tamamlandı.`, "text-emerald-400"); } },
+                    { id: "brics_uyeligi", title: "BRICS+ Tam Üyelik", desc: "+2000 Hazine", reward: () => { GameState.countries.TUR.money += 2000; log(`MİLLİ ODAK: ${GameState.countries.TUR.name} - BRICS+ entegrasyonu sağlandı.`, "text-emerald-400"); } }
+                ],
+                "DEU": [
+                    { id: "avrupa_ordusu", title: "Avrupa Savunma Birliği", desc: "+5 Askeri Fabrika", reward: () => { GameState.countries.DEU.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.DEU.name} - Avrupa savunması güçlendi.`, "text-emerald-400"); } },
+                    { id: "yesil_enerji", title: "Yenilenebilir Enerji Hamlesi", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.DEU.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.DEU.name} - Yeşil enerjiye geçiş yapıldı.`, "text-emerald-400"); } }
+                ],
+                "USA": [
+                    { id: "pasifik_kalkanı", title: "Pasifik Kalkanı", desc: "+5 Askeri Fabrika", reward: () => { GameState.countries.USA.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.USA.name} - Pasifik'te savunma hattı kuruldu.`, "text-emerald-400"); } },
+                    { id: "silikon_vadisi", title: "Silikon Vadisi Destek Paketi", desc: "+1000 Hazine", reward: () => { GameState.countries.USA.money += 1000; log(`MİLLİ ODAK: ${GameState.countries.USA.name} - Teknoloji devleri yatırıma başladı.`, "text-emerald-400"); } }
+                ],
+                "RUS": [
+                    { id: "kuzey_guney", title: "Kuzey-Güney Koridoru", desc: "+5 Sivil Fabrika", reward: () => { GameState.countries.RUS.civFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.RUS.name} - Lojistik hattı açıldı.`, "text-emerald-400"); } },
+                    { id: "arktik", title: "Arktik Hakimiyeti", desc: "+50K İnsan Gücü", reward: () => { GameState.countries.RUS.manpower += 50000; log(`MİLLİ ODAK: ${GameState.countries.RUS.name} - Arktik bölgesi kontrol altına alındı.`, "text-emerald-400"); } }
+                ],
+                "GBR": [
+                    { id: "aukus", title: "AUKUS İttifakı", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.GBR.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.GBR.name} - AUKUS ortaklığı onaylandı.`, "text-emerald-400"); } },
+                    { id: "kuresel_ingiltere", title: "Küresel İngiltere Vizyonu", desc: "+500 Hazine", reward: () => { GameState.countries.GBR.money += 500; log(`MİLLİ ODAK: ${GameState.countries.GBR.name} - Ticari ağ genişletildi.`, "text-emerald-400"); } }
+                ],
+                "FRA": [
+                    { id: "stratejik_ozerklik", title: "Stratejik Özerklik", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.FRA.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.FRA.name} - Savunma sanayii özerkleşti.`, "text-emerald-400"); } },
+                    { id: "afrika_etki", title: "Afrika Etki Alanı", desc: "+500 Hazine", reward: () => { GameState.countries.FRA.money += 500; log(`MİLLİ ODAK: ${GameState.countries.FRA.name} - Bölgesel nüfuz artırıldı.`, "text-emerald-400"); } }
+                ],
+                "ITA": [
+                    { id: "akdeniz_enerji", title: "Akdeniz Enerji Merkezi", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.ITA.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ITA.name} - Akdeniz'de enerji üssü kuruldu.`, "text-emerald-400"); } },
+                    { id: "goc_reformu", title: "Göç Yönetimi Reformu", desc: "+10K İnsan Gücü", reward: () => { GameState.countries.ITA.manpower += 10000; log(`MİLLİ ODAK: ${GameState.countries.ITA.name} - Göç politikası güncellendi.`, "text-emerald-400"); } }
+                ],
+                "JPN": [
+                    { id: "pasifik_paktı", title: "Pasifik Savunma Paktı", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.JPN.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.JPN.name} - Pasifik güvenliği sağlandı.`, "text-emerald-400"); } },
+                    { id: "yüksek_teknoloji", title: "Yüksek Teknoloji Yatırımı", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.JPN.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.JPN.name} - Teknoloji atılımı gerçekleşti.`, "text-emerald-400"); } }
+                ],
+                "POL": [
+                    { id: "dogu_kalkanı", title: "Doğu Kalkanı (Tahkimat)", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.POL.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.POL.name} - Doğu sınırı tahkim edildi.`, "text-emerald-400"); } },
+                    { id: "nükleer_enerji", title: "Nükleer Enerji Geçişi", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.POL.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.POL.name} - Nükleer enerji yatırımı başladı.`, "text-emerald-400"); } }
+                ],
+                "AUT": [
+                    { id: "tarafsızlık", title: "Avrupa Tarafsızlık Yasası", desc: "+200 Hazine", reward: () => { GameState.countries.AUT.money += 200; log(`MİLLİ ODAK: ${GameState.countries.AUT.name} - Tarafsızlık politikası güçlendi.`, "text-emerald-400"); } },
+                    { id: "ticaret_blogu", title: "Orta Avrupa Ticaret Bloğu", desc: "+1 Sivil Fabrika", reward: () => { GameState.countries.AUT.civFactories += 1; log(`MİLLİ ODAK: ${GameState.countries.AUT.name} - Ticari birlik kuruldu.`, "text-emerald-400"); } }
+                ],
+                "AUS": [
+                    { id: "aukus_modernizasyon", title: "AUKUS Donanma Modernizasyonu", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.AUS.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.AUS.name} - Donanma modernize edildi.`, "text-emerald-400"); } },
+                    { id: "indopasifik_guvenlik", title: "Indo-Pasifik Güvenlik", desc: "+10K İnsan Gücü", reward: () => { GameState.countries.AUS.manpower += 10000; log(`MİLLİ ODAK: ${GameState.countries.AUS.name} - Pasifik güvenliği sağlandı.`, "text-emerald-400"); } }
+                ],
+                "CAN": [
+                    { id: "arktik_devriyesi", title: "Kuzey Arktik Devriyesi", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.CAN.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.CAN.name} - Kuzey hattı koruma altına alındı.`, "text-emerald-400"); } },
+                    { id: "yesil_hidrojen", title: "Yeşil Hidrojen Üretimi", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.CAN.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.CAN.name} - Hidrojen yatırımı başladı.`, "text-emerald-400"); } }
+                ],
+                "CHN": [
+                    { id: "kusak_yol", title: "Kuşak ve Yol İnisiyatifi", desc: "+10 Sivil Fabrika", reward: () => { GameState.countries.CHN.civFactories += 10; log(`MİLLİ ODAK: ${GameState.countries.CHN.name} - Global lojistik ağı genişledi.`, "text-emerald-400"); } },
+                    { id: "yari_iletken", title: "Yarı İletken Yerlileştirme", desc: "+5 Askeri Fabrika", reward: () => { GameState.countries.CHN.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.CHN.name} - Yerli çip üretimi başladı.`, "text-emerald-400"); } }
+                ],
+                "IND": [
+                    { id: "make_in_india", title: "Make in India Atılımı", desc: "+5 Askeri Fabrika", reward: () => { GameState.countries.IND.milFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.IND.name} - Yerli üretim devrimi başladı.`, "text-emerald-400"); } },
+                    { id: "guney_asya_liderlik", title: "Güney Asya Liderliği", desc: "+1000 Hazine", reward: () => { GameState.countries.IND.money += 1000; log(`MİLLİ ODAK: ${GameState.countries.IND.name} - Bölgesel güç pozisyonu güçlendi.`, "text-emerald-400"); } }
+                ],
+                "BRA": [
+                    { id: "amazon_koruma", title: "Amazon Koruma ve Kalkınma", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.BRA.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.BRA.name} - Amazon koruma alanı genişledi.`, "text-emerald-400"); } },
+                    { id: "brics_kopru", title: "BRICS+ Ticaret Köprüsü", desc: "+500 Hazine", reward: () => { GameState.countries.BRA.money += 500; log(`MİLLİ ODAK: ${GameState.countries.BRA.name} - BRICS ile ticaret köprüsü kuruldu.`, "text-emerald-400"); } }
+                ],
+                "KOR": [
+                    { id: "kalkan_kalkan", title: "Kalkan Kalkan (Füze Savunma)", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.KOR.milFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.KOR.name} - Hava savunma kalkanı tamamlandı.`, "text-emerald-400"); } },
+                    { id: "yari_iletken_devrim", title: "Yarı İletken Devrim", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.KOR.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.KOR.name} - Çip teknolojisinde atılım yapıldı.`, "text-emerald-400"); } }
+                ],
+                "ESP": [
+                    { id: "akdeniz_lojistik", title: "Akdeniz Lojistik Merkezi", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.ESP.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ESP.name} - Akdeniz lojistiği güçlendi.`, "text-emerald-400"); } },
+                    { id: "ab_yesil_mutabakat", title: "AB Yeşil Mutabakatı", desc: "+300 Hazine", reward: () => { GameState.countries.ESP.money += 300; log(`MİLLİ ODAK: ${GameState.countries.ESP.name} - Yeşil mutabakata katılım sağlandı.`, "text-emerald-400"); } }
+                ],
+                "SAU": [
+                    { id: "vizyon_2030", title: "Vizyon 2030 Hamlesi", desc: "+5 Sivil Fabrika", reward: () => { GameState.countries.SAU.civFactories += 5; log(`MİLLİ ODAK: ${GameState.countries.SAU.name} - Vizyon 2030 hedeflerine ulaşıldı.`, "text-emerald-400"); } },
+                    { id: "bolgesel_baris", title: "Bölgesel Barış Diplomasisi", desc: "+1000 Hazine", reward: () => { GameState.countries.SAU.money += 1000; log(`MİLLİ ODAK: ${GameState.countries.SAU.name} - Diplomatik başarı elde edildi.`, "text-emerald-400"); } }
+                ],
+                "MEX": [
+                    { id: "nearshoring", title: "Nearshoring (Üretim Üssü)", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.MEX.civFactories += 3; log(`MİLLİ ODAK: ${GameState.countries.MEX.name} - Üretim üssü olma süreci başladı.`, "text-emerald-400"); } },
+                    { id: "kuzey_amerika_entegrasyonu", title: "Kuzey Amerika Entegrasyonu", desc: "+500 Hazine", reward: () => { GameState.countries.MEX.money += 500; log(`MİLLİ ODAK: ${GameState.countries.MEX.name} - Ticari entegrasyon tamamlandı.`, "text-emerald-400"); } }
+                ],
+                "ZAF": [
+                    { id: "afrika_serbest_ticaret", title: "Afrika Serbest Ticaret Bölgesi", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.ZAF.civFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ZAF.name} - Afrika pazarına erişim arttı.`, "text-emerald-400"); } },
+                    { id: "maden_isleme", title: "Maden İşleme Kapasitesi", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.ZAF.milFactories += 2; log(`MİLLİ ODAK: ${GameState.countries.ZAF.name} - Maden işleme teknolojisi modernize edildi.`, "text-emerald-400"); } }
+                ],
+                "UKR": [
+                    { id: "batı_entegrasyonu", title: "Avrupa Entegrasyonu", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.UKR.civFactories += 4; log(`MİLLİ ODAK: Ukrayna - Avrupa fonları sivil sanayiyi büyüttü.`, "text-emerald-400"); } },
+                    { id: "savunma_hattı", title: "Dinyeper Savunma Doktrini", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.UKR.milFactories += 3; log(`MİLLİ ODAK: Ukrayna - Savunma sanayii üretime hız verdi.`, "text-emerald-400"); } }
+                ],
+                "GRC": [
+                    { id: "ege_kalkınma", title: "Ege Deniz Ticareti", desc: "+1500 Hazine", reward: () => { GameState.countries.GRC.money += 1500; log(`MİLLİ ODAK: Yunanistan - Deniz ticaret filoları modernize edildi.`, "text-emerald-400"); } },
+                    { id: "ordu_modernizasyon", title: "Sparta Doktrini", desc: "+50,000 İnsan Gücü", reward: () => { GameState.countries.GRC.manpower += 50000; log(`MİLLİ ODAK: Yunanistan - Seferberlik yasaları genişletildi.`, "text-emerald-400"); } }
+                ],
+                "NLD": [
+                    { id: "liman_genisletme", title: "Rotterdam Genişletmesi", desc: "+6 Sivil Fabrika", reward: () => { GameState.countries.NLD.civFactories += 6; log(`MİLLİ ODAK: Hollanda - Rotterdam limanı Avrupa'nın kalbi oldu.`, "text-emerald-400"); } }
+                ],
+                "SWE": [
+                    { id: "skandinav_endustri", title: "Scania Ağır Sanayii", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.SWE.milFactories += 4; log(`MİLLİ ODAK: İsveç - Yerli çelik ve silah sanayii zirvede.`, "text-emerald-400"); } }
+                ],
+                "FIN": [
+                    { id: "mannerheim_hattı", title: "Sisu Savunma İstihkamı", desc: "+40,000 İnsan Gücü", reward: () => { GameState.countries.FIN.manpower += 40000; log(`MİLLİ ODAK: Finlandiya - Zorlu kış doktrini orduyu güçlendirdi.`, "text-emerald-400"); } }
+                ],
+                "NOR": [
+                    { id: "petrol_fonu", title: "Kuzey Denizi Petrol Fonu", desc: "+3000 Hazine", reward: () => { GameState.countries.NOR.money += 3000; log(`MİLLİ ODAK: Norveç - Devlet fonları rekor seviyeye ulaştı.`, "text-emerald-400"); } }
+                ],
+                "DNK": [
+                    { id: "bogaz_kontrolu", title: "Baltık Geçiş Rejimi", desc: "+1000 Hazine", reward: () => { GameState.countries.DNK.money += 1000; log(`MİLLİ ODAK: Danimarka - Deniz ticaret vergileri artırıldı.`, "text-emerald-400"); } }
+                ],
+                "CHE": [
+                    { id: "alp_kalesi", title: "Alp Reduıt Tahkimatı", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.CHE.civFactories += 2; log(`MİLLİ ODAK: İsviçre - Alp sığınakları ve bankacılık altyapısı güçlendirildi.`, "text-emerald-400"); } }
+                ],
+                "BEL": [
+                    { id: "avrupa_kalbi", title: "Brüksel Bürokrasisi", desc: "+1200 Hazine", reward: () => { GameState.countries.BEL.money += 1200; log(`MİLLİ ODAK: Belçika - Uluslararası ticaret anlaşmaları yapıldı.`, "text-emerald-400"); } }
+                ],
+                "ROU": [
+                    { id: "karpat_savunması", title: "Karpat Sanayileşmesi", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.ROU.milFactories += 3; log(`MİLLİ ODAK: Romanya - Karpat lojistik hatları kuruldu.`, "text-emerald-400"); } }
+                ],
+                "CZE": [
+                    { id: "skoda_uretim", title: "Skoda Silah Fabrikaları", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.CZE.milFactories += 4; log(`MİLLİ ODAK: Çekya - Ağır mühimmat üretimi tavan yaptı.`, "text-emerald-400"); } }
+                ],
+                "HUN": [
+                    { id: "budapeste_savunma", title: "Tuna Savunma Planı", desc: "+30,000 İnsan Gücü", reward: () => { GameState.countries.HUN.manpower += 30000; log(`MİLLİ ODAK: Macaristan - Ulusal muhafız birlikleri kuruldu.`, "text-emerald-400"); } }
+                ],
+                "ISR": [
+                    { id: "demir_kubbe", title: "Teknolojik Üstünlük", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.ISR.milFactories += 4; log(`MİLLİ ODAK: İsrail - Askeri teknoloji ve siber savunma yatırımları.`, "text-emerald-400"); } },
+                    { id: "hazineler", title: "Yüksek Teknoloji İhracatı", desc: "+2000 Hazine", reward: () => { GameState.countries.ISR.money += 2000; log(`MİLLİ ODAK: İsrail - Silikon Vadisi yatırımları meyvesini verdi.`, "text-emerald-400"); } }
+                ],
+                "IRN": [
+                    { id: "pers_koridoru", title: "Körfez Lojistik Üstünlüğü", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.IRN.milFactories += 3; log(`MİLLİ ODAK: İran - Hürmüz Boğazı istihkamları artırıldı.`, "text-emerald-400"); } },
+                    { id: "seferberlik", title: "Besic Seferberliği", desc: "+120,000 İnsan Gücü", reward: () => { GameState.countries.IRN.manpower += 120000; log(`MİLLİ ODAK: İran - Devrim muhafızları yeni tugaylar kurdu.`, "text-emerald-400"); } }
+                ],
+                "EGY": [
+                    { id: "suveys_kanalı", title: "Süveyş Kanalı Genişletmesi", desc: "+2500 Hazine", reward: () => { GameState.countries.EGY.money += 2500; log(`MİLLİ ODAK: Mısır - Kanal geçiş ücretleri hazineyi doldurdu.`, "text-emerald-400"); } },
+                    { id: "sinai_hattı", title: "Kahire Ağır Sanayii", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.EGY.civFactories += 4; log(`MİLLİ ODAK: Mısır - Nil deltası endüstri merkezleri kuruldu.`, "text-emerald-400"); } }
+                ],
+                "PAK": [
+                    { id: "oruz_savunma", title: "Keşmir Doktrini", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.PAK.milFactories += 4; log(`MİLLİ ODAK: Pakistan - Stratejik savunma ve mühimmat fabrikaları açıldı.`, "text-emerald-400"); } },
+                    { id: "nufus_gucu", title: "İndus Seferberliği", desc: "+150,000 İnsan Gücü", reward: () => { GameState.countries.PAK.manpower += 150000; log(`MİLLİ ODAK: Pakistan - Ordu kadroları genişletildi.`, "text-emerald-400"); } }
+                ],
+                "IDN": [
+                    { id: "takımada_ticareti", title: "Cakarta Endüstri Bölgesi", desc: "+5 Sivil Fabrika", reward: () => { GameState.countries.IDN.civFactories += 5; log(`MİLLİ ODAK: Endonezya - Adalar arası ticaret ve lojistik ağı.`, "text-emerald-400"); } }
+                ],
+                "TWN": [
+                    { id: "tsmc_fabrikaları", title: "Yarı İletken Tekeli", desc: "+6 Sivil Fabrika", reward: () => { GameState.countries.TWN.civFactories += 6; log(`MİLLİ ODAK: Tayvan - Çip üretimi küresel pazarı domine etti.`, "text-emerald-400"); } }
+                ],
+                "PRK": [
+                    { id: "juche_doktrini", title: "Juche Ağır Sanayii", desc: "+5 Askeri Fabrika", reward: () => { GameState.countries.PRK.milFactories += 5; log(`MİLLİ ODAK: Kuzey Kore - Fabrikalar tamamen ordu üretimine ayrıldı.`, "text-emerald-400"); } },
+                    { id: "toplu_askerlik", title: "Yüce Lider Seferberliği", desc: "+200,000 İnsan Gücü", reward: () => { GameState.countries.PRK.manpower += 200000; log(`MİLLİ ODAK: Kuzey Kore - Devrim ordusu safları sıklaştırdı.`, "text-emerald-400"); } }
+                ],
+                "ARG": [
+                    { id: "pampa_tarım", title: "Pampa Tarım Reformu", desc: "+1800 Hazine", reward: () => { GameState.countries.ARG.money += 1800; log(`MİLLİ ODAK: Arjantin - Tarım ihracatı ekonomiyi kurtarıyor.`, "text-emerald-400"); } }
+                ],
+                "AZE": [
+                    { id: "baku_petrol", title: "Hazar Enerji Koridoru", desc: "+4 Sivil Fabrika, +1500 Hazine", reward: () => { GameState.countries.AZE.civFactories += 4; GameState.countries.AZE.money += 1500; log(`MİLLİ ODAK: Azerbaycan - Şahdeniz ve Bakü hatları tam kapasite çalışıyor.`, "text-emerald-400"); } },
+                    { id: "modern_ordu", title: "Karabağ Doktrini", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.AZE.milFactories += 3; log(`MİLLİ ODAK: Azerbaycan - İHA ve mühimmat üretim hatları kuruldu.`, "text-emerald-400"); } }
+                ],
+                "COL": [
+                    { id: "col_1", title: "Bogota Sanayii", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.COL.civFactories += 3; log(`MİLLİ ODAK: Kolombiya - Yerli sanayi büyüyor.`, "text-emerald-400"); } }
+                ],
+                "VEN": [
+                    { id: "ven_1", title: "Orinoco Petrolü", desc: "+2000 Hazine", reward: () => { GameState.countries.VEN.money += 2000; log(`MİLLİ ODAK: Venezuela - Petrol gelirleri arttı.`, "text-emerald-400"); } }
+                ],
+                "CHL": [
+                    { id: "chl_1", title: "And Çeliği", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.CHL.milFactories += 3; log(`MİLLİ ODAK: Şili - Maden ve çelik üretimi güçlendi.`, "text-emerald-400"); } }
+                ],
+                "PER": [
+                    { id: "per_1", title: "Lima Ticareti", desc: "+1000 Hazine", reward: () => { GameState.countries.PER.money += 1000; log(`MİLLİ ODAK: Peru - Liman ve ticaret gelirleri arttı.`, "text-emerald-400"); } }
+                ],
+                "ZAF": [
+                    { id: "zaf_1", title: "Pretoria Madenleri", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.ZAF.civFactories += 4; log(`MİLLİ ODAK: Güney Afrika - Madencilik sektörü büyüyor.`, "text-emerald-400"); } }
+                ],
+                "NGA": [
+                    { id: "nga_1", title: "Lagos Endüstrisi", desc: "+80K İnsan Gücü", reward: () => { GameState.countries.NGA.manpower += 80000; log(`MİLLİ ODAK: Nijerya - Ordu ve nüfus artışı.`, "text-emerald-400"); } }
+                ],
+                "DZA": [
+                    { id: "dza_1", title: "Sahra Gazı", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.DZA.milFactories += 3; log(`MİLLİ ODAK: Cezayir - Gaz ihracatı ve savunma sanayii.`, "text-emerald-400"); } }
+                ],
+                "MAR": [
+                    { id: "mar_1", title: "Kazablanka Limanı", desc: "+1200 Hazine", reward: () => { GameState.countries.MAR.money += 1200; log(`MİLLİ ODAK: Fas - Ticaret ve liman gelirleri arttı.`, "text-emerald-400"); } }
+                ],
+                "TUN": [
+                    { id: "tun_1", title: "Kartaca Turizmi", desc: "+800 Hazine", reward: () => { GameState.countries.TUN.money += 800; log(`MİLLİ ODAK: Tunus - Turizm ve ticaret büyüyor.`, "text-emerald-400"); } }
+                ],
+                "LBY": [
+                    { id: "lby_1", title: "Trablus Tahkimatı", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.LBY.milFactories += 2; log(`MİLLİ ODAK: Libya - Savunma sanayii güçlendi.`, "text-emerald-400"); } }
+                ],
+                "SDN": [
+                    { id: "sdn_1", title: "Hartum Seferberliği", desc: "+40K İnsan Gücü", reward: () => { GameState.countries.SDN.manpower += 40000; log(`MİLLİ ODAK: Sudan - Seferberlik çalışmaları.`, "text-emerald-400"); } }
+                ],
+                "ETH": [
+                    { id: "eth_1", title: "Rönesans Barajı", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.ETH.civFactories += 3; log(`MİLLİ ODAK: Etiyopya - Büyük altyapı projeleri.`, "text-emerald-400"); } }
+                ],
+                "KEN": [
+                    { id: "ken_1", title: "Nairobi Altyapısı", desc: "+1000 Hazine", reward: () => { GameState.countries.KEN.money += 1000; log(`MİLLİ ODAK: Kenya - Bölgesel ticaret merkezi.`, "text-emerald-400"); } }
+                ],
+                "AGO": [
+                    { id: "ago_1", title: "Luanda Madenleri", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.AGO.milFactories += 2; log(`MİLLİ ODAK: Angola - Maden gelirleri savunma için kullanılıyor.`, "text-emerald-400"); } }
+                ],
+                "IRQ": [
+                    { id: "irq_1", title: "Bağdat Yeniden İnşa", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.IRQ.civFactories += 3; log(`MİLLİ ODAK: Irak - Yeniden yapılandırma devam ediyor.`, "text-emerald-400"); } }
+                ],
+                "SYR": [
+                    { id: "syr_1", title: "Şam İstihkamları", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.SYR.milFactories += 3; log(`MİLLİ ODAK: Suriye - Savunma hatları tahkim edildi.`, "text-emerald-400"); } }
+                ],
+                "JOR": [
+                    { id: "jor_1", title: "Akabe Koridoru", desc: "+1000 Hazine", reward: () => { GameState.countries.JOR.money += 1000; log(`MİLLİ ODAK: Ürdün - Ticaret koridoru aktif.`, "text-emerald-400"); } }
+                ],
+                "LBN": [
+                    { id: "lbn_1", title: "Beyrut Limanı", desc: "+500 Hazine", reward: () => { GameState.countries.LBN.money += 500; log(`MİLLİ ODAK: Lübnan - Liman ticareti canlanıyor.`, "text-emerald-400"); } }
+                ],
+                "OMN": [
+                    { id: "omn_1", title: "Maskat Dokları", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.OMN.civFactories += 2; log(`MİLLİ ODAK: Umman - Liman altyapısı genişletildi.`, "text-emerald-400"); } }
+                ],
+                "YEM": [
+                    { id: "yem_1", title: "Aden Direnişi", desc: "+30K İnsan Gücü", reward: () => { GameState.countries.YEM.manpower += 30000; log(`MİLLİ ODAK: Yemen - Savunma seferberliği.`, "text-emerald-400"); } }
+                ],
+                "KWT": [
+                    { id: "kwt_1", title: "Kuveyt Yatırım Fonu", desc: "+3000 Hazine", reward: () => { GameState.countries.KWT.money += 3000; log(`MİLLİ ODAK: Kuveyt - Fonlar ekonomiyi destekliyor.`, "text-emerald-400"); } }
+                ],
+                "QAT": [
+                    { id: "qat_1", title: "Doha Sıvı Gaz (LNG)", desc: "+4000 Hazine", reward: () => { GameState.countries.QAT.money += 4000; log(`MİLLİ ODAK: Katar - LNG ihracatı rekor kırıyor.`, "text-emerald-400"); } }
+                ],
+                "ARE": [
+                    { id: "are_1", title: "Burç Halife Finans", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.ARE.civFactories += 4; log(`MİLLİ ODAK: BAE - Finans ve inşaat sektörü büyüyor.`, "text-emerald-400"); } }
+                ],
+                "GEO": [
+                    { id: "geo_1", title: "Tiflis Altyapısı", desc: "+1 Sivil Fabrika", reward: () => { GameState.countries.GEO.civFactories += 1; log(`MİLLİ ODAK: Gürcistan - Altyapı yatırımları.`, "text-emerald-400"); } }
+                ],
+                "ARM": [
+                    { id: "arm_1", title: "Erivan Savunması", desc: "+1 Askeri Fabrika", reward: () => { GameState.countries.ARM.milFactories += 1; log(`MİLLİ ODAK: Ermenistan - Savunma güçlendiriliyor.`, "text-emerald-400"); } }
+                ],
+                "KAZ": [
+                    { id: "kaz_1", title: "Astana Ağır Sanayii", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.KAZ.civFactories += 4; log(`MİLLİ ODAK: Kazakistan - Sanayi büyüyor.`, "text-emerald-400"); } }
+                ],
+                "UZB": [
+                    { id: "uzb_1", title: "Taşkent Pamuk ve Tekstil", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.UZB.civFactories += 3; log(`MİLLİ ODAK: Özbekistan - Tekstil sektörü canlandı.`, "text-emerald-400"); } }
+                ],
+                "TKM": [
+                    { id: "tkm_1", title: "Cehennem Kapısı Gazı", desc: "+1500 Hazine", reward: () => { GameState.countries.TKM.money += 1500; log(`MİLLİ ODAK: Türkmenistan - Gaz ihracatı devam ediyor.`, "text-emerald-400"); } }
+                ],
+                "KGZ": [
+                    { id: "kgz_1", title: "Tanrı Dağları İstihkamı", desc: "+1 Askeri Fabrika", reward: () => { GameState.countries.KGZ.milFactories += 1; log(`MİLLİ ODAK: Kırgızistan - Dağlık savunma güçlendirildi.`, "text-emerald-400"); } }
+                ],
+                "TJK": [
+                    { id: "tjk_1", title: "Pamir Savunması", desc: "+15K İnsan Gücü", reward: () => { GameState.countries.TJK.manpower += 15000; log(`MİLLİ ODAK: Tacikistan - Dağlık birlikler aktif.`, "text-emerald-400"); } }
+                ],
+                "AFG": [
+                    { id: "afg_1", title: "Kabil Direnişi", desc: "+50K İnsan Gücü", reward: () => { GameState.countries.AFG.manpower += 50000; log(`MİLLİ ODAK: Afganistan - Yerel savunma güçleri toplandı.`, "text-emerald-400"); } }
+                ],
+                "BGD": [
+                    { id: "bgd_1", title: "Dakka Tekstil Sanayii", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.BGD.civFactories += 3; log(`MİLLİ ODAK: Bangladeş - Tekstil ihracatı rekor kırıyor.`, "text-emerald-400"); } }
+                ],
+                "LKA": [
+                    { id: "lka_1", title: "Kolombo Limanı", desc: "+800 Hazine", reward: () => { GameState.countries.LKA.money += 800; log(`MİLLİ ODAK: Sri Lanka - Liman ticareti canlandı.`, "text-emerald-400"); } }
+                ],
+                "MMR": [
+                    { id: "mmr_1", title: "Cunta Tahkimatı", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.MMR.milFactories += 2; log(`MİLLİ ODAK: Myanmar - Savunma sanayii güçlendi.`, "text-emerald-400"); } }
+                ],
+                "THA": [
+                    { id: "tha_1", title: "Bangkok Serbest Ticaret", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.THA.civFactories += 3; log(`MİLLİ ODAK: Tayland - Serbest ticaret bölgesi genişledi.`, "text-emerald-400"); } }
+                ],
+                "VNM": [
+                    { id: "vnm_1", title: "Hanoi Silah Sanayii", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.VNM.milFactories += 4; log(`MİLLİ ODAK: Vietnam - Savunma üretimi arttı.`, "text-emerald-400"); } }
+                ],
+                "MYS": [
+                    { id: "mys_1", title: "Kuala Lumpur Çip Üretimi", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.MYS.civFactories += 3; log(`MİLLİ ODAK: Malezya - Çip sanayii büyüyor.`, "text-emerald-400"); } }
+                ],
+                "SGP": [
+                    { id: "sgp_1", title: "Malakka Boğazı Tekeli", desc: "+3000 Hazine", reward: () => { GameState.countries.SGP.money += 3000; log(`MİLLİ ODAK: Singapur - Boğaz ticareti rekor kırıyor.`, "text-emerald-400"); } }
+                ],
+                "PHL": [
+                    { id: "phl_1", title: "Manila Tersaneleri", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.PHL.civFactories += 2; log(`MİLLİ ODAK: Filipinler - Denizcilik sanayii güçlendi.`, "text-emerald-400"); } }
+                ],
+                "NZL": [
+                    { id: "nzl_1", title: "Auckland Lojistiği", desc: "+1000 Hazine", reward: () => { GameState.countries.NZL.money += 1000; log(`MİLLİ ODAK: Yeni Zelanda - Ticaret ve lojistik büyüyor.`, "text-emerald-400"); } }
+                ],
+                "PRT": [
+                    { id: "prt_1", title: "Lizbon Liman Gelişimi", desc: "+1200 Hazine", reward: () => { GameState.countries.PRT.money += 1200; log(`MİLLİ ODAK: Portekiz - Liman altyapısı modernize edildi.`, "text-emerald-400"); } }
+                ],
+                "IRL": [
+                    { id: "irl_1", title: "Dublin Teknoloji Üssü", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.IRL.civFactories += 2; log(`MİLLİ ODAK: İrlanda - Teknoloji sektörü büyüyor.`, "text-emerald-400"); } }
+                ],
+                "SVK": [
+                    { id: "svk_1", title: "Bratislava Otomotiv", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.SVK.milFactories += 2; log(`MİLLİ ODAK: Slovakya - Otomotiv ve savunma sanayii.`, "text-emerald-400"); } }
+                ],
+                "HRV": [
+                    { id: "hrv_1", title: "Adriyatik Donanma Üssü", desc: "+1000 Hazine", reward: () => { GameState.countries.HRV.money += 1000; log(`MİLLİ ODAK: Hırvatistan - Deniz ticaret gelirleri arttı.`, "text-emerald-400"); } }
+                ],
+                "SRB": [
+                    { id: "srb_1", title: "Belgrad Fabrikaları", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.SRB.milFactories += 2; log(`MİLLİ ODAK: Sırbistan - Savunma sanayii güçleniyor.`, "text-emerald-400"); } }
+                ],
+                "BGR": [
+                    { id: "bgr_1", title: "Sofya Savunma Hattı", desc: "+20K İnsan Gücü", reward: () => { GameState.countries.BGR.manpower += 20000; log(`MİLLİ ODAK: Bulgaristan - Seferberlik çalışmaları.`, "text-emerald-400"); } }
+                ],
+                "CUB": [
+                    { id: "cub_1", title: "Havana Devrim Hattı", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.CUB.milFactories += 2; log(`MİLLİ ODAK: Küba - Savunma üretimi devam ediyor.`, "text-emerald-400"); } }
+                ],
+                "PAN": [
+                    { id: "pan_1", title: "Panama Kanalı Geliri", desc: "+2000 Hazine", reward: () => { GameState.countries.PAN.money += 2000; log(`MİLLİ ODAK: Panama - Kanal gelirleri rekor kırıyor.`, "text-emerald-400"); } }
+                ],
+                "MNG": [
+                    { id: "bozkir_suvarileri", title: "Bozkır Süvarileri", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.MNG.milFactories += 2; log(`MİLLİ ODAK: Moğolistan - Mobil birlikler güçlendirildi.`, "text-emerald-400"); } }
+                ],
+                "LUX": [
+                    { id: "celik_devleri", title: "ARBED Çelik Sanayii", desc: "+6 Sivil Fabrika", reward: () => { GameState.countries.LUX.civFactories += 6; log(`MİLLİ ODAK: Lüksemburg - Küçük dev üretim atağına kalktı.`, "text-emerald-400"); } }
+                ],
+                "ISL": [
+                    { id: "jeotermal_enerji", title: "Jeotermal Altyapı", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.ISL.civFactories += 3; log(`MİLLİ ODAK: İzlanda - Enerji üretimi optimize edildi.`, "text-emerald-400"); } }
+                ],
+                "BOL": [
+                    { id: "andin_maden", title: "Kalay Madenleri", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.BOL.civFactories += 4; log(`MİLLİ ODAK: Bolivya - Madencilik sektörü büyüyor.`, "text-emerald-400"); } }
+                ],
+                "ECU": [
+                    { id: "galapagos_ussu", title: "Galapagos İkmal Üssü", desc: "+1500 Hazine", reward: () => { GameState.countries.ECU.money += 1500; log(`MİLLİ ODAK: Ekvador - Liman gelirleri kasada.`, "text-emerald-400"); } }
+                ],
+                "GHA": [
+                    { id: "altin_sahili", title: "Altın Sahili Ticareti", desc: "+5 Sivil Fabrika", reward: () => { GameState.countries.GHA.civFactories += 5; log(`MİLLİ ODAK: Gana - Maden ihracatı artırıldı.`, "text-emerald-400"); } }
+                ],
+                "ALB": [
+                    { id: "adriyatik_tahkimat", title: "Adriyatik Savunma Hattı", desc: "+2 Askeri Fabrika", reward: () => { GameState.countries.ALB.milFactories += 2; log(`MİLLİ ODAK: Arnavutluk - Kıyı savunması güçlendirildi.`, "text-emerald-400"); } }
+                ],
+                "EST": [
+                    { id: "baltik_dijital", title: "Baltık Ticaret Ağı", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.EST.civFactories += 3; log(`MİLLİ ODAK: Estonya - Ticaret ağları modernize edildi.`, "text-emerald-400"); } }
+                ],
+                "LVA": [
+                    { id: "riga_tersaneleri", title: "Riga Endüstri Bölgesi", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.LVA.civFactories += 3; log(`MİLLİ ODAK: Letonya - Üretim hatları genişletildi.`, "text-emerald-400"); } }
+                ],
+                "LTU": [
+                    { id: "vilnius_savunma", title: "Demir Kurt Seferberliği", desc: "+20K İnsan Gücü", reward: () => { GameState.countries.LTU.manpower += 20000; log(`MİLLİ ODAK: Litvanya - Savunma tugayları kuruldu!`, "text-emerald-400"); } }
+                ],
+                "URY": [
+                    { id: "latin_finans", title: "Montevideo Serbest Bölgesi", desc: "+3 Sivil Fabrika, +2000 Hazine", reward: () => { GameState.countries.URY.civFactories += 3; GameState.countries.URY.money += 2000; log(`MİLLİ ODAK: Uruguay finans merkezi haline geldi.`, "text-emerald-400"); } }
+                ],
+                "PRY": [
+                    { id: "chaco_tahkimat", title: "Chaco Sınır Hattı", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.PRY.milFactories += 3; log(`MİLLİ ODAK: Paraguay savunma sanayisini kurdu.`, "text-emerald-400"); } }
+                ],
+                "GTM": [
+                    { id: "maya_tarim", title: "Tarım Reformu", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.GTM.civFactories += 4; log(`MİLLİ ODAK: Guatemala tarımsal üretimi artırdı.`, "text-emerald-400"); } }
+                ],
+                "CRI": [
+                    { id: "ordu_silahsizlanma", title: "Barışçıl Bütçe", desc: "+6 Sivil Fabrika, +4000 Hazine", reward: () => { GameState.countries.CRI.civFactories += 6; GameState.countries.CRI.money += 4000; log(`MİLLİ ODAK: Kosta Rika bütçesini kalkınmaya harcıyor.`, "text-emerald-400"); } }
+                ],
+                "DOM": [
+                    { id: "karayip_ticareti", title: "Karayip Liman Ağı", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.DOM.civFactories += 3; log(`MİLLİ ODAK: Dominik lojistik merkez oldu.`, "text-emerald-400"); } }
+                ],
+                "SEN": [
+                    { id: "dakar_limani", title: "Dakar Stratejik Üssü", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.SEN.civFactories += 4; log(`MİLLİ ODAK: Senegal ticaret hacmini büyüttü.`, "text-emerald-400"); } }
+                ],
+                "CIV": [
+                    { id: "kakao_monopol", title: "Küresel Kakao İhracatı", desc: "+5 Sivil Fabrika, +2000 Hazine", reward: () => { GameState.countries.CIV.civFactories += 5; GameState.countries.CIV.money += 2000; log(`MİLLİ ODAK: Fildişi Sahili kasayı dolduruyor.`, "text-emerald-400"); } }
+                ],
+                "SSD": [
+                    { id: "petrol_korumasi", title: "Nile Petrol Sahaları", desc: "+3000 Hazine", reward: () => { GameState.countries.SSD.money += 3000; log(`MİLLİ ODAK: Güney Sudan petrol gelirlerini güvenceye aldı.`, "text-emerald-400"); } }
+                ],
+                "UGA": [
+                    { id: "viktorya_sanayi", title: "Viktorya Gölü Projeleri", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.UGA.milFactories += 4; log(`MİLLİ ODAK: Uganda askeri üretime yüklendi.`, "text-emerald-400"); } }
+                ],
+                "TZA": [
+                    { id: "darüsselam_lojistik", title: "Doğu Afrika Kapısı", desc: "+5 Sivil Fabrika", reward: () => { GameState.countries.TZA.civFactories += 5; log(`MİLLİ ODAK: Tanzanya altyapısını güçlendirdi.`, "text-emerald-400"); } }
+                ],
+                "ZMB": [
+                    { id: "bakir_madenleri", title: "Bakır Kuşağı Yatırımları", desc: "+5 Sivil Fabrika", reward: () => { GameState.countries.ZMB.civFactories += 5; log(`MİLLİ ODAK: Zambiya madencilik atağı başlattı.`, "text-emerald-400"); } }
+                ],
+                "MOZ": [
+                    { id: "hint_denizi_ticaret", title: "Kıyı Lojistiği", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.MOZ.civFactories += 3; log(`MİLLİ ODAK: Mozambik limanları genişletildi.`, "text-emerald-400"); } }
+                ],
+                "MDG": [
+                    { id: "ada_izolasyonu", title: "Kendi Kendine Yeten Ada", desc: "+4 Sivil Fabrika", reward: () => { GameState.countries.MDG.civFactories += 4; log(`MİLLİ ODAK: Madagaskar sanayi altyapısı kurdu.`, "text-emerald-400"); } }
+                ],
+                "LBR": [
+                    { id: "kauçuk_anlasmasi", title: "Firestone Kauçuk Anlaşması", desc: "+2 Sivil, +2 Askeri Fabrika", reward: () => { GameState.countries.LBR.civFactories += 2; GameState.countries.LBR.milFactories += 2; log(`MİLLİ ODAK: Liberya hammadde ticaretini açtı.`, "text-emerald-400"); } }
+                ],
+                "SVN": [
+                    { id: "alp_endüstrisi", title: "Hassas Sanayi Atölyeleri", desc: "+3 Askeri Fabrika", reward: () => { GameState.countries.SVN.milFactories += 3; log(`MİLLİ ODAK: Slovenya askeri teknoloji üretiyor.`, "text-emerald-400"); } }
+                ],
+                "MKD": [
+                    { id: "vardar_koridoru", title: "Vardar Lojistik Hattı", desc: "+2 Sivil Fabrika", reward: () => { GameState.countries.MKD.civFactories += 2; log(`MİLLİ ODAK: Kuzey Makedonya transit geçişleri güçlendirdi.`, "text-emerald-400"); } }
+                ],
+                "BIH": [
+                    { id: "bosna_cephanelik", title: "Dağlık Bölge Fabrikaları", desc: "+4 Askeri Fabrika", reward: () => { GameState.countries.BIH.milFactories += 4; log(`MİLLİ ODAK: Bosna Hersek mühimmat üretimini artırdı.`, "text-emerald-400"); } }
+                ],
+                "MDA": [
+                    { id: "tarim_sanayi", title: "Dinyester Havzası Tarımı", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.MDA.civFactories += 3; log(`MİLLİ ODAK: Moldova iç sanayiyi canlandırdı.`, "text-emerald-400"); } }
+                ],
+                "KHM": [
+                    { id: "mekong_altyapi", title: "Mekong Havzası Gelişimi", desc: "+3 Sivil Fabrika", reward: () => { GameState.countries.KHM.civFactories += 3; log(`MİLLİ ODAK: Kamboçya lojistik hatları kurdu.`, "text-emerald-400"); } }
+                ],
+                "LAO": [
+                    { id: "dag_tahkimat", title: "Dağlık Bölge Direnişi", desc: "+30K İnsan Gücü", reward: () => { GameState.countries.LAO.manpower += 30000; log(`MİLLİ ODAK: Laos zorlu dağ birliklerini topladı.`, "text-emerald-400"); } }
+                ]
+            },
             activeWars: [],
             trainingQueue: [],
             globalTension: 5
@@ -1468,7 +1840,7 @@ GameState.saveSlot = "save1"; // varsayılan slot
         target.occupier = GameState.player;           // İşgalciyi kaydet
         target.savedColor = player.color;             // RENKİ DOĞRU KAYDET
         
-        target.name = `${player.name} Yönetimindeki ${target.name} Eyaleti`;
+        target.name = `${player.name} Yönetimindeki ${target.name}`;
 
         if (d3.select(`#${war.target}`).node()) {
             d3.select(`#${war.target}`).classed("active-war", false)
@@ -1649,12 +2021,16 @@ if (!window.editorKeyListenerAdded) {
 
             const player = GameState.countries[GameState.player];
 
-            // 2. Ekonomik & Endüstriyel Çıktı Üretimi
-            player.money += player.civFactories * 15;
-            player.stockpile.guns += player.prodAllocation.guns * 15;
-            player.stockpile.artillery += player.prodAllocation.artillery * 2;
-            player.stockpile.tanks += player.prodAllocation.tanks * 1;
+            // 2. Ekonomik & Endüstriyel Çıktı Üretimi (Verimlilik Etkili)
+            const eff = player.factoryEfficiency || 1.0;
+            const lineEff = player.productionLines || { guns: 1.0, artillery: 1.0, tanks: 1.0 };
+
+            player.money += Math.floor(player.civFactories * 15 * eff);
             
+            player.stockpile.guns += Math.floor(player.prodAllocation.guns * 15 * lineEff.guns * eff);
+            player.stockpile.artillery += Math.floor(player.prodAllocation.artillery * 2 * lineEff.artillery * eff);
+            player.stockpile.tanks += Math.floor(player.prodAllocation.tanks * 1 * lineEff.tanks * eff);
+           
             player.manpower += Math.floor(player.pop * 0.0005); // Doğal nüfus artışından manpower
 
             // 3. Kışla Eğitim Sırası Yönetimi
@@ -1781,10 +2157,26 @@ container.innerHTML = GameState.activeWars.map((war, index) => `
 // --- KUŞLARIN GİZLİ ORDUSU EASTER EGG (TEK KULLANIMLIK) ---
 let inputBuffer = "";
 const targetCodes = {
-    "limon": { msg: "🍋 Limon Tümeni Göreve Hazır! (+50K İnsan Gücü)", used: false, action: () => { GameState.countries[GameState.player].manpower += 50000; } },
-    "fairy": { msg: "🧚 Fairy Hava Desteği Sağlandı! (+20 Askeri Fabrika)", used: false, action: () => { GameState.countries[GameState.player].milFactories += 20; } },
-    "fosfor": { msg: "🧪 Fosforlu Mühimmat Aktif! (+10K Piyade Tüfeği)", used: false, action: () => { GameState.countries[GameState.player].stockpile.guns += 10000; } },
-    "kral": { msg: "👑 Kral Geldi Hükmediyor! (+5000 Hazine)", used: false, action: () => { GameState.countries[GameState.player].money += 5000; } }
+    "limon": { 
+        msg: "🍋 Limon Tümeni Göreve Hazır! (+50K İnsan Gücü)", 
+        used: false, 
+        action: () => { GameState.countries[GameState.player].manpower += 50000; } 
+    },
+    "fairy": { 
+        msg: "🧚 Fairy Hava Desteği Sağlandı! (+20 Askeri Fabrika)", 
+        used: false, 
+        action: () => { GameState.countries[GameState.player].milFactories += 20; } 
+    },
+    "fosfor": { 
+        msg: "🧪 Fosforlu Mühimmat Aktif! (+10K Piyade Tüfeği)", 
+        used: false, 
+        action: () => { GameState.countries[GameState.player].stockpile.guns += 10000; } 
+    },
+    "kral": { 
+        msg: "👑 Kral Geldi Hükmediyor! (+5000 Hazine)", 
+        used: false, 
+        action: () => { GameState.countries[GameState.player].money += 5000; } 
+    }
 };
 
 window.addEventListener("keydown", (e) => {
