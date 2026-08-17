@@ -1,0 +1,66 @@
+/* Supreme Command — MP + Stage1 UI */
+#mp-hud { backdrop-filter: blur(6px); }
+#mp-chat-log .mine { color: #7dd3fc; }
+#mp-chat-log .sys { color: #6a7460; font-style: italic; }
+#mp-chat-log .dm { color: #c4a35a; }
+.mp-ping-marker { pointer-events: none; animation: mpPing 1.6s ease-out forwards; }
+@keyframes mpPing {
+  0% { opacity: 1; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+#mp-btn-create:disabled,
+#mp-btn-join:disabled,
+#mp-btn-create.opacity-40,
+#mp-btn-join.opacity-40 {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+#mp-pre-room-btns.hidden { display: none !important; }
+#mp-btn-leave.hidden { display: none !important; }
+#mp-room-info.hidden { display: none !important; }
+#sc-gameover-modal { animation: scFadeIn 0.25s ease; }
+@keyframes scFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Stage 3 — FoW / Desync / Peace VP */
+.country-path.prov-fog {
+  filter: brightness(0.35) saturate(0.4);
+  pointer-events: auto;
+}
+#mp-desync-modal.hidden { display: none !important; }
+#mp-ping-strip { max-width: 100%; }
+#peace-vp-banner button:active { transform: scale(0.98); }
+
+/* Grand Expansion */
+.focus-node.locked { cursor: not-allowed; }
+#grand-div-designer, #grand-cabinet { margin-top: 0.5rem; }
+#hud-pp { color: #fbbf24; }
+
+/* Mastermind */
+#master-map-modes { pointer-events: auto; }
+#master-map-modes .map-mode-btn { backdrop-filter: blur(4px); }
+#master-div-designer button:active { transform: scale(0.98); }
+.country-path { transition: fill 0.35s ease; }
+
+
+/* v1.1 */
+.country-path {
+  stroke-width: 0.012px !important;
+}
+.country-path.prov-border, .country-path[data-border="1"] {
+  stroke-width: 0.12px !important;
+}
+#log-panel {
+  left: auto !important;
+  right: 0.5rem !important;
+  bottom: 0.5rem !important;
+  transform: none !important;
+  width: min(280px, 42vw) !important;
+  height: 88px !important;
+  max-width: 280px !important;
+}
+#master-map-modes, .map-mode-btn { display: none !important; }
+.prov-fog { filter: none !important; opacity: 1 !important; }
