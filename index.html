@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supreme Command | Master Strategy in Web</title>
+    <title>Supreme Command — Playable Release v1.1.3</title>
     <link rel="icon" href="https://i.imgur.com/U9Yw62b.png" type="image/png">
     
     <!-- TAILWIND CSS, D3.JS VE TOPOJSON ENTEGRASYONLARI -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { corePlugins: { preflight: true } };</script>
+    <!-- Tailwind CDN: geliştirme kullanımı -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
     
@@ -53,7 +55,10 @@
             transition: fill 0.4s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.2s;
             cursor: pointer;
         }
-        .country-path:hover {
+        .prov-occupied {
+        /* tarama pattern fill ile geliyor */
+    }
+    .country-path:hover {
             stroke: #ffffff !important;
             stroke-width: 1.5px !important;
             opacity: 0.9;
@@ -140,8 +145,514 @@
       .country-path { cursor: pointer; }
     }
 
-    </style>
-<head>
+    
+    /* Sol panel body class ile */
+    body.sidebar-kapali aside.md\:w-\[480px\],
+    body.sidebar-kapali #left-panel {
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        overflow: hidden !important;
+        border: none !important;
+        padding: 0 !important;
+        opacity: 0;
+        pointer-events: none;
+    }
+    body.sidebar-kapali main.flex-1 {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    #sidebar-edge-btn {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10050;
+        width: 28px;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        color: #38bdf8;
+        border: 1px solid #334155;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 900;
+        box-shadow: 4px 0 16px rgba(0,0,0,0.45);
+        transition: background 0.2s, color 0.2s, width 0.2s;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    #sidebar-edge-btn:hover { background: #1e293b; color: #67e8f9; width: 32px; }
+    body.sidebar-kapali #sidebar-edge-btn {
+        background: linear-gradient(180deg, #164e63 0%, #0e7490 100%);
+        color: #ecfeff;
+    }
+    @media screen and (orientation: landscape) and (max-width: 950px) {
+        #top-bar {
+            height: auto !important;
+            min-height: 44px;
+            flex-wrap: nowrap !important;
+            padding: 4px 8px 4px 36px !important;
+            gap: 8px !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        #top-bar button {
+            min-height: 36px;
+            min-width: 36px;
+            padding: 6px 10px !important;
+            font-size: 12px !important;
+        }
+        aside.md\:w-\[480px\], #left-panel {
+            width: min(42vw, 360px) !important;
+            max-width: 42vw !important;
+        }
+        .tab-btn {
+            min-height: 40px !important;
+            font-size: 11px !important;
+            padding: 8px 6px !important;
+        }
+        #sidebar-edge-btn { width: 32px; height: 80px; font-size: 16px; }
+        #content-military button { min-height: 40px; font-size: 11px !important; }
+    }
+
+
+
+    /* ========== Komuta arayüzü (elle işlenmiş katman) ========== */
+    :root {
+        --cmd-bg: #0b0e14;
+        --cmd-panel: #12161f;
+        --cmd-panel-2: #161b26;
+        --cmd-line: #2a3142;
+        --cmd-line-soft: #1e2430;
+        --cmd-text: #d5dbe6;
+        --cmd-muted: #8b95a8;
+        --cmd-amber: #c9a227;
+        --cmd-teal: #3d9b94;
+        --cmd-danger: #b33b4a;
+        --cmd-ok: #3d8f6e;
+    }
+    body {
+        background: var(--cmd-bg) !important;
+        background-image:
+            linear-gradient(180deg, rgba(18,22,31,0.9) 0%, transparent 120px),
+            repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px) !important;
+        color: var(--cmd-text);
+        font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+    }
+    #top-bar {
+        background: linear-gradient(180deg, #141922 0%, #0e1219 100%) !important;
+        border-bottom: 1px solid var(--cmd-line) !important;
+        box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 20px rgba(0,0,0,0.35) !important;
+    }
+    #left-panel {
+        background: var(--cmd-panel) !important;
+        border-right: 1px solid var(--cmd-line) !important;
+        box-shadow: none !important;
+    }
+    #left-panel > div:first-child {
+        background: #0e1219 !important;
+        border-bottom: 1px solid var(--cmd-line-soft) !important;
+        gap: 4px !important;
+        padding: 8px !important;
+    }
+    .tab-btn {
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        color: var(--cmd-muted) !important;
+        border-radius: 4px !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.06em !important;
+        text-transform: uppercase !important;
+        padding: 7px 9px !important;
+        transition: color 0.15s, background 0.15s, border-color 0.15s !important;
+    }
+    .tab-btn:hover {
+        color: var(--cmd-text) !important;
+        background: rgba(255,255,255,0.03) !important;
+        border-color: var(--cmd-line-soft) !important;
+    }
+    .tab-btn.active {
+        color: var(--cmd-amber) !important;
+        background: rgba(201,162,39,0.08) !important;
+        border-color: rgba(201,162,39,0.35) !important;
+        box-shadow: none !important;
+    }
+    .panel-card {
+        background: var(--cmd-panel-2);
+        border: 1px solid var(--cmd-line-soft);
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 2px;
+    }
+    .panel-title {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--cmd-muted);
+        margin-bottom: 8px;
+    }
+    .stat-tile {
+        background: #0e1219;
+        border: 1px solid var(--cmd-line-soft);
+        border-radius: 4px;
+        padding: 8px 10px;
+    }
+    .stat-label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--cmd-muted);
+        font-weight: 600;
+    }
+    .stat-value {
+        font-family: "Courier Prime", "Consolas", monospace;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--cmd-text);
+        margin-top: 2px;
+    }
+    #hud-date {
+        background: #0a0d13 !important;
+        border: 1px solid rgba(201,162,39,0.35) !important;
+        color: var(--cmd-amber) !important;
+        border-radius: 3px !important;
+        font-size: 11px !important;
+        letter-spacing: 0.1em !important;
+        box-shadow: none !important;
+    }
+    #btn-speed, #btn-inbox, #top-bar button {
+        border-radius: 4px !important;
+        border-color: var(--cmd-line) !important;
+        background: #151a24 !important;
+        font-weight: 600 !important;
+    }
+    #top-bar button:hover {
+        border-color: #3d4658 !important;
+        background: #1a2030 !important;
+    }
+    button.bg-emerald-600, #top-bar button.bg-emerald-600 {
+        background: #1f4d3a !important;
+        border-color: #2d6b52 !important;
+    }
+    main.flex-1 {
+        background: #031a5c !important;
+    }
+    #map-container {
+        background: #031a5c !important;
+    }
+    #game-map {
+        background: #031a5c !important;
+    }
+    .country-path {
+        stroke: #05070b !important;
+        stroke-width: 0.35px !important;
+    }
+    .country-path:hover {
+        stroke: #c9a227 !important;
+        stroke-width: 0.9px !important;
+        filter: brightness(1.08);
+    }
+    /* Log */
+    #log-panel, #tactical-log {
+        border-color: var(--cmd-line) !important;
+        background: rgba(11,14,20,0.88) !important;
+        border-radius: 4px !important;
+        backdrop-filter: blur(6px);
+    }
+    /* Event modal hand-tuned */
+    #event-modal > div {
+        border-radius: 8px !important;
+        border-color: #5c4a1f !important;
+        background: #12161f !important;
+        box-shadow: 0 24px 48px rgba(0,0,0,0.65) !important;
+    }
+    #event-modal h2 {
+        color: var(--cmd-amber) !important;
+        letter-spacing: 0.08em !important;
+    }
+    /* Scrollbars */
+    #left-panel .overflow-y-auto::-webkit-scrollbar { width: 6px; }
+    #left-panel .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: #2a3142; border-radius: 3px;
+    }
+    /* Soften generic slate cards inside panels */
+    #left-panel .bg-slate-950\/40,
+    #left-panel .bg-slate-950\/60,
+    #left-panel .bg-slate-950\/50 {
+        background: var(--cmd-panel-2) !important;
+        border-color: var(--cmd-line-soft) !important;
+        border-radius: 6px !important;
+    }
+    #left-panel .rounded-xl {
+        border-radius: 6px !important;
+    }
+    /* V27 host already in dashboard */
+    #v27-toast-host > div {
+        border-radius: 6px !important;
+        font-family: "Segoe UI", system-ui, sans-serif !important;
+    }
+
+
+    .cmd-btn {
+        width: 100%;
+        padding: 7px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #c5cdd9;
+        background: #0e1219;
+        border: 1px solid #2a3142;
+        border-radius: 4px;
+        text-align: left;
+        cursor: pointer;
+    }
+    .cmd-btn-on {
+        border-color: rgba(201,162,39,0.45) !important;
+        background: rgba(201,162,39,0.1) !important;
+        color: #e8d5a3 !important;
+    }
+    .cmd-btn:hover {
+        border-color: #4a5568;
+        background: #151a24;
+        color: #e8eef7;
+    }
+    
+
+    
+    /* —— Supreme Command · AOH-inspired shell —— */
+    :root {
+      --sc-bg: #0c0f0c;
+      --sc-panel: #141a14;
+      --sc-panel2: #1a2218;
+      --sc-border: #2a3a28;
+      --sc-border-hi: #3d5c38;
+      --sc-gold: #c4a35a;
+      --sc-gold-dim: #8a7340;
+      --sc-text: #d8dcc8;
+      --sc-muted: #7a8470;
+      --sc-green: #3d6b45;
+      --sc-green-hi: #4f8a58;
+    }
+    #main-menu-screen {
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(45,70,40,0.35), transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(30,40,25,0.4), transparent 45%),
+        linear-gradient(160deg, #0a0c0a 0%, #12180f 40%, #0c100c 100%) !important;
+    }
+    #main-menu-screen .sc-menu-card {
+      background: linear-gradient(180deg, #1a2218 0%, #121810 100%);
+      border: 2px solid var(--sc-border);
+      box-shadow: 0 0 0 1px #0a0c0a, 0 20px 50px rgba(0,0,0,0.65), inset 0 1px 0 rgba(196,163,90,0.08);
+      border-radius: 4px;
+      max-width: 380px;
+      width: 100%;
+    }
+    #main-menu-screen .sc-menu-title {
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.18em;
+      color: var(--sc-gold);
+      text-shadow: 0 2px 0 #0a0c0a, 0 0 24px rgba(196,163,90,0.15);
+    }
+    #main-menu-screen .sc-menu-sub {
+      color: var(--sc-muted);
+      letter-spacing: 0.2em;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+    .mm-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 16px;
+      margin: 0;
+      background: linear-gradient(180deg, #1e281c, #151c14);
+      border: 1px solid var(--sc-border);
+      color: var(--sc-text) !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .mm-btn:hover {
+      border-color: var(--sc-gold-dim);
+      color: var(--sc-gold) !important;
+      background: linear-gradient(180deg, #243020, #1a2218);
+    }
+    .mm-btn-primary {
+      border-color: var(--sc-green) !important;
+      background: linear-gradient(180deg, #243d28, #1a2e1c) !important;
+      color: #e8f0e0 !important;
+    }
+    .mm-btn-primary:hover {
+      border-color: var(--sc-green-hi) !important;
+      background: linear-gradient(180deg, #2d4d30, #1f3824) !important;
+      color: #fff !important;
+    }
+    #lobby-screen {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(40,60,35,0.3), transparent 55%),
+        #0c0f0c !important;
+    }
+    #lobby-screen .sc-lobby-card {
+      background: linear-gradient(180deg, #161c14, #10140f);
+      border: 2px solid var(--sc-border);
+      border-radius: 4px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+    }
+    #credits-modal .sc-about-card,
+    #settings-overlay .sc-settings-card {
+      background: linear-gradient(180deg, #1a2218, #121810);
+      border: 2px solid var(--sc-border);
+      border-radius: 4px;
+    }
+
+    #main-menu-screen {
+        background: #0a0c10 !important;
+        background-image:
+            radial-gradient(ellipse 70% 45% at 50% 0%, rgba(6,35,140,0.4), transparent 55%),
+            linear-gradient(180deg, #0c1018 0%, #0a0c10 50%) !important;
+    }
+    .mm-btn {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #c5cdd9;
+        background: #0e1219;
+        border: 1px solid #2a3142;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .mm-btn:hover {
+        background: #161b26;
+        border-color: #3d4658;
+        color: #e8eef7;
+    }
+    .mm-btn-primary {
+        background: #1a3d32;
+        border-color: #2d6b52;
+        color: #ecfdf5;
+    }
+    .mm-btn-primary:hover {
+        background: #234d40;
+        border-color: #3d8f6e;
+    }
+
+    #lobby-screen {
+        background: #0a0c10 !important;
+        background-image:
+            radial-gradient(ellipse 80% 50% at 50% -10%, rgba(6,35,140,0.35), transparent 55%),
+            radial-gradient(ellipse 60% 40% at 80% 100%, rgba(201,162,39,0.05), transparent 50%) !important;
+    }
+    #lobby-screen .max-w-5xl {
+        border: 1px solid #2a3142 !important;
+        background: #12161f !important;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.55) !important;
+        border-radius: 10px !important;
+    }
+    #lobby-screen select, #lobby-screen input[type="text"] {
+        border-radius: 5px !important;
+        border-color: #2a3142 !important;
+        background: #0e1219 !important;
+    }
+    #lobby-screen label {
+        color: #8b95a8 !important;
+        letter-spacing: 0.1em !important;
+    }
+
+    #lobby-screen {
+        background: #0b0e14 !important;
+        background-image:
+            radial-gradient(ellipse at 50% -20%, rgba(201,162,39,0.07), transparent 55%),
+            linear-gradient(180deg, #0e1219 0%, #0b0e14 40%) !important;
+    }
+    #lobby-screen .bg-slate-900\/95,
+    #lobby-screen .bg-slate-900 {
+        background: #12161f !important;
+        border-color: #2a3142 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+    }
+    #lobby-screen h1, #lobby-screen .tracking-widest {
+        letter-spacing: 0.14em !important;
+    }
+    #top-bar .font-mono {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* === Layout fix v26 === */
+    html, body { height: 100%; width: 100%; margin: 0; overflow: hidden; }
+    body { display: flex; flex-direction: column; background: #020617; }
+    #top-bar { flex-shrink: 0; position: relative; z-index: 40; }
+    #game-root { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: row; overflow: hidden; }
+    #left-panel { flex-shrink: 0; overflow: hidden; }
+    #map-container, #game-map { width: 100%; height: 100%; min-height: 200px; }
+    main.flex-1 { flex: 1 1 auto; min-width: 0; min-height: 0; position: relative; }
+    #hud-gold, #hud-manpower, #hud-factories, #hud-tension, #hud-date {
+      white-space: nowrap; display: inline-block; min-width: 2.5rem;
+    }
+    .tab-btn.active { border-color: #0891b2; color: #22d3ee; background: rgba(6,182,212,0.12); }
+
+    
+        /* Inline {ISO} → flagcdn, font-size ile ölçeklenir */
+        .inline-flag {
+            height: 1em;
+            width: auto;
+            vertical-align: middle;
+            margin: 0 0.2em;
+            border-radius: 2px;
+            display: inline-block;
+            object-fit: cover;
+            box-shadow: 0 0 0 1px rgba(0,0,0,.25);
+        }
+
+    
+    /* V51 mobil */
+    @media (max-width: 900px) and (orientation: landscape) {
+      #left-panel, aside, .left-panel { max-width: 42vw !important; font-size: 11px !important; }
+      .tab-btn { min-height: 36px !important; padding: 8px 10px !important; font-size: 11px !important; }
+      #top-bar button, #top-bar .px-2 { min-height: 34px; }
+      #game-map { touch-action: none; }
+    }
+    @media (max-width: 900px) {
+      .mm-btn { min-height: 44px !important; font-size: 14px !important; }
+      #lobby-screen select, #lobby-screen button { min-height: 40px; font-size: 13px; }
+    }
+
+    
+    #main-menu-screen.hidden, #lobby-screen.hidden {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+      z-index: -1 !important;
+    }
+    #lobby-screen:not(.hidden) {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 50 !important;
+      pointer-events: auto !important;
+    }
+    #main-menu-screen:not(.hidden) {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 60 !important;
+    }
+</style>
+
     <!-- Mevcut kodların, title ve tailwind cdn'lerin duracak, onların hemen altına ekle: -->
 
     <style>
@@ -207,6 +718,8 @@
     
 
     <!-- manifest/sw opsiyonel; localhost'ta 404 üretmesin diye kaldırıldı -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden">
     <div id="orientation-lock" aria-hidden="true">
@@ -219,19 +732,80 @@
     </div>
 
 
-<input type="checkbox" id="sidebar-toggle-check">
-<label for="sidebar-toggle-check" class="kapat-ac-butonu">◀▶ SOL PANEL</label>
 
     <!-- STRATEJİK SEÇİM LOBİSİ -->
-    <div id="lobby-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-        <div class="w-full max-w-5xl bg-slate-900/95 border-2 border-slate-700 rounded-lg p-6 shadow-2xl flex flex-col md:flex-row gap-6 relative overflow-hidden">
+    <button type="button" id="sidebar-edge-btn" onclick="toggleSidebar()" title="Sol panel" aria-label="Sol panel">◀</button>
+
+    <!-- ========== ANA MENÜ ========== -->
+    <div id="main-menu-screen" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div class="sc-menu-card overflow-hidden">
+            <div class="px-8 pt-9 pb-5 text-center border-b border-[#2a3a28]">
+                <div class="sc-menu-sub mb-3">Browser Grand Strategy</div>
+                <h1 class="sc-menu-title text-2xl md:text-3xl font-bold uppercase">Supreme Command</h1>
+                <div class="mt-2 inline-block px-3 py-1 rounded border border-[#c4a35a]/35 bg-[#1a1810]/80">
+                    <span class="text-[10px] font-black tracking-[0.2em] uppercase text-[#c4a35a]">Grand Master Edition</span>
+                    <span class="text-[10px] text-[#8a9480] ml-2 font-mono">v1.1.3</span>
+                </div>
+                <p class="text-[11px] text-[#7a8470] mt-3 leading-relaxed max-w-xs mx-auto">
+                    1081 provinces · host-centric MP · focus · supply · intel · division designer
+                </p>
+            </div>
+            <div class="p-5 space-y-2">
+                <button type="button" id="mm-continue" onclick="mainMenuContinue()" class="mm-btn mm-btn-primary hidden" data-i18n="mm_continue">Continue</button>
+                <button type="button" onclick="mainMenuNewGame()" class="mm-btn mm-btn-primary" data-i18n="mm_new">Yeni oyun</button>
+                <button type="button" id="mm-quick-play" onclick="(window.scForcePlay||window.scQuickPlay||mainMenuNewGame)()" class="mm-btn mm-btn-primary" style="background:linear-gradient(180deg,#1a4a2e,#0f2a1a);border-color:#2d6b52;">⚔ Hızlı Başla (Türkiye)</button>
+                <button type="button" onclick="mainMenuMultiplayer()" class="mm-btn mm-btn-primary">Çok oyunculu</button>
+                <button type="button" onclick="mainMenuLoad()" class="mm-btn" data-i18n="mm_load">Kayıt yükle</button>
+                <button type="button" onclick="(openSettingsModal||toggleSettings)()" class="mm-btn" data-i18n="mm_settings">Settings</button>
+                <button type="button" onclick="mainMenuCredits()" class="mm-btn" data-i18n="mm_about">About</button>
+            </div>
+            <div class="px-5 pb-4 text-center space-y-1">
+                <div class="text-[10px] text-[#5a6450] tracking-[0.15em] uppercase" data-i18n="mm_version">
+                    v1.1.3 · Playable Release · Map pack 1081
+                </div>
+                <div class="text-[9px] text-[#6a7460] tracking-wide">
+                    Engineered by Grok · HTML5 / JavaScript Grand Strategy Engine
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="credits-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/75 p-4" onclick="if(event.target===this)this.classList.add('hidden')">
+        <div class="sc-about-card w-full max-w-md p-0 overflow-hidden" onclick="event.stopPropagation()">
+            <div class="px-5 py-3 border-b border-[#2a3a28] flex justify-between items-center bg-[#1a2218]">
+                <h3 class="text-sm font-bold text-[#c4a35a] uppercase tracking-[0.2em]">About</h3>
+                <button type="button" onclick="document.getElementById('credits-modal').classList.add('hidden')" class="text-[#7a8470] hover:text-[#c4a35a] text-xs font-bold px-2">✕</button>
+            </div>
+            <div class="px-5 py-4 space-y-3 text-[12px] text-[#b8c0a8] leading-relaxed max-h-[70vh] overflow-y-auto">
+                <p><b class="text-[#c4a35a]">Supreme Command — Grand Master Edition v1.0</b></p>
+                <p class="text-[#8a9480] text-[11px]">Browser grand strategy engine: province-level map, host-centric multiplayer, national focuses, logistics, intelligence and division designer.</p>
+                <ul class="text-[11px] text-[#9aa890] space-y-1 list-disc pl-4">
+                    <li>1081 provinces · D3 map · Modern / WW1 / WW2 scenarios</li>
+                    <li>Host-centric MP · shared clock · Fog of War · ping/desync shield</li>
+                    <li>Focus trees · cabinet/PP · tech &amp; equipment production</li>
+                    <li>Division designer · combat width · air/naval missions</li>
+                    <li>Supply map · espionage · occupation laws · puppets</li>
+                </ul>
+                <p class="text-[10px] text-[#c4a35a] border-t border-[#2a3a28] pt-3 font-semibold tracking-wide">
+                    Engineered by Grok · HTML5 / JavaScript Grand Strategy Engine
+                </p>
+                <p class="text-[10px] text-[#6a7460]">
+                    Single-player &amp; multiplayer · offline-capable after load · map pack 1081
+                </p>
+            </div>
+            <div class="px-5 py-3 border-t border-[#2a3a28]">
+                <button type="button" onclick="document.getElementById('credits-modal').classList.add('hidden')" class="mm-btn mm-btn-primary w-full">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lobby-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="sc-lobby-card w-full max-w-5xl p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden">
             
             <div class="flex-1 flex flex-col justify-between">
                 <div>
-                    <h1 class="text-3xl font-black tracking-widest text-slate-100 uppercase border-b border-slate-700 pb-3 flex items-center gap-3">
-                        <span class="text-red-600 animate-pulse">✠</span> SUPREME COMMAND
-                    </h1>
-                    <p class="text-xs text-slate-400 mt-2 tracking-wide uppercase font-semibold">2026 Yönetim Odası</p>
+                    <button type="button" onclick="mainMenuBack()" class="text-[10px] text-slate-500 hover:text-slate-300 mb-2 tracking-wider uppercase">← Ana menü</button>
+                    <h1 class="text-2xl font-black tracking-widest text-slate-100 uppercase border-b border-slate-700 pb-3">Yeni sefer</h1>
+                    <p class="text-xs text-slate-500 mt-2 tracking-wide">Senaryo, ülke ve zorluk seçin</p>
                     
                     <div class="mt-6 space-y-3">
                         <label class="text-xs text-cyan-400 uppercase tracking-wider font-bold block">Yöneteceğiniz Devleti Seçin:</label>
@@ -366,7 +940,9 @@
                             <div>Sivil Fabrika: <span id="lobby-stat-civ" class="text-slate-200 font-mono">-</span></div>
                             <div>Askeri Fabrika: <span id="lobby-stat-mil" class="text-slate-200 font-mono">-</span></div>
                             <div>Hazine Bütçesi: <span id="lobby-stat-gold" class="text-yellow-400 font-mono">-</span></div>
-                            <div>Siyasi İdeoloji: <span id="lobby-stat-ideo" class="text-cyan-400">-</span></div>
+                            <div>Başkent: <span id="lobby-stat-capital" class="text-amber-400/90">-</span></div>
+                            <div>Kimlik: <span id="lobby-stat-identity" class="text-slate-300">-</span></div>
+                            <div>Siyasi İdeoloji: <span id="lobby-stat-ideo" class="text-slate-300">-</span></div>
                         </div>
                     </div>
                 </div>
@@ -396,7 +972,7 @@
                     <p class="text-[9px] text-slate-500 mt-1">Kapatırsanız rastgele event pop-up’ları gelmez.</p>
                 </div>
                 <div class="mt-6">
-                    <button onclick="startGame()" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 border border-cyan-500 rounded text-sm font-black tracking-widest shadow-lg uppercase transition-all duration-300 transform active:scale-95">
+                    <button onclick="startGame()" class="w-full py-3.5 bg-[#1a3d32] hover:bg-[#234d40] border border-[#2d6b52] rounded text-sm font-bold tracking-[0.12em] uppercase text-emerald-50 transition-colors">
                         Seferi Başlat ⚔
                     </button>
 <button onclick="loadGamePrompt()" class="w-full mt-3 py-3 bg-slate-700 hover:bg-slate-600 border border-slate-500 rounded text-sm font-black tracking-widest">
@@ -422,133 +998,194 @@
     </div>
 
     <!-- ANA OYUN HUD BAR -->
-    <header id="top-bar" class="h-14 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shadow-md z-40">
-        <div class="flex items-center gap-4">
-            <img id="hud-flag" src="https://flagcdn.com/w40/tr.png" class="h-6 w-9 object-cover rounded border border-slate-700" alt="HUD Flag">
-            <div class="flex flex-col">
-                <span id="hud-country-name" class="text-sm font-black uppercase tracking-wider text-slate-100">Türkiye</span>
-                <span id="hud-country-ideology" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cumhuriyet</span>
+    <header id="top-bar" class="h-12 min-h-[3rem] px-3 md:px-4 flex items-center justify-between gap-3 z-40 flex-shrink-0">
+        <div class="flex items-center gap-2 md:gap-4 min-w-0">
+            <img id="hud-flag" src="https://flagcdn.com/w40/tr.png" class="h-6 w-9 object-cover rounded border border-slate-700 flex-shrink-0" alt="HUD Flag">
+            <div class="flex flex-col min-w-0">
+                <span id="hud-country-name" class="text-sm font-black uppercase tracking-wider text-slate-100 truncate">Türkiye</span>
+                <span id="hud-country-ideology" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">Cumhuriyet</span>
             </div>
         </div>
 
-        <!-- Taktik Kaynak Barları -->
-        <div class="flex items-center gap-6 text-xs font-semibold tracking-wider">
-            <div class="flex items-center gap-1.5" title="Hazine">
-                <span>💲</span><span id="hud-gold" class="text-yellow-500 font-mono">1,200</span>
+        <div class="flex items-center gap-3 md:gap-5 text-xs font-semibold tracking-wider flex-shrink-0">
+            <div class="flex items-center gap-1" title="Hazine">
+                <span class="text-slate-500 text-[10px]">Hazine</span> <span id="hud-gold" class="text-yellow-500 font-mono whitespace-nowrap">1,200</span>
             </div>
-            <div class="flex items-center gap-1.5" title="İnsan Gücü">
-                <span>👤</span><span id="hud-manpower" class="text-slate-200 font-mono">150K</span>
+            <div class="flex items-center gap-1" title="İnsan Gücü">
+                <span class="text-slate-500 text-[10px]">İG</span> <span id="hud-manpower" class="text-slate-200 font-mono whitespace-nowrap">150K</span>
             </div>
-            <div class="flex items-center gap-1.5" title="Fabrikalar (Sivil / Askeri)">
-                <span>🏭</span><span id="hud-factories" class="text-slate-200 font-mono">10 / 5</span>
+            <div class="flex items-center gap-1" title="Fabrikalar (Sivil / Askeri)">
+                <span class="text-slate-500 text-[10px]">Fab</span> <span id="hud-factories" class="text-slate-200 font-mono whitespace-nowrap">10 / 5</span>
             </div>
-            <div class="flex items-center gap-1.5" title="Küresel Gerilim Seviyesi">
-                <span>🔥</span><span id="hud-tension" class="text-red-500 font-mono">5%</span>
+            <div class="flex items-center gap-1" title="Küresel Gerilim">
+                <span class="text-slate-500 text-[10px]">Gerilim</span> <span id="hud-tension" class="text-red-500 font-mono whitespace-nowrap">5%</span>
+            </div>
+            <div class="flex items-center gap-1" title="Savaş Desteği">
+                <span class="text-slate-500 text-[10px]">SD</span> <span id="v27-ws" class="text-orange-400 font-mono whitespace-nowrap">55%</span>
+            </div>
+            <div class="flex items-center gap-1" title="İstikrar">
+                <span class="text-slate-500 text-[10px]">İst</span> <span id="v27-stab" class="text-emerald-400 font-mono whitespace-nowrap">50%</span>
+            </div>
+            <div class="flex items-center gap-1" title="Mevsim">
+                <span class="text-slate-500 text-[10px]">Mevsim</span>
+                <span id="v27-season" class="text-slate-300 font-mono whitespace-nowrap text-[11px]">—</span>
+            </div>
+            <div class="flex items-center gap-1" title="Siyasi güç">
+                <span class="text-slate-500 text-[10px]">SP</span>
+                <span id="v30-pp" class="text-amber-500/90 font-mono whitespace-nowrap text-[11px]">50</span>
+            </div>
+            <div class="flex items-center gap-1" title="Savaş yorgunluğu">
+                <span class="text-slate-500 text-[10px]">SY</span>
+                <span id="v30-we" class="text-rose-400/90 font-mono whitespace-nowrap text-[11px]">0%</span>
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
-<button onclick="toggleInbox()" id="btn-inbox"
-        class="relative ml-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded border border-slate-600 transition-all active:scale-95"
-        title="Diplomatik Posta">
-    ✉️
-    <span id="inbox-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 bg-red-600 text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span>
-</button>
-<button onclick="toggleSettings()" class="ml-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded border border-slate-600" title="Ayarlar">⚙️</button>
-<button onclick="exportSaveFile()" 
-        class="ml-2 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded border border-emerald-500 flex items-center gap-1.5 transition-all active:scale-95">
-    💾 KAYDET
-</button>
-<button onclick="toggleMapEditor()" 
-        class="ml-2 px-4 py-1.5 bg-purple-700 hover:bg-purple-600 text-white text-xs font-bold rounded border border-purple-500 transition-all active:scale-95">
-    ✏️ HARİTA EDİTÖRÜ
-</button>
-            <div class="hidden md:flex items-center gap-1 ml-2" title="Harita modu">
-                <button onclick="setMapMode('political')" class="map-mode-btn px-1.5 py-1 bg-slate-800 border border-slate-600 text-[9px] rounded font-bold" data-mode="political">🏛</button>
-                <button onclick="setMapMode('ideology')" class="map-mode-btn px-1.5 py-1 bg-slate-800 border border-slate-600 text-[9px] rounded font-bold" data-mode="ideology">🚩</button>
-                <button onclick="setMapMode('tension')" class="map-mode-btn px-1.5 py-1 bg-slate-800 border border-slate-600 text-[9px] rounded font-bold" data-mode="tension">🔥</button>
-                <button onclick="setMapMode('industry')" class="map-mode-btn px-1.5 py-1 bg-slate-800 border border-slate-600 text-[9px] rounded font-bold" data-mode="industry">🏭</button>
-            </div>
-            <div class="bg-slate-950 px-3 py-1.5 rounded border border-yellow-700/50 text-xs font-black tracking-widest text-yellow-400 font-mono shadow-[0_0_12px_rgba(250,204,21,0.15)]" id="hud-date">
-                01 OCA 2026
-            </div>
-            <button onclick="toggleGameSpeed()" id="btn-speed" class="px-3 py-1.5 bg-slate-800 border border-slate-700 text-xs rounded hover:border-slate-500 font-bold transition-all">
-                ⏸ DURAKLAT
+        <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+            <button onclick="toggleInbox()" id="btn-inbox"
+                class="relative px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded border border-slate-600"
+                title="Diplomatik Posta">✉️
+                <span id="inbox-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 bg-red-600 text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span>
             </button>
+            <button onclick="toggleSettings()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded border border-slate-600" title="Ayarlar">⚙️</button>
+            <button onclick="exportSaveFile()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded border border-emerald-500">💾 KAYDET</button>
+            <div id="hud-date" class="bg-slate-950 px-2.5 py-1.5 rounded border border-yellow-700/50 text-[11px] font-black tracking-widest text-yellow-400 font-mono whitespace-nowrap">01 OCA 2026</div>
+            <button onclick="toggleGameSpeed()" id="btn-speed" class="px-2.5 py-1.5 bg-slate-800 border border-slate-700 text-xs rounded hover:border-slate-500 font-bold whitespace-nowrap">⏸ DURAKLAT</button>
         </div>
     </header>
 
-    <!-- ANA KONTROL VE HARİTA GRİDİ -->
-    <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
-        
-        <!-- SOL PANEL: KONTROL MERKEZİ -->
-        <aside id="left-panel" class="w-full md:w-[480px] bg-slate-900 border-r border-slate-800 h-full flex flex-col z-30 relative shadow-2xl transition-all duration-300">
-
-            <button onclick="toggleSidebar()" id="sidebar-toggle-btn" class="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-slate-800 border border-slate-700 hover:border-cyan-500 text-slate-300 w-4 h-16 flex items-center justify-center rounded-r z-50 text-[10px] font-bold transition-colors">
-                ◀
-            </button>
-
+    <!-- ANA KONTROL VE HARİTA -->
+    <div id="game-root" class="flex-1 flex flex-col md:flex-row overflow-hidden relative min-h-0">
+        <!-- SOL PANEL -->
+        <aside id="left-panel" class="w-full md:w-[420px] lg:w-[480px] bg-slate-900 border-r border-slate-800 h-full max-h-[42vh] md:max-h-none flex flex-col z-30 shadow-2xl flex-shrink-0">
             <!-- Sekmeler -->
-            <div class="flex border-b border-slate-800 text-xs font-black tracking-wider uppercase bg-slate-950/60 overflow-x-auto">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 tab-btn active whitespace-nowrap px-1">Gösterge</button>
-                <button onclick="switchTab('production')" id="tab-production" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Üretim</button>
-                <button onclick="switchTab('military')" id="tab-military" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Ordular</button>
-                <button onclick="switchTab('economy')" id="tab-economy" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Ekonomi</button>
-                <button onclick="switchTab('focus')" id="tab-focus" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Odaklar</button>
-                <button onclick="switchTab('research')" id="tab-research" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Araştırma</button>
-                <button onclick="switchTab('diplomacy')" id="tab-diplomacy" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Diplomasi</button>
-                <button onclick="switchTab('province')" id="tab-province" class="tab-btn flex-1 py-3 border-b-2 border-transparent hover:text-slate-200 whitespace-nowrap px-1">Eyalet</button>
+            <div class="flex flex-wrap gap-1 p-2 border-b border-slate-800 bg-slate-950/80">
+                <button type="button" class="tab-btn active px-2 py-1.5 text-[10px] font-bold rounded border border-cyan-600 text-cyan-400 bg-cyan-950/30" onclick="switchTab('dashboard')">Özet</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('production')">Üretim</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('military')">Ordu</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('economy')">Ekonomi</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('diplomacy')">Diplomasi</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('focus')">Odak</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('research')">Araştırma</button>
+                <button type="button" class="tab-btn px-2 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-300" onclick="switchTab('province')">Eyalet</button>
             </div>
-
-            <!-- SEKME PANEL DETAYLARI -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-6">
-
-                <!-- DASHBOARD PANEL -->
-                <div id="content-dashboard" class="space-y-4">
-                    <div class="bg-slate-950/40 border border-slate-800 rounded p-4">
-                        <h3 class="text-xs text-yellow-500 uppercase tracking-widest font-black mb-3">Milli Envanter</h3>
-                        <div class="grid grid-cols-2 gap-4 text-xs font-semibold">
-                            <div class="bg-slate-900/80 p-3 rounded border border-slate-800 flex flex-col">
-                                <span class="text-slate-400 uppercase text-[10px]">Piyade Tüfeği</span>
-                                <span id="dash-guns" class="text-slate-200 text-sm font-bold mt-1">12,000 🔫</span>
-                            </div>
-                            <div class="bg-slate-900/80 p-3 rounded border border-slate-800 flex flex-col">
-                                <span class="text-slate-400 uppercase text-[10px]">Sahra Topçusu</span>
-                                <span id="dash-artillery" class="text-slate-200 text-sm font-bold mt-1">150 🚀</span>
-                            </div>
-                            <div class="bg-slate-900/80 p-3 rounded border border-slate-800 flex flex-col">
-                                <span class="text-slate-400 uppercase text-[10px]">Zırhlı Tank</span>
-                                <span id="dash-tanks" class="text-slate-200 text-sm font-bold mt-1">50 🛡️</span>
-                            </div>
-                            <div class="bg-slate-900/80 p-3 rounded border border-slate-800 flex flex-col">
-                                <span class="text-slate-400 uppercase text-[10px]">Askeri Tümen Sayısı</span>
-                                <span id="dash-divs" class="text-slate-200 text-sm font-bold mt-1">11 Tümen ⚔️</span>
-                            </div>
+            <div class="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+                <!-- DASHBOARD -->
+                <div id="content-dashboard" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2 mb-1">
+                        <div class="stat-tile">
+                            <div class="stat-label">Tüfek</div>
+                            <div id="dash-guns" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-tile">
+                            <div class="stat-label">Topçu</div>
+                            <div id="dash-artillery" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-tile">
+                            <div class="stat-label">Tank</div>
+                            <div id="dash-tanks" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-tile">
+                            <div class="stat-label">Tümen</div>
+                            <div id="dash-divs" class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="panel-card">
+                        <h3 class="panel-title">Ulusal Odak</h3>
+                        <div id="active-focus-display" class="text-xs text-slate-400">
+                            <div class="italic text-slate-500">Aktif odak yok.</div>
+                        </div>
+                    </div>
+                    <div class="panel-card">
+                        <h3 class="panel-title text-rose-400/90">Cephe Durumu</h3>
+                        <div id="dash-active-wars" class="space-y-2">
+                            <div class="text-xs text-slate-500 italic text-center py-3">Aktif cephe yok.</div>
                         </div>
                     </div>
 
-                    <!-- Aktif Odak İlerlemesi -->
-                    <div class="bg-slate-950/40 border border-slate-800 rounded p-4">
-                        <h3 class="text-xs text-slate-400 uppercase tracking-widest font-black mb-3">Aktif Odak Çalışmaları</h3>
-                        <div id="active-focus-display" class="bg-slate-900 p-3 rounded border border-slate-800">
-                            <div class="text-xs font-bold text-slate-500 italic">Devam eden bir odak çalışması yok.</div>
+                    <!-- Stratejik durum (yasalar, hedefler, sıralama) -->
+                    <div class="panel-card border-l-2 border-l-amber-700/60">
+                        <div class="flex justify-between items-center">
+                            <h3 class="panel-title text-amber-500/90">Stratejik Durum</h3>
+                            <span class="text-[10px] font-mono text-cyan-400">Skor: <b id="v27-score">0</b></span>
                         </div>
-                    </div>
+                        <div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1">Hedefler</div>
+                            <div id="v27-objectives" class="space-y-1.5"></div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1">Yasalar & Politikalar</div>
+                            <div id="v27-laws"></div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1">Milli Ruhlar</div>
+                            <div id="v27-spirits" class="space-y-1"></div>
+                        </div>
 
-                    <!-- Aktif Muharebe Alanları -->
-                    <div class="bg-slate-950/40 border border-slate-800 rounded p-4">
-                        <h3 class="text-xs text-red-500 uppercase tracking-widest font-black mb-3">Cephelerdeki Savaş Durumu</h3>
-                        <div id="dash-active-wars" class="space-y-3">
-                            <div class="text-xs text-slate-500 italic text-center py-4 bg-slate-900/50 rounded border border-slate-800">Barıştayız.</div>
+                        <div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Doktrin</div>
+                            <div id="v31-doctrine" class="flex flex-col gap-1"></div>
+                        </div>
+                        <div>
+                            <div id="v48-front-strip" class="mb-2 rounded border border-[#2a3a28] bg-[#121810] p-2 text-[10px] text-[#9aa890] hidden"></div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Dünya ilişkileri</div>
+                            <div id="v51-world-rel" class="mb-2 text-[10px] text-slate-500 border border-slate-800 rounded p-2 bg-slate-950/40">—</div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Ordu durumu</div>
+                            <div id="v31-status"></div>
+                        </div>
+                        <div class="panel-card border-l-2 border-l-rose-800/50">
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Fraksiyonlar & Gerilim</div>
+                            <div id="hoi-faction-panel" class="text-[10px] text-slate-400 space-y-1"></div>
+                            <div id="hoi-faction-actions" class="mt-2 flex flex-wrap gap-1"></div>
+                            <div class="mt-2 text-[9px] text-slate-500">Dünya gerilimi: <b id="hoi-wt" class="text-amber-400 font-mono">0%</b></div>
+                            <div class="text-[9px] text-slate-500">Garantiler: <span id="hoi-guarantees" class="text-slate-400">—</span></div>
+                            <div class="text-[9px] text-slate-500">Ordu XP: <b id="hoi-army-xp" class="text-slate-300 font-mono">0</b> · Araştırma slot: <b id="hoi-research-slots" class="text-slate-300 font-mono">1</b></div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Kararlar</div>
+                            <div id="v30-decisions"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Sıralama</div>
+                                <div id="v27-ranking" class="space-y-0.5"></div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] text-slate-500 font-bold uppercase mb-1 tracking-wider">Cephe notları</div>
+                                <div id="v27-combat-feed" class="max-h-28 overflow-y-auto text-[10px] text-slate-400"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- PRODUCTION PANEL -->
                 <div id="content-production" class="hidden space-y-4">
+                    <div id="v42-equip-panel" class="bg-slate-950/50 border border-slate-700 rounded-lg p-3 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="panel-title text-[11px]">Ekipman dengesi</h3>
+                            <span id="v42-equip-status" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">—</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                            <div class="rounded border border-slate-800 bg-slate-900/80 p-2">
+                                <div class="text-slate-500 text-[9px]">Tüfek</div>
+                                <div id="v42-need-guns" class="text-slate-200">0 / 0</div>
+                            </div>
+                            <div class="rounded border border-slate-800 bg-slate-900/80 p-2">
+                                <div class="text-slate-500 text-[9px]">Top</div>
+                                <div id="v42-need-art" class="text-slate-200">0 / 0</div>
+                            </div>
+                            <div class="rounded border border-slate-800 bg-slate-900/80 p-2">
+                                <div class="text-slate-500 text-[9px]">Tank</div>
+                                <div id="v42-need-tank" class="text-slate-200">0 / 0</div>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-slate-500 leading-snug" id="v42-equip-hint">İhtiyaç = tümen × ekipman. Stok yetersizse cephe gücü düşer.</div>
+                        <div class="w-full h-1.5 bg-slate-900 rounded overflow-hidden">
+                            <div id="v42-equip-bar" class="h-full bg-emerald-600 transition-all" style="width:100%"></div>
+                        </div>
+                    </div>
                     <div class="bg-slate-950/40 border border-slate-800 rounded p-4 space-y-4">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                            <h3 class="text-xs text-cyan-400 uppercase tracking-widest font-black">Askeri Fabrika Atamaları</h3>
+                            <h3 class="panel-title">Askeri fabrika hatları</h3>
                             <span id="prod-unallocated" class="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded">0 Atanmamış Fabrika</span>
                         </div>
 
@@ -612,12 +1249,21 @@
                 <div id="content-military" class="hidden space-y-3">
                     <!-- Özet kartlar -->
                     <div id="mil-overview" class="grid grid-cols-3 gap-2"></div>
+                    <div id="v42-mil-equip" class="text-[10px] text-slate-400 border border-slate-800 rounded p-2 bg-slate-950/50"></div>
+                    <div id="v42-support-bonus" class="text-[10px] text-slate-400 border border-slate-800 rounded p-2 bg-slate-950/40"></div>
+                    <div id="v47-combat-panel" class="rounded-lg border border-slate-700 bg-slate-950/60 p-3 space-y-2 text-[10px]">
+                        <div class="flex justify-between items-center">
+                            <h3 class="panel-title text-[11px] text-amber-600/90">Muharebe (Org / HP)</h3>
+                            <span class="text-[9px] text-slate-500">HOI tarzı tur</span>
+                        </div>
+                        <div id="v47-combat-body" class="text-slate-400 space-y-2">Savaş yok — org/HP burada görünür.</div>
+                    </div>
 
                     <!-- KARA KUVVETLERİ -->
                     <div class="rounded-xl border border-slate-700/80 bg-gradient-to-br from-slate-900 to-slate-950 overflow-hidden">
                         <div class="px-3 py-2 bg-slate-800/60 border-b border-slate-700 flex items-center gap-2">
                             <span class="text-sm">🪖</span>
-                            <h3 class="text-[11px] text-amber-400 uppercase tracking-widest font-black">Kara Kuvvetleri</h3>
+                            <h3 class="panel-title text-amber-600/80">Kara kuvvetleri</h3>
                         </div>
                         <div class="p-3 space-y-2">
                             <div class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/80 border border-emerald-900/40">
@@ -653,20 +1299,68 @@
                         <div id="training-queue" class="space-y-2"></div>
                     </div>
 
-                    <!-- HAVA & DENİZ -->
+                    <!-- HAVA KUVVETLERİ -->
                     <div class="rounded-xl border border-sky-900/50 bg-gradient-to-br from-sky-950/30 to-slate-950 overflow-hidden">
                         <div class="px-3 py-2 bg-sky-950/40 border-b border-sky-900/50 flex items-center gap-2">
                             <span class="text-sm">✈️</span>
-                            <h3 class="text-[11px] text-sky-400 uppercase tracking-widest font-black">Hava & Deniz</h3>
+                            <h3 class="text-[11px] text-sky-400 uppercase tracking-widest font-black">Hava Kuvvetleri</h3>
                         </div>
                         <div class="p-3 space-y-2">
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="buildAirUnit('fighters')" class="py-2 bg-sky-900/50 hover:bg-sky-800 border border-sky-600 rounded-lg text-[10px] font-bold">✈️ +5 Avcı</button>
-                                <button onclick="buildAirUnit('bombers')" class="py-2 bg-indigo-900/50 hover:bg-indigo-800 border border-indigo-600 rounded-lg text-[10px] font-bold">💣 +5 Bombardıman</button>
+                            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/80 border border-sky-900/40">
+                                <div class="w-9 h-9 rounded-lg bg-sky-950 border border-sky-700 flex items-center justify-center text-lg">✈️</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] font-black text-slate-100">Avcı Uçağı</div>
+                                    <div class="text-[9px] text-slate-500">200💰 · 15 Al · 5 Petrol</div>
+                                </div>
+                                <button onclick="buildAirUnit('fighters')" class="px-2.5 py-1.5 bg-sky-900/70 hover:bg-sky-800 border border-sky-600 text-[9px] font-bold rounded-lg">ÜRET</button>
                             </div>
-                            <div id="air-navy-stats" class="text-[10px] text-slate-400 font-mono"></div>
+                            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/80 border border-indigo-900/40">
+                                <div class="w-9 h-9 rounded-lg bg-indigo-950 border border-indigo-700 flex items-center justify-center text-lg">💣</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] font-black text-slate-100">Bombardıman</div>
+                                    <div class="text-[9px] text-slate-500">280💰 · 20 Al · 8 Petrol</div>
+                                </div>
+                                <button onclick="buildAirUnit('bombers')" class="px-2.5 py-1.5 bg-indigo-900/70 hover:bg-indigo-800 border border-indigo-600 text-[9px] font-bold rounded-lg">ÜRET</button>
+                            </div>
+                            <div id="air-force-stats" class="text-[10px] text-slate-400 font-mono px-1"></div>
                         </div>
                     </div>
+
+                    <!-- DENİZ KUVVETLERİ -->
+                    <div class="rounded-xl border border-blue-900/50 bg-gradient-to-br from-blue-950/30 to-slate-950 overflow-hidden">
+                        <div class="px-3 py-2 bg-blue-950/40 border-b border-blue-900/50 flex items-center gap-2">
+                            <span class="text-sm">🚢</span>
+                            <h3 class="text-[11px] text-blue-300 uppercase tracking-widest font-black">Deniz Kuvvetleri</h3>
+                        </div>
+                        <div class="p-3 space-y-2">
+                            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/80 border border-blue-900/40">
+                                <div class="w-9 h-9 rounded-lg bg-blue-950 border border-blue-700 flex items-center justify-center text-lg">🚤</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] font-black text-slate-100">Muhrip</div>
+                                    <div class="text-[9px] text-slate-500">350💰 · 25 Çelik · 8 Petrol</div>
+                                </div>
+                                <button onclick="buildShip('destroyer')" class="px-2.5 py-1.5 bg-blue-900/70 hover:bg-blue-800 border border-blue-600 text-[9px] font-bold rounded-lg">İNŞA</button>
+                            </div>
+                            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/80 border border-cyan-900/40">
+                                <div class="w-9 h-9 rounded-lg bg-cyan-950 border border-cyan-700 flex items-center justify-center text-lg">🚢</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] font-black text-slate-100">Kruvazör</div>
+                                    <div class="text-[9px] text-slate-500">600💰 · 45 Çelik · 15 Petrol</div>
+                                </div>
+                                <button onclick="buildShip('cruiser')" class="px-2.5 py-1.5 bg-cyan-900/70 hover:bg-cyan-800 border border-cyan-600 text-[9px] font-bold rounded-lg">İNŞA</button>
+                            </div>
+                            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-slate-900/80 border border-indigo-900/40">
+                                <div class="w-9 h-9 rounded-lg bg-indigo-950 border border-indigo-700 flex items-center justify-center text-lg">🛳️</div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] font-black text-slate-100">Savaş Gemisi</div>
+                                    <div class="text-[9px] text-slate-500">1200💰 · 80 Çelik · 25 Petrol</div>
+                                </div>
+                                <button onclick="buildShip('battleship')" class="px-2.5 py-1.5 bg-indigo-900/70 hover:bg-indigo-800 border border-indigo-600 text-[9px] font-bold rounded-lg">İNŞA</button>
+                            </div>
+                            <div id="navy-force-stats" class="text-[10px] text-slate-400 font-mono px-1"></div>
+                        </div>
+                    </div>
+                    <div id="air-navy-stats" class="hidden"></div>
 
                     <!-- ÖZEL OPS -->
                     <div class="rounded-xl border border-slate-700/80 bg-slate-950/50 p-3 space-y-2">
@@ -682,7 +1376,7 @@
                             <h3 class="text-[11px] text-purple-300 uppercase tracking-widest font-black">Nükleer Program</h3>
                         </div>
                         <div class="p-3 space-y-2" id="nuclear-status">
-                            <p class="text-[9px] text-slate-500">Min. 8 askeri fabrika · başlangıç 500💰 · günlük maliyet</p>
+                            <p class="text-[9px] text-slate-500">Şartlar: tech≥2 · ≥12 askeri fab · ≥8 sivil · ≥5000💰 · ≥3 üniversite/akademi · altyapı≥4 · ≥2 araştırma</p>
                             <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
                                 <div id="nuclear-bar" class="bg-purple-500 h-2 transition-all" style="width:0%"></div>
                             </div>
@@ -774,14 +1468,13 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </aside>
 
-        <!-- SAĞ PANEL: STRATEJİK D3 JEO-HARİTA ALANI -->
-        <main class="flex-1 relative bg-slate-950 flex items-center justify-center">
+<!-- SAĞ PANEL: STRATEJİK D3 JEO-HARİTA ALANI -->
+        <main class="flex-1 relative flex items-center justify-center" style="background:#031a5c">
             <!-- D3 Harita -->
-            <div id="map-container" class="absolute inset-0">
+            <div id="map-container" class="absolute inset-0" style="background:#031a5c">
                 <svg id="game-map" class="w-full h-full"></svg>
             </div>
         </main>
@@ -790,5 +1483,141 @@
     <!-- SİMÜLASYON MOTORU VE PROGRAMMATİK MANTIK -->
     
     <script src="./script.js" defer></script>
+
+    <!-- V53 Multiplayer Lobby -->
+        <div id="mp-lobby-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-black/85 p-3">
+      <div class="w-full max-w-3xl rounded border-2 border-[#2a3a28] overflow-hidden shadow-2xl" style="background:linear-gradient(180deg,#1a2218,#0e120e)">
+        <div class="px-4 py-3 border-b border-[#2a3a28] flex justify-between items-center bg-[#141a14]">
+          <div>
+            <h2 class="text-sm font-bold text-[#c4a35a] uppercase tracking-[0.18em]">Supremacy Lobi</h2>
+            <p class="text-[10px] text-[#6a7460]">Supremacy 1914 tarzı · sürekli dünya · kalan uluslar AI</p>
+          </div>
+          <button type="button" onclick="mpCloseLobby()" class="text-[#7a8470] hover:text-[#c4a35a] font-bold text-lg px-2">✕</button>
+        </div>
+        <div class="p-4 grid md:grid-cols-5 gap-3 text-[12px] text-[#c8d0b8] max-h-[82vh] overflow-y-auto">
+          <!-- LEFT: browser + create -->
+          <div class="md:col-span-3 space-y-3">
+            <div id="mp-pre-room-btns" class="grid grid-cols-2 gap-2">
+              <button type="button" id="mp-btn-create" onclick="mpCreateRoom()" class="py-2.5 font-bold uppercase tracking-wider border border-[#2a5c38] bg-[#1a2e1c] hover:bg-[#243d28]">Yeni Dünya Kur</button>
+              <button type="button" id="mp-btn-join" onclick="mpJoinRoomPrompt()" class="py-2.5 font-bold uppercase tracking-wider border border-[#3a4a28] bg-[#1a2210]">Kod ile Katıl</button>
+            </div>
+            <button type="button" id="mp-btn-leave" onclick="mpLeaveRoom()" class="hidden w-full py-2 font-bold uppercase tracking-wider border border-red-900 bg-[#2a1515] text-red-200">Dünyadan Ayrıl</button>
+            <div id="mp-room-info" class="text-[11px] text-[#8a9480] hidden border border-[#2a3a28] rounded p-2 bg-[#0c100c]">
+              <div>Dünya ID: <b id="mp-room-code" class="text-[#c4a35a] tracking-[0.2em] text-sm">————</b>
+                <button type="button" onclick="mpCopyCode()" class="ml-2 text-[10px] underline text-cyan-500">Davet kopyala</button>
+              </div>
+              <div class="mt-1">Rol: <span id="mp-role">—</span> · <span id="mp-conn-status">—</span></div>
+            </div>
+            <div class="border border-[#2a3a28] rounded bg-[#0c100c]">
+              <div class="px-2 py-1.5 border-b border-[#2a3a28] flex justify-between items-center">
+                <span class="text-[10px] font-black uppercase tracking-wider text-[#c4a35a]">Açık Dünyalar</span>
+                <button type="button" onclick="renderOpenRooms()" class="text-[10px] text-cyan-500 underline">Yenile</button>
+              </div>
+              <div id="mp-open-rooms" class="max-h-36 overflow-y-auto p-1 text-[11px]">
+                <div class="text-slate-500 p-2">Host “Listeye yaz” derse burada görünür.</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="text-[10px] uppercase text-[#6a7460]">Komutan adı
+                <input id="mp-player-name" type="text" maxlength="16" value="Komutan" class="w-full mt-1 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1.5 text-[12px] text-[#d8dcc8]">
+              </label>
+              <label class="text-[10px] uppercase text-[#6a7460]">Ulus (listeden)
+                <select id="mp-player-country" class="w-full mt-1 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1.5 text-[12px] text-[#d8dcc8]"></select>
+              </label>
+            </div>
+            <label class="flex items-center gap-2 text-[11px] text-[#8a9480]">
+              <input id="mp-spectator" type="checkbox" class="accent-[#c4a35a]"> Sadece izle (seyirci)
+            </label>
+            <div id="mp-host-opts" class="hidden space-y-2 border border-[#2a3a28] rounded p-2 bg-[#0c100c]">
+              <div class="text-[10px] font-black text-[#c4a35a] uppercase tracking-wider">Host — Dünya Ayarları</div>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="text-[10px]">Senaryo
+                  <select id="mp-scenario" class="w-full mt-0.5 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1 text-[11px]">
+                    <option value="modern">Modern</option>
+                    <option value="ww1">1914 (WW1)</option>
+                    <option value="ww2">1939 (WW2)</option>
+                  </select>
+                </label>
+                <label class="text-[10px]">Maks insan
+                  <input id="mp-max-players" type="number" min="2" max="12" value="8" class="w-full mt-0.5 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1 text-[11px]" onchange="mpSetMaxPlayers(this.value)">
+                </label>
+                <label class="text-[10px]">Zaman temposu
+                  <select id="mp-sup-tempo" class="w-full mt-0.5 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1 text-[11px]" onchange="mpSetSupremacyTempo(this.value)">
+                    <option value="1">Yavaş (Supremacy)</option>
+                    <option value="2">Normal</option>
+                    <option value="3">Hızlı</option>
+                  </select>
+                </label>
+                <label class="text-[10px] flex items-center gap-1 pt-4">
+                  <input id="mp-ai-fill" type="checkbox" checked class="accent-[#c4a35a]"> Boş uluslar AI
+                </label>
+              </div>
+              <button type="button" onclick="mpAnnounceRoom()" class="w-full py-1.5 text-[10px] font-bold border border-cyan-900 bg-cyan-950/30 rounded">Listeye Yaz (açık dünya)</button>
+              <button type="button" id="mp-start-btn" onclick="mpHostStartSupremacy()" class="w-full py-2.5 font-bold uppercase tracking-wider border border-[#c4a35a] bg-[#3d2a10] text-[#fde68a]">Dünyayı Başlat</button>
+              <p class="text-[9px] text-[#6a7460]">Hazır bekleme yok — en az 1 insan yeter. Diğer uluslar AI olur (Supremacy 1914 gibi).</p>
+            </div>
+          </div>
+          <!-- RIGHT: players + claimed -->
+          <div class="md:col-span-2 space-y-3">
+            <div class="border border-[#2a3a28] rounded bg-[#0c100c]">
+              <div class="px-2 py-1.5 border-b border-[#2a3a28] text-[10px] font-black uppercase tracking-wider text-[#c4a35a]">Oyuncular</div>
+              <div id="mp-player-list" class="space-y-1 min-h-[80px] max-h-48 overflow-y-auto p-2"></div>
+            </div>
+            <div class="border border-[#2a3a28] rounded bg-[#0c100c]">
+              <div class="px-2 py-1.5 border-b border-[#2a3a28] text-[10px] font-black uppercase tracking-wider text-slate-400">Alınan Uluslar</div>
+              <div id="mp-claimed-nations" class="p-2 text-[10px] text-slate-500 min-h-[40px]">—</div>
+            </div>
+            <div class="text-[9px] text-[#5a6450] leading-relaxed border-t border-[#2a3a28] pt-2">
+              <b class="text-[#8a9480]">Supremacy kuralları:</b> ortak sürekli harita · host zamanı yönetir · bağlantı kopunca ülke AI’ya geçer · diplomasi / savaş / ticaret insanlar arası.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div id="mp-trade-modal" class="hidden fixed inset-0 z-[95] flex items-center justify-center bg-black/60 p-3">
+      <div class="w-full max-w-sm rounded border border-[#2a3a28] bg-[#121810] p-4 space-y-2 text-[12px]">
+        <div class="flex justify-between"><span class="font-bold text-[#c4a35a] uppercase text-xs tracking-wider">Takas teklifi</span>
+          <button type="button" onclick="document.getElementById('mp-trade-modal').classList.add('hidden')" class="text-[#7a8470]">✕</button></div>
+        <label class="block text-[10px] text-[#6a7460]">Hedef oyuncu
+          <select id="mp-trade-target" class="w-full mt-1 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1.5"></select></label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="text-[10px]">Para<input id="mp-trade-money" type="number" min="0" value="0" class="w-full bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1"></label>
+          <label class="text-[10px]">Petrol<input id="mp-trade-oil" type="number" min="0" value="0" class="w-full bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1"></label>
+          <label class="text-[10px]">Gıda<input id="mp-trade-food" type="number" min="0" value="0" class="w-full bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1"></label>
+          <label class="text-[10px]">Eyalet (ad)<input id="mp-trade-prov" type="text" class="w-full bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1"></label>
+        </div>
+        <button type="button" onclick="mpSendTrade()" class="w-full py-2 font-bold border border-[#2a5c38] bg-[#1a2e1c] rounded uppercase text-[11px]">Teklif gönder</button>
+        <p class="text-[10px] text-[#5a6450]">Host doğrular · yetersiz kaynak reddedilir</p>
+      </div>
+    </div>
+
+    <div id="mp-vote-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4">
+      <div class="w-full max-w-xs rounded border border-[#c4a35a]/40 bg-[#121810] p-4 text-center space-y-3">
+        <div class="text-sm font-bold text-[#c4a35a]" id="mp-vote-title">Duraklatma oylaması</div>
+        <div class="text-[11px] text-[#8a9480]" id="mp-vote-body">—</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="mpCastVote(true)" class="py-2 bg-[#1a2e1c] border border-[#2a5c38] rounded font-bold">Kabul</button>
+          <button type="button" onclick="mpCastVote(false)" class="py-2 bg-[#2a1515] border border-[#5c2a2a] rounded font-bold">Ret</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="mp-diplo-popup" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/70 p-4">
+      <div class="w-full max-w-sm rounded border border-[#c4a35a]/50 bg-[#121810] p-4 space-y-3 text-[12px] text-[#c8d0b8]">
+        <div class="text-sm font-bold text-[#c4a35a] uppercase tracking-wider" id="mp-diplo-title">Diplomatik teklif</div>
+        <div id="mp-diplo-body" class="text-[11px] text-[#9aa890]">—</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="mp-diplo-accept" class="py-2 bg-[#1a2e1c] border border-[#2a5c38] rounded font-bold">Kabul</button>
+          <button type="button" id="mp-diplo-reject" class="py-2 bg-[#2a1515] border border-[#5c2a2a] rounded font-bold">Ret</button>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
 </body>
 </html>
