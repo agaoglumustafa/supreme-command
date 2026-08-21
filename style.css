@@ -64,3 +64,12 @@
 }
 #master-map-modes, .map-mode-btn { display: none !important; }
 .prov-fog { filter: none !important; opacity: 1 !important; }
+
+
+/* Province split editor */
+#sc-split-badge { animation: scSplitPulse 2s ease-in-out infinite; }
+@keyframes scSplitPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(167,139,250,.45); }
+  50% { box-shadow: 0 0 0 8px rgba(167,139,250,0); }
+}
+body.sc-split-on #game-map path.country-path { cursor: crosshair; }
