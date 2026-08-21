@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supreme Command — Playable Release v1.1.3</title>
+    <title>Supreme Command — Playable Release v1.4.9</title>
     <link rel="icon" href="https://i.imgur.com/U9Yw62b.png" type="image/png">
     
     <!-- TAILWIND CSS, D3.JS VE TOPOJSON ENTEGRASYONLARI -->
@@ -718,7 +718,7 @@
     
 
     <!-- manifest/sw opsiyonel; localhost'ta 404 üretmesin diye kaldırıldı -->
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <!-- PeerJS lazy-loaded on multiplayer open -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden">
@@ -744,7 +744,7 @@
                 <h1 class="sc-menu-title text-2xl md:text-3xl font-bold uppercase">Supreme Command</h1>
                 <div class="mt-2 inline-block px-3 py-1 rounded border border-[#c4a35a]/35 bg-[#1a1810]/80">
                     <span class="text-[10px] font-black tracking-[0.2em] uppercase text-[#c4a35a]">Grand Master Edition</span>
-                    <span class="text-[10px] text-[#8a9480] ml-2 font-mono">v1.1.3</span>
+                    <span class="text-[10px] text-[#8a9480] ml-2 font-mono">v1.4.9</span>
                 </div>
                 <p class="text-[11px] text-[#7a8470] mt-3 leading-relaxed max-w-xs mx-auto">
                     1081 provinces · host-centric MP · focus · supply · intel · division designer
@@ -753,7 +753,7 @@
             <div class="p-5 space-y-2">
                 <button type="button" id="mm-continue" onclick="mainMenuContinue()" class="mm-btn mm-btn-primary hidden" data-i18n="mm_continue">Continue</button>
                 <button type="button" onclick="mainMenuNewGame()" class="mm-btn mm-btn-primary" data-i18n="mm_new">Yeni oyun</button>
-                <button type="button" id="mm-quick-play" onclick="(window.scForcePlay||window.scQuickPlay||mainMenuNewGame)()" class="mm-btn mm-btn-primary" style="background:linear-gradient(180deg,#1a4a2e,#0f2a1a);border-color:#2d6b52;">⚔ Hızlı Başla (Türkiye)</button>
+                <button type="button" id="mm-quick-play" onclick="(window.scForcePlay||window.scQuickPlay||mainMenuNewGame)()" class="mm-btn mm-btn-primary" style="background:linear-gradient(180deg,#1a4a2e,#0f2a1a);border-color:#2d6b52;">Hızlı Başla</button>
                 <button type="button" onclick="mainMenuMultiplayer()" class="mm-btn mm-btn-primary">Çok oyunculu</button>
                 <button type="button" onclick="mainMenuLoad()" class="mm-btn" data-i18n="mm_load">Kayıt yükle</button>
                 <button type="button" onclick="(openSettingsModal||toggleSettings)()" class="mm-btn" data-i18n="mm_settings">Settings</button>
@@ -761,7 +761,7 @@
             </div>
             <div class="px-5 pb-4 text-center space-y-1">
                 <div class="text-[10px] text-[#5a6450] tracking-[0.15em] uppercase" data-i18n="mm_version">
-                    v1.1.3 · Playable Release · Map pack 1081
+                    v1.4.9 · Polish · Map pack 1081
                 </div>
                 <div class="text-[9px] text-[#6a7460] tracking-wide">
                     Engineered by Grok · HTML5 / JavaScript Grand Strategy Engine
@@ -1482,15 +1482,15 @@
 
     <!-- SİMÜLASYON MOTORU VE PROGRAMMATİK MANTIK -->
     
-    <script src="./script.js" defer></script>
+    <script src="./js/loader.js" defer></script>
 
     <!-- V53 Multiplayer Lobby -->
         <div id="mp-lobby-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-black/85 p-3">
       <div class="w-full max-w-3xl rounded border-2 border-[#2a3a28] overflow-hidden shadow-2xl" style="background:linear-gradient(180deg,#1a2218,#0e120e)">
         <div class="px-4 py-3 border-b border-[#2a3a28] flex justify-between items-center bg-[#141a14]">
           <div>
-            <h2 class="text-sm font-bold text-[#c4a35a] uppercase tracking-[0.18em]">Supremacy Lobi</h2>
-            <p class="text-[10px] text-[#6a7460]">Supremacy 1914 tarzı · sürekli dünya · kalan uluslar AI</p>
+            <h2 class="text-sm font-bold text-[#c4a35a] uppercase tracking-[0.18em]">Çok oyunculu Lobi</h2>
+            <p class="text-[10px] text-[#6a7460]">Sürekli dünya tarzı · sürekli dünya · kalan uluslar AI</p>
           </div>
           <button type="button" onclick="mpCloseLobby()" class="text-[#7a8470] hover:text-[#c4a35a] font-bold text-lg px-2">✕</button>
         </div>
@@ -1543,7 +1543,7 @@
                 </label>
                 <label class="text-[10px]">Zaman temposu
                   <select id="mp-sup-tempo" class="w-full mt-0.5 bg-[#151c14] border border-[#2a3a28] rounded px-2 py-1 text-[11px]" onchange="mpSetSupremacyTempo(this.value)">
-                    <option value="1">Yavaş (Supremacy)</option>
+                    <option value="1">Yavaş</option>
                     <option value="2">Normal</option>
                     <option value="3">Hızlı</option>
                   </select>
@@ -1554,7 +1554,7 @@
               </div>
               <button type="button" onclick="mpAnnounceRoom()" class="w-full py-1.5 text-[10px] font-bold border border-cyan-900 bg-cyan-950/30 rounded">Listeye Yaz (açık dünya)</button>
               <button type="button" id="mp-start-btn" onclick="mpHostStartSupremacy()" class="w-full py-2.5 font-bold uppercase tracking-wider border border-[#c4a35a] bg-[#3d2a10] text-[#fde68a]">Dünyayı Başlat</button>
-              <p class="text-[9px] text-[#6a7460]">Hazır bekleme yok — en az 1 insan yeter. Diğer uluslar AI olur (Supremacy 1914 gibi).</p>
+              <p class="text-[9px] text-[#6a7460]">Hazır bekleme yok — en az 1 insan yeter. Diğer uluslar AI olur.</p>
             </div>
           </div>
           <!-- RIGHT: players + claimed -->
@@ -1568,7 +1568,7 @@
               <div id="mp-claimed-nations" class="p-2 text-[10px] text-slate-500 min-h-[40px]">—</div>
             </div>
             <div class="text-[9px] text-[#5a6450] leading-relaxed border-t border-[#2a3a28] pt-2">
-              <b class="text-[#8a9480]">Supremacy kuralları:</b> ortak sürekli harita · host zamanı yönetir · bağlantı kopunca ülke AI’ya geçer · diplomasi / savaş / ticaret insanlar arası.
+              <b class="text-[#8a9480]">Çok oyunculu kuralları:</b> ortak sürekli harita · host zamanı yönetir · bağlantı kopunca ülke AI’ya geçer · diplomasi / savaş / ticaret insanlar arası.
             </div>
           </div>
         </div>
@@ -1618,6 +1618,35 @@
 
 
 
+
+
+<script>
+window.loadPeerJS = function () {
+  return new Promise(function (resolve, reject) {
+    if (window.Peer) return resolve(window.Peer);
+    if (window.__peerLoading) return window.__peerLoading.then(resolve, reject);
+    window.__peerLoading = new Promise(function (res, rej) {
+      var s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";
+      s.onload = function () { res(window.Peer); };
+      s.onerror = function () { rej(new Error("PeerJS load failed")); };
+      document.head.appendChild(s);
+    });
+    window.__peerLoading.then(resolve, reject);
+  });
+};
+// Wrap multiplayer menu when ready
+document.addEventListener("sc-ready", function () {
+  var prev = window.mainMenuMultiplayer;
+  if (typeof prev === "function" && !prev._peerLazy) {
+    window.mainMenuMultiplayer = async function () {
+      try { await window.loadPeerJS(); } catch (e) { console.warn(e); alert("Çok oyunculu kütüphanesi yüklenemedi."); return; }
+      return prev.apply(this, arguments);
+    };
+    window.mainMenuMultiplayer._peerLazy = true;
+  }
+});
+</script>
 
 </body>
 </html>
