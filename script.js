@@ -19470,3 +19470,1045 @@ console.log("V27 Legendary systems loaded");
 
   console.log("[release v1.1.3] menu nav + forcePlay + lock");
 })();
+
+
+// ===== SC HOUR ONE — first-hour engagement =====
+// Goal: player should not stare at a quiet map for the first ~1h of real play.
+(function SCHourOne() {
+  "use strict";
+
+  var DAY_MS = 24 * 3600 * 1000;
+  var WINDOW_DAYS = 120; // first ~4 game months = dense opening
+
+  function GS() {
+    try { return window.GameState || (typeof GameState !== "undefined" ? GameState : null); } catch (e) { return null; }
+  }
+
+  function ensureHour() {
+    var g = GS();
+    if (!g) return null;
+    if (!g.hourOne) {
+      g.hourOne = {
+        startMs: g.date ? g.date.getTime() : Date.now(),
+        dayIndex: 0,
+        lastPulseDay: -1,
+        lastNewsDay: -1,
+        missionsDone: {},
+        flashWars: 0,
+        tensionBoosted: false,
+        introFired: false
+      };
+    }
+    return g.hourOne;
+  }
+
+  function daysSinceStart(g, h) {
+    if (!g || !g.date || !h) return 0;
+    return Math.max(0, Math.floor((g.date.getTime() - h.startMs) / DAY_MS));
+  }
+
+  function inOpening(g, h) {
+    return daysSinceStart(g, h) <= WINDOW_DAYS;
+  }
+
+  function neighborsOfPlayer(g) {
+    var out = [];
+    try {
+      if (typeof countriesShareBorder !== "function") return out;
+      Object.keys(g.countries || {}).forEach(function (iso) {
+        if (iso === g.player) return;
+        if (countriesShareBorder(iso, g.player)) out.push(iso);
+      });
+    } catch (e) {}
+    return out;
+  }
+
+  function pick(arr) {
+    if (!arr || !arr.length) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function nameOf(g, iso) {
+    var c = g.countries[iso];
+    return (c && c.name) || iso;
+  }
+
+  function toast(msg, kind) {
+    try {
+      if (typeof showToast === "function") showToast(msg, kind || "info");
+      else if (typeof log === "function") log(msg, "text-amber-300");
+    } catch (e) {}
+  }
+
+  function slog(msg, cls) {
+    try { if (typeof log === "function") log(msg, cls || "text-slate-300"); } catch (e) {}
+  }
+
+  // ----- Opening missions (auto-tracked) -----
+  var MISSIONS = [
+    {
+      id: "focus_start",
+      title: "Milli odak başlat",
+      hint: "Sol panelden bir milli odak seç — ilk 2 hafta içinde.",
+      check: function (g) {
+        var p = g.countries[g.player];
+        return !!(p && (p.activeFocus || (p.completedFocuses && p.completedFocuses.length)));
+      },
+      reward: function (g) {
+        var p = g.countries[g.player];
+        if (!p) return;
+        p.money = (p.money || 0) + 250;
+        p.manpower = (p.manpower || 0) + 8000;
+        slog("🎯 GÖREV: Milli odak — +250 hazine, +8K İG", "text-emerald-400");
+        toast("Görev tamam: Milli odak", "good");
+      }
+    },
+    {
+      id: "build_civ",
+      title: "1 sivil fabrika kur / yükselt",
+      hint: "Ekonomi paneli veya inşa ile sivil fabrika sayını artır.",
+      check: function (g, h) {
+        var p = g.countries[g.player];
+        if (!p) return false;
+        if (h.baseCiv == null) h.baseCiv = p.civFactories || 0;
+        return (p.civFactories || 0) > h.baseCiv;
+      },
+      reward: function (g) {
+        var p = g.countries[g.player];
+        if (!p) return;
+        p.money = (p.money || 0) + 400;
+        slog("🎯 GÖREV: Sivil fabrika — +400 hazine", "text-emerald-400");
+        toast("Görev tamam: Sanayi", "good");
+      }
+    },
+    {
+      id: "raise_div",
+      title: "Orduyu büyüt",
+      hint: "En az +2 piyade tümeni kur (stok / seferberlik).",
+      check: function (g, h) {
+        var p = g.countries[g.player];
+        if (!p || !p.divisions) return false;
+        var inf = p.divisions.inf || 0;
+        if (h.baseInf == null) h.baseInf = inf;
+        return inf >= h.baseInf + 2;
+      },
+      reward: function (g) {
+        var p = g.countries[g.player];
+        if (!p) return;
+        p.stockpile = p.stockpile || {};
+        p.stockpile.guns = (p.stockpile.guns || 0) + 1200;
+        slog("🎯 GÖREV: Ordu büyütme — +1200 tüfek", "text-emerald-400");
+        toast("Görev tamam: Seferberlik", "good");
+      }
+    },
+    {
+      id: "survive_crisis",
+      title: "İlk krizi atlat",
+      hint: "Açılış krizlerinden birini seçimle çöz.",
+      check: function (g, h) { return !!h.crisisResolved; },
+      reward: function (g) {
+        var p = g.countries[g.player];
+        if (!p) return;
+        p.money = (p.money || 0) + 300;
+        g.globalTension = Math.max(0, (g.globalTension || 0) - 3);
+        slog("🎯 GÖREV: Kriz yönetimi — +300 hazine, gerilim −3", "text-emerald-400");
+        toast("Görev tamam: Kriz", "good");
+      }
+    }
+  ];
+
+  function checkMissions(g, h) {
+    MISSIONS.forEach(function (m) {
+      if (h.missionsDone[m.id]) return;
+      try {
+        if (m.check(g, h)) {
+          h.missionsDone[m.id] = true;
+          m.reward(g);
+          try { if (typeof updateHUD === "function") updateHUD(); } catch (e) {}
+        }
+      } catch (e) {}
+    });
+  }
+
+  // ----- Scripted crises (modal when possible) -----
+  function fireChoiceEvent(title, desc, choices) {
+    try {
+      if (typeof showEventModal === "function") {
+        // generic fallback below
+      }
+    } catch (e) {}
+    // Build a lightweight modal compatible with existing event-modal id
+    if (document.getElementById("event-modal")) return false;
+    var modal = document.createElement("div");
+    modal.id = "event-modal";
+    modal.className = "fixed inset-0 z-[12000] flex items-center justify-center bg-black/75 p-4";
+    var btns = choices.map(function (c, i) {
+      return '<button type="button" data-i="' + i + '" class="w-full text-left px-3 py-2 mb-2 rounded border border-slate-600 bg-slate-900 hover:border-amber-600 text-sm text-slate-200">' +
+        c.label + "</button>";
+    }).join("");
+    modal.innerHTML =
+      '<div class="w-full max-w-md rounded border border-amber-800/50 bg-[#12161f] shadow-2xl overflow-hidden">' +
+      '<div class="px-4 py-3 border-b border-slate-800 bg-[#0e1219]">' +
+      '<div class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Açılış Krizi</div>' +
+      '<h2 class="text-base font-bold text-amber-100 mt-1">' + title + "</h2></div>" +
+      '<div class="px-4 py-3 text-sm text-slate-300 leading-relaxed">' + desc + "</div>" +
+      '<div class="px-4 py-3 border-t border-slate-800">' + btns + "</div></div>";
+    document.body.appendChild(modal);
+    modal.querySelectorAll("button[data-i]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = parseInt(btn.getAttribute("data-i"), 10);
+        try { choices[idx].fn(); } catch (e) { console.warn(e); }
+        modal.remove();
+        var g = GS();
+        var h = ensureHour();
+        if (h) h.crisisResolved = true;
+        try { if (typeof updateHUD === "function") updateHUD(); } catch (e) {}
+      });
+    });
+    return true;
+  }
+
+  function crisisBorder(g, h) {
+    var n = pick(neighborsOfPlayer(g));
+    if (!n) n = pick(Object.keys(g.countries || {}).filter(function (x) { return x !== g.player; }));
+    if (!n) return;
+    var nm = nameOf(g, n);
+    fireChoiceEvent(
+      "Sınır Olayı — " + nm,
+      nm + " birlikleri sınırda 'tatbikat' adı altında yığınak yaptı. Basın galeyanda. Nasıl karşılık veriyorsun?",
+      [
+        {
+          label: "Diplomatik nota ver (gerilim +2, ilişki −5)",
+          fn: function () {
+            g.globalTension = Math.min(100, (g.globalTension || 0) + 2);
+            if (!g.relations) g.relations = {};
+            g.relations[n] = (g.relations[n] || 0) - 5;
+            slog("📜 Nota: " + nm + " protesto edildi.", "text-yellow-300");
+          }
+        },
+        {
+          label: "Karşılık yığınak (para −120, gerilim +6, ordu moral +)",
+          fn: function () {
+            var p = g.countries[g.player];
+            if (p) p.money = Math.max(0, (p.money || 0) - 120);
+            g.globalTension = Math.min(100, (g.globalTension || 0) + 6);
+            if (p && p.divisions) p.divisions.inf = (p.divisions.inf || 0) + 1;
+            slog("🪖 Sınır yığınağı: " + nm + " karşısında 1 tümen konuşlandı.", "text-orange-400");
+          }
+        },
+        {
+          label: "Görmezden gel (gerilim +1, istikrar riski)",
+          fn: function () {
+            g.globalTension = Math.min(100, (g.globalTension || 0) + 1);
+            var p = g.countries[g.player];
+            if (p) p.stability = Math.max(20, (p.stability || 55) - 4);
+            slog("😶 Kriz yok sayıldı — muhalefet sert eleştirdi.", "text-slate-400");
+          }
+        }
+      ]
+    );
+  }
+
+  function crisisEconomy(g, h) {
+    fireChoiceEvent(
+      "Bütçe Krizi",
+      "Hazine beklenenden zayıf geldi. Kabine ikiye bölündü: kemer sıkma mı, açık mı?",
+      [
+        {
+          label: "Kemer sık (para +180, fabrika verimi −3% 60 gün)",
+          fn: function () {
+            var p = g.countries[g.player];
+            if (!p) return;
+            p.money = (p.money || 0) + 180;
+            p.factoryEfficiency = Math.max(0.7, (p.factoryEfficiency || 1) - 0.03);
+            slog("💰 Kemer sıkma paketi kabul edildi.", "text-yellow-300");
+          }
+        },
+        {
+          label: "Açık ver, silahlan (para −100, +800 tüfek, gerilim +3)",
+          fn: function () {
+            var p = g.countries[g.player];
+            if (!p) return;
+            p.money = Math.max(0, (p.money || 0) - 100);
+            p.stockpile = p.stockpile || {};
+            p.stockpile.guns = (p.stockpile.guns || 0) + 800;
+            g.globalTension = Math.min(100, (g.globalTension || 0) + 3);
+            slog("🔫 Silahlanma kredisi açıldı.", "text-orange-400");
+          }
+        },
+        {
+          label: "Dış borç (para +500, ilişki maliyeti — komşular −8)",
+          fn: function () {
+            var p = g.countries[g.player];
+            if (!p) return;
+            p.money = (p.money || 0) + 500;
+            if (!g.relations) g.relations = {};
+            neighborsOfPlayer(g).forEach(function (iso) {
+              g.relations[iso] = (g.relations[iso] || 0) - 8;
+            });
+            slog("🏦 Dış borç alındı — komşular tedirgin.", "text-amber-300");
+          }
+        }
+      ]
+    );
+  }
+
+  function crisisRefugees(g, h) {
+    var n = pick(neighborsOfPlayer(g)) || "Bölge";
+    var nm = typeof n === "string" && g.countries[n] ? nameOf(g, n) : "komşu bölge";
+    fireChoiceEvent(
+      "Mülteci Dalgası",
+      nm + " tarafından sınırına onlarca bin sivil yığıldı. Kabul mü, geri çevirme mi?",
+      [
+        {
+          label: "Kabul et (+15K İG, para −150, istikrar −3)",
+          fn: function () {
+            var p = g.countries[g.player];
+            if (!p) return;
+            p.manpower = (p.manpower || 0) + 15000;
+            p.money = Math.max(0, (p.money || 0) - 150);
+            p.stability = Math.max(15, (p.stability || 55) - 3);
+            slog("🏕️ Mülteciler kabul edildi.", "text-cyan-300");
+          }
+        },
+        {
+          label: "Sınırı kapat (gerilim +5, ilişki −12)",
+          fn: function () {
+            g.globalTension = Math.min(100, (g.globalTension || 0) + 5);
+            if (g.countries[n] && g.relations) g.relations[n] = (g.relations[n] || 0) - 12;
+            slog("🚧 Sınır kapatıldı — uluslararası tepki.", "text-orange-400");
+          }
+        },
+        {
+          label: "Geçici kamplar (para −80, İG +6K)",
+          fn: function () {
+            var p = g.countries[g.player];
+            if (!p) return;
+            p.money = Math.max(0, (p.money || 0) - 80);
+            p.manpower = (p.manpower || 0) + 6000;
+            slog("⛺ Geçici kamplar kuruldu.", "text-slate-300");
+          }
+        }
+      ]
+    );
+  }
+
+  function maybeScriptedCrisis(g, h, day) {
+    if (document.getElementById("event-modal")) return;
+    // Day 3, 12, 28, 45, 70...
+    var slots = [3, 12, 28, 45, 70, 95];
+    if (slots.indexOf(day) === -1) return;
+    if (h["crisis_" + day]) return;
+    h["crisis_" + day] = true;
+    var roll = Math.random();
+    if (roll < 0.34) crisisBorder(g, h);
+    else if (roll < 0.67) crisisEconomy(g, h);
+    else crisisRefugees(g, h);
+  }
+
+  // ----- World news pulse (log spam that feels alive) -----
+  var NEWS = [
+    function (g) {
+      var a = pick(Object.keys(g.countries)); var b = pick(Object.keys(g.countries));
+      if (!a || !b || a === b) return null;
+      return "📰 " + nameOf(g, a) + " ile " + nameOf(g, b) + " arasında ticaret görüşmeleri sürüyor.";
+    },
+    function (g) {
+      var a = pick(Object.keys(g.countries));
+      return a ? "🏭 " + nameOf(g, a) + " yeni bir silah fabrikasını devreye aldı." : null;
+    },
+    function (g) {
+      return "📡 Küresel gerilim: %" + Math.floor(g.globalTension || 0) + " — borsalar temkinli.";
+    },
+    function (g) {
+      var a = pick(neighborsOfPlayer(g));
+      return a ? "🚨 İstihbarat: " + nameOf(g, a) + " sınırında olağan dışı hareketlilik." : "🚨 İstihbarat: bölgede tatbikat yoğunluğu arttı.";
+    },
+    function (g) {
+      var a = pick(Object.keys(g.countries));
+      return a ? "🕊️ " + nameOf(g, a) + " barış çağrısı yayımladı (propaganda olabilir)." : null;
+    },
+    function (g) {
+      return "⚔️ Ani çatışma raporları: uzak bir cephede topçu ateşi duyuldu.";
+    },
+    function (g) {
+      var a = pick(Object.keys(g.countries));
+      return a ? "👷 " + nameOf(g, a) + " içinde grev dalgası — üretim düştü." : null;
+    }
+  ];
+
+  function pulseNews(g, h, day) {
+    if (day === h.lastNewsDay) return;
+    if (day % 2 !== 0) return; // every other day in opening
+    h.lastNewsDay = day;
+    var fn = pick(NEWS);
+    var line = fn && fn(g);
+    if (line) slog(line, "text-slate-400");
+  }
+
+  // ----- AI flash wars (not on player, but visible) -----
+  function maybeFlashWar(g, h, day) {
+    if (h.flashWars >= 5) return;
+    if (day < 5 || day % 11 !== 0) return;
+    if (Math.random() > 0.55) return;
+    var keys = Object.keys(g.countries || {}).filter(function (iso) {
+      return iso !== g.player && g.countries[iso] && !g.countries[iso].isCapitulated;
+    });
+    if (keys.length < 2) return;
+    var a = pick(keys);
+    var b = pick(keys.filter(function (x) { return x !== a; }));
+    if (!a || !b) return;
+    h.flashWars++;
+    g.globalTension = Math.min(100, (g.globalTension || 0) + 4 + Math.floor(Math.random() * 5));
+    var ca = g.countries[a], cb = g.countries[b];
+    if (ca) ca.money = Math.max(0, (ca.money || 0) - 60);
+    if (cb) cb.money = Math.max(0, (cb.money || 0) - 50);
+    slog("⚔️ BÖLGESEL ÇATIŞMA: " + nameOf(g, a) + " × " + nameOf(g, b) + " — gerilim yükseldi!", "text-red-400");
+    toast(nameOf(g, a) + " savaşa girdi", "bad");
+  }
+
+  // ----- Neighbor harassment -----
+  function maybeNeighborPressure(g, h, day) {
+    if (day < 6 || day % 9 !== 0) return;
+    var n = pick(neighborsOfPlayer(g));
+    if (!n) return;
+    if (!g.relations) g.relations = {};
+    g.relations[n] = (g.relations[n] || 0) - (2 + Math.floor(Math.random() * 4));
+    g.globalTension = Math.min(100, (g.globalTension || 0) + 1);
+    if (Math.random() < 0.5 && typeof pushInboxMessage === "function") {
+      try {
+        pushInboxMessage({
+          from: n,
+          type: "warning",
+          text: "Sınır hattındaki hareketleriniz endişe verici. Açıklama bekliyoruz.",
+          expiresWeeks: 4
+        });
+      } catch (e) {}
+    } else {
+      slog("⚠️ " + nameOf(g, n) + " sınır protestosu yayımladı.", "text-orange-300");
+    }
+  }
+
+  // ----- Mission strip UI -----
+  function ensureMissionStrip(g, h) {
+    if (!inOpening(g, h)) {
+      var dead = document.getElementById("sc-hour-missions");
+      if (dead) dead.remove();
+      return;
+    }
+    var el = document.getElementById("sc-hour-missions");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "sc-hour-missions";
+      el.style.cssText = "position:fixed;top:3.25rem;left:50%;transform:translateX(-50%);z-index:90;max-width:min(640px,94vw);width:100%;pointer-events:none;";
+      document.body.appendChild(el);
+    }
+    var pending = MISSIONS.filter(function (m) { return !h.missionsDone[m.id]; }).slice(0, 3);
+    if (!pending.length) {
+      el.innerHTML = '<div style="margin:0 auto;width:fit-content;background:rgba(6,20,12,.88);border:1px solid #2d6b52;color:#86efac;font:11px/1.3 system-ui;padding:6px 12px;border-radius:6px;">✓ Açılış görevleri tamam — dünya hâlâ hareketli</div>';
+      return;
+    }
+    el.innerHTML =
+      '<div style="margin:0 auto;background:rgba(12,14,20,.92);border:1px solid #3f3f46;border-radius:8px;padding:8px 12px;box-shadow:0 8px 24px rgba(0,0,0,.45);">' +
+      '<div style="font:10px system-ui;letter-spacing:.14em;text-transform:uppercase;color:#c4a35a;margin-bottom:4px;">İlk saat hedefleri · gün ' + daysSinceStart(g, h) + "/" + WINDOW_DAYS + "</div>" +
+      pending.map(function (m) {
+        return '<div style="font:12px system-ui;color:#e2e8f0;margin:2px 0;"><span style="color:#fbbf24;">▸</span> <b>' + m.title + "</b> <span style=\"color:#94a3b8;font-size:11px;\">— " + m.hint + "</span></div>";
+      }).join("") +
+      "</div>";
+  }
+
+  function introOnce(g, h) {
+    if (h.introFired) return;
+    h.introFired = true;
+    if (!h.tensionBoosted) {
+      g.globalTension = Math.min(100, Math.max(28, (g.globalTension || 0) + 12));
+      h.tensionBoosted = true;
+    }
+    // seed mission baselines
+    var p = g.countries[g.player];
+    if (p) {
+      h.baseCiv = p.civFactories || 0;
+      h.baseInf = (p.divisions && p.divisions.inf) || 0;
+    }
+    slog("🔥 AÇILIŞ: Bölge kaynıyor. İlk 4 ay kritik — görevlerini tamamla, krizleri yönet.", "text-amber-300 font-bold");
+    toast("Açılış fazı: dünya hareketleniyor", "info");
+    try {
+      if (typeof pushInboxMessage === "function") {
+        pushInboxMessage({
+          from: g.player,
+          type: "greet",
+          text: "Kurmay başkanı: Komşular teyakkazda. Odak seç, orduyu kur, ilk krize hazır ol.",
+          expiresWeeks: 8
+        });
+      }
+    } catch (e) {}
+  }
+
+  function hourPulse() {
+    var g = GS();
+    if (!g || !g.running || g.gameOver) return;
+    var h = ensureHour();
+    if (!h) return;
+    if (!g.date) return;
+    // bind start on first running tick
+    if (!h._bound) {
+      h.startMs = g.date.getTime();
+      h._bound = true;
+    }
+    var day = daysSinceStart(g, h);
+    h.dayIndex = day;
+    if (!inOpening(g, h)) {
+      ensureMissionStrip(g, h);
+      return;
+    }
+    introOnce(g, h);
+    if (day !== h.lastPulseDay) {
+      h.lastPulseDay = day;
+      pulseNews(g, h, day);
+      maybeScriptedCrisis(g, h, day);
+      maybeFlashWar(g, h, day);
+      maybeNeighborPressure(g, h, day);
+      // denser random events in opening
+      if (day > 0 && day % 3 === 0 && typeof processRandomEvents === "function" && Math.random() < 0.65) {
+        try { processRandomEvents(); } catch (e) {}
+      }
+    }
+    checkMissions(g, h);
+    ensureMissionStrip(g, h);
+  }
+
+  // Wrap gameTick
+  var _tick = typeof gameTick === "function" ? gameTick : null;
+  if (_tick) {
+    window.gameTick = function () {
+      try { _tick.apply(this, arguments); } catch (e) { console.warn("[tick]", e); }
+      try { hourPulse(); } catch (e) { console.warn("[hourOne]", e); }
+    };
+  } else {
+    // poll if tick name not yet bound
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (typeof gameTick === "function" && !gameTick._hourWrapped) {
+        var prev = gameTick;
+        window.gameTick = function () {
+          try { prev.apply(this, arguments); } catch (e) {}
+          try { hourPulse(); } catch (e) {}
+        };
+        window.gameTick._hourWrapped = true;
+        clearInterval(iv);
+      }
+      if (tries > 40) clearInterval(iv);
+    }, 250);
+  }
+
+  // Boost AI aggression slightly during opening via processAITick wrap
+  var _ai = window.processAITick;
+  if (typeof processAITick === "function" || _ai) {
+    var prevAI = window.processAITick || processAITick;
+    window.processAITick = function () {
+      var g = GS();
+      var h = g && ensureHour();
+      var old = g && g.aiAggression;
+      if (g && h && inOpening(g, h)) {
+        g.aiAggression = Math.max(old || 1, 1.35);
+      }
+      try { return prevAI.apply(this, arguments); } finally {
+        if (g && old != null) g.aiAggression = old;
+      }
+    };
+  }
+
+  // Also run pulse on interval as safety if tick wrapper misses
+  setInterval(function () {
+    try {
+      var g = GS();
+      if (g && g.running && !g.gameOver) hourPulse();
+    } catch (e) {}
+  }, 4000);
+
+  console.log("[hour-one] first-hour engagement online");
+})();
+
+
+// ===== SC PROGRESSION — growth loop + AI map + rank =====
+// Makes the campaign develop: recruit → fight → take land → rank up → harder world.
+(function SCProgression() {
+  "use strict";
+
+  function GS() {
+    try { return window.GameState || (typeof GameState !== "undefined" ? GameState : null); } catch (e) { return null; }
+  }
+  function owners() {
+    try { return window.provinceOwners || (typeof provinceOwners !== "undefined" ? provinceOwners : null); } catch (e) { return null; }
+  }
+  function slog(msg, cls) {
+    try { if (typeof log === "function") log(msg, cls || "text-slate-300"); } catch (e) {}
+  }
+  function toast(msg, kind) {
+    try { if (typeof showToast === "function") showToast(msg, kind || "info"); } catch (e) {}
+  }
+  function paint() {
+    try {
+      if (typeof scPaintPolitical === "function") scPaintPolitical();
+      else if (typeof refreshMapColors === "function") refreshMapColors();
+    } catch (e) {}
+  }
+  function hud() {
+    try { if (typeof updateHUD === "function") updateHUD(); } catch (e) {}
+  }
+  function cname(g, iso) {
+    var c = g.countries[iso];
+    return (c && c.name) || iso;
+  }
+  function countProvs(po, iso) {
+    if (!po) return 0;
+    var n = 0;
+    for (var k in po) if (po[k] === iso) n++;
+    return n;
+  }
+  function totalDivs(c) {
+    if (!c || !c.divisions) return 0;
+    return (c.divisions.inf || 0) + (c.divisions.art || 0) + (c.divisions.arm || 0);
+  }
+  function powerOf(g, iso) {
+    var c = g.countries[iso];
+    if (!c) return 0;
+    var po = owners();
+    var prov = countProvs(po, iso);
+    var fac = (c.civFactories || 0) + (c.milFactories || 0) * 1.4;
+    var div = totalDivs(c);
+    return prov * 2 + fac * 3 + div * 4 + (c.money || 0) / 200;
+  }
+
+  // ---------- Rank / campaign stage ----------
+  var RANKS = [
+    { id: "minor", title: "Bölgesel Güç", minProv: 0, color: "#94a3b8" },
+    { id: "regional", title: "Bölgesel Aktör", minProv: 12, color: "#38bdf8" },
+    { id: "major", title: "Büyük Güç", minProv: 35, color: "#a78bfa" },
+    { id: "great", title: "Büyük Devlet", minProv: 70, color: "#fbbf24" },
+    { id: "super", title: "Süper Güç", minProv: 140, color: "#f87171" }
+  ];
+
+  function ensureProg(g) {
+    if (!g.progression) {
+      g.progression = {
+        rankId: "minor",
+        lastRank: "minor",
+        lastAiExpandDay: -99,
+        lastDockRefresh: 0,
+        conquests: 0,
+        warsWon: 0,
+        stage: 1,
+        stageNotes: {}
+      };
+    }
+    return g.progression;
+  }
+
+  function currentRank(g) {
+    var po = owners();
+    var n = countProvs(po, g.player);
+    var rank = RANKS[0];
+    for (var i = 0; i < RANKS.length; i++) {
+      if (n >= RANKS[i].minProv) rank = RANKS[i];
+    }
+    // industry can bump one tier
+    var p = g.countries[g.player];
+    var fac = p ? (p.civFactories || 0) + (p.milFactories || 0) : 0;
+    if (fac >= 60 && rank.id === "regional") rank = RANKS[2];
+    if (fac >= 100 && rank.id === "major") rank = RANKS[3];
+    return rank;
+  }
+
+  function applyRankBonuses(g, rank) {
+    var p = g.countries[g.player];
+    if (!p) return;
+    // soft passive by rank
+    var mul = { minor: 1, regional: 1.04, major: 1.08, great: 1.12, super: 1.18 };
+    g.playerProdMul = mul[rank.id] || 1;
+  }
+
+  function checkRankUp(g, prog) {
+    var rank = currentRank(g);
+    prog.rankId = rank.id;
+    if (rank.id !== prog.lastRank) {
+      var up = RANKS.findIndex(function (r) { return r.id === rank.id; }) >
+               RANKS.findIndex(function (r) { return r.id === prog.lastRank; });
+      prog.lastRank = rank.id;
+      applyRankBonuses(g, rank);
+      if (up) {
+        slog("🏅 RÜTBE: " + rank.title + " — üretim ve prestij arttı.", "text-amber-300 font-bold");
+        toast("Rütbe: " + rank.title, "good");
+        var p = g.countries[g.player];
+        if (p) {
+          p.money = (p.money || 0) + 350;
+          p.manpower = (p.manpower || 0) + 12000;
+        }
+        hud();
+      }
+    } else {
+      applyRankBonuses(g, rank);
+    }
+    // update HUD chip
+    var chip = document.getElementById("sc-rank-chip");
+    if (chip) {
+      chip.textContent = rank.title;
+      chip.style.color = rank.color;
+    }
+  }
+
+  // ---------- Province transfer helper ----------
+  function transferProvinces(fromIso, toIso, maxN, onlyBorder) {
+    var po = owners();
+    var g = GS();
+    if (!po || !g) return [];
+    var pool = [];
+    for (var name in po) {
+      if (po[name] !== fromIso) continue;
+      if (onlyBorder && typeof getProvinceNeighbors === "function") {
+        try {
+          var neigh = getProvinceNeighbors(name) || [];
+          var touches = neigh.some(function (nb) { return po[nb] === toIso; });
+          if (!touches) continue;
+        } catch (e) {}
+      }
+      pool.push(name);
+    }
+    if (!pool.length) {
+      // fallback: any province of fromIso
+      for (var name2 in po) if (po[name2] === fromIso) pool.push(name2);
+    }
+    // shuffle
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    }
+    var taken = pool.slice(0, Math.max(0, maxN || 1));
+    taken.forEach(function (pr) {
+      po[pr] = toIso;
+      if (window.provinceOwners) window.provinceOwners[pr] = toIso;
+    });
+    // economic loot
+    var loser = g.countries[fromIso];
+    var winner = g.countries[toIso];
+    if (winner && taken.length) {
+      winner.money = (winner.money || 0) + taken.length * 40;
+      winner.manpower = (winner.manpower || 0) + taken.length * 2000;
+      if (Math.random() < 0.35) winner.civFactories = (winner.civFactories || 0) + 1;
+      if (Math.random() < 0.25) winner.milFactories = (winner.milFactories || 0) + 1;
+    }
+    if (loser && taken.length) {
+      loser.money = Math.max(0, (loser.money || 0) - taken.length * 25);
+      if ((loser.civFactories || 0) > 2 && Math.random() < 0.3) loser.civFactories--;
+    }
+    return taken;
+  }
+
+  // ---------- Player war: drip occupation ----------
+  function dripPlayerWars(g, prog) {
+    var wars = g.activeWars || [];
+    if (!wars.length) return;
+    wars.forEach(function (w) {
+      if (!w || !w.target) return;
+      var atk = w.attacker || g.player;
+      // only drip if player is involved
+      if (atk !== g.player && w.target !== g.player) return;
+      var winner = atk === g.player ? g.player : (w.target === g.player ? null : atk);
+      // player attacking AI
+      if (atk === g.player && (w.progress || 0) >= 18 && Math.random() < 0.22) {
+        var n = 1 + ((w.progress || 0) > 55 ? 1 : 0);
+        var taken = transferProvinces(w.target, g.player, n, true);
+        if (taken.length) {
+          prog.conquests += taken.length;
+          g.occupations = g.occupations || {};
+          taken.forEach(function (pr) { g.occupations[pr] = g.player; });
+          slog("🏴 Cephe ilerledi: " + taken.length + " eyalet (" + cname(g, w.target) + ") kontrolüne geçti.", "text-emerald-400");
+          toast("+" + taken.length + " eyalet", "good");
+          paint();
+          hud();
+        }
+      }
+      // AI attacking player — lose provinces slowly
+      if (w.target === g.player && (w.progress || 0) < 40 && Math.random() < 0.12) {
+        var lost = transferProvinces(g.player, atk, 1, true);
+        if (lost.length) {
+          slog("💥 Geri çekilme: " + lost.length + " eyalet " + cname(g, atk) + " eline geçti!", "text-red-400");
+          toast("Eyalet kaybedildi", "bad");
+          paint();
+          hud();
+        }
+      }
+    });
+  }
+
+  // ---------- AI expands on the map ----------
+  function aiExpand(g, prog, dayKey) {
+    if (dayKey - prog.lastAiExpandDay < 5) return;
+    if (Math.random() > 0.55) return;
+    prog.lastAiExpandDay = dayKey;
+    var po = owners();
+    if (!po) return;
+    var isos = Object.keys(g.countries || {}).filter(function (iso) {
+      var c = g.countries[iso];
+      return c && !c.isCapitulated && iso !== g.player;
+    });
+    if (isos.length < 2) return;
+    // pick strong AI
+    isos.sort(function (a, b) { return powerOf(g, b) - powerOf(g, a); });
+    var strong = isos[Math.floor(Math.random() * Math.min(6, isos.length))];
+    // pick weaker victim preferably bordering
+    var victims = isos.filter(function (v) { return v !== strong && powerOf(g, v) < powerOf(g, strong) * 0.85; });
+    if (!victims.length) return;
+    var victim = victims[Math.floor(Math.random() * victims.length)];
+    // prefer border
+    var taken = transferProvinces(victim, strong, 1 + (Math.random() < 0.35 ? 1 : 0), true);
+    if (!taken.length) return;
+    g.globalTension = Math.min(100, (g.globalTension || 0) + 2);
+    slog("🗺️ Harita değişti: " + cname(g, strong) + " ← " + cname(g, victim) + " (" + taken.length + " eyalet)", "text-orange-300");
+    if (Math.random() < 0.4) toast(cname(g, strong) + " genişliyor", "info");
+    paint();
+    // if victim nearly dead
+    if (countProvs(po, victim) <= 1) {
+      var vc = g.countries[victim];
+      if (vc) {
+        vc.isCapitulated = true;
+        slog("☠️ " + cname(g, victim) + " fiilen çöktü.", "text-red-400");
+      }
+    }
+  }
+
+  // ---------- Quick actions (exported) ----------
+  window.scQuickTrainInf = function () {
+    var g = GS();
+    if (!g || !g.running) return false;
+    var p = g.countries[g.player];
+    if (!p) return false;
+    p.stockpile = p.stockpile || { guns: 0, artillery: 0, tanks: 0 };
+    p.divisions = p.divisions || { inf: 0, art: 0, arm: 0 };
+    var mp = 8000, guns = 400, cost = 80;
+    if ((p.manpower || 0) < mp) { slog("Yetersiz insan gücü.", "text-red-400"); toast("İG yetersiz", "bad"); return false; }
+    if ((p.stockpile.guns || 0) < guns) { slog("Yetersiz tüfek stoku — üretim hatlarını doldur.", "text-red-400"); toast("Tüfek yok", "bad"); return false; }
+    if ((p.money || 0) < cost) { slog("Yetersiz hazine.", "text-red-400"); return false; }
+    p.manpower -= mp;
+    p.stockpile.guns -= guns;
+    p.money -= cost;
+    p.divisions.inf = (p.divisions.inf || 0) + 1;
+    slog("🪖 +1 Piyade Tümeni (acele seferberlik).", "text-emerald-400");
+    toast("+1 Piyade", "good");
+    hud();
+    refreshDock();
+    return true;
+  };
+
+  window.scQuickBuildCiv = function () {
+    if (typeof buildFactory === "function") {
+      try { buildFactory("civ"); refreshDock(); return true; } catch (e) {}
+    }
+    var g = GS();
+    var p = g && g.countries[g.player];
+    if (!p) return false;
+    if ((p.money || 0) < 800) { slog("Sivil fabrika için 800 hazine gerekir.", "text-red-400"); return false; }
+    p.money -= 800;
+    p.civFactories = (p.civFactories || 0) + 1;
+    slog("🏭 +1 Sivil fabrika.", "text-yellow-400");
+    hud();
+    refreshDock();
+    return true;
+  };
+
+  window.scQuickBuildMil = function () {
+    if (typeof buildFactory === "function") {
+      try { buildFactory("mil"); refreshDock(); return true; } catch (e) {}
+    }
+    var g = GS();
+    var p = g && g.countries[g.player];
+    if (!p) return false;
+    if ((p.money || 0) < 1000) { slog("Askeri fabrika için 1000 hazine gerekir.", "text-red-400"); return false; }
+    p.money -= 1000;
+    p.milFactories = (p.milFactories || 0) + 1;
+    slog("🏭 +1 Askeri fabrika.", "text-yellow-400");
+    hud();
+    refreshDock();
+    return true;
+  };
+
+  window.scQuickJustifySelected = function () {
+    var g = GS();
+    if (!g) return;
+    var iso = g.selectedCountry;
+    if (!iso || iso === g.player) {
+      slog("Haritadan yabancı bir ülke eyaleti seç.", "text-yellow-400");
+      toast("Düşman eyalet seç", "info");
+      return;
+    }
+    if (typeof startJustification === "function") startJustification(iso);
+    else {
+      g.justifications = g.justifications || [];
+      if (!g.justifications.some(function (j) { return j.target === iso; })) {
+        g.justifications.push({ target: iso, progress: 0 });
+        slog("Gerekçe hazırlanıyor: " + cname(g, iso), "text-orange-400");
+      }
+    }
+    refreshDock();
+  };
+
+  window.scQuickDeclareSelected = function () {
+    var g = GS();
+    if (!g) return;
+    var iso = g.selectedCountry;
+    if (!iso || iso === g.player) {
+      slog("Savaş için yabancı ülke seç.", "text-yellow-400");
+      return;
+    }
+    if (typeof declareWar === "function") declareWar(iso);
+    else if (window.declareWar) window.declareWar(iso);
+    refreshDock();
+  };
+
+  // ---------- Command dock UI ----------
+  function refreshDock() {
+    var g = GS();
+    if (!g || !g.running || g.gameOver) {
+      var d0 = document.getElementById("sc-cmd-dock");
+      if (d0) d0.style.display = "none";
+      return;
+    }
+    var dock = document.getElementById("sc-cmd-dock");
+    if (!dock) {
+      dock = document.createElement("div");
+      dock.id = "sc-cmd-dock";
+      dock.style.cssText = "position:fixed;left:50%;bottom:0.6rem;transform:translateX(-50%);z-index:95;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:min(920px,96vw);pointer-events:auto;";
+      document.body.appendChild(dock);
+    }
+    dock.style.display = "flex";
+    var p = g.countries[g.player] || {};
+    var po = owners();
+    var provN = countProvs(po, g.player);
+    var rank = currentRank(g);
+    var sel = g.selectedCountry && g.selectedCountry !== g.player ? cname(g, g.selectedCountry) : "—";
+    var just = (g.justifications || []).filter(function (j) { return j.progress >= 100; }).map(function (j) { return j.target; });
+    var canDec = g.selectedCountry && just.indexOf(g.selectedCountry) >= 0;
+    dock.innerHTML =
+      '<div style="background:rgba(8,12,18,.94);border:1px solid #334155;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;box-shadow:0 8px 28px rgba(0,0,0,.5);">' +
+      '<span id="sc-rank-chip" style="font:11px system-ui;font-weight:700;color:' + rank.color + ';padding:2px 8px;border:1px solid #475569;border-radius:999px;">' + rank.title + "</span>" +
+      '<span style="font:11px system-ui;color:#94a3b8;">Eyalet <b style="color:#e2e8f0">' + provN + "</b> · Piyade <b style=\"color:#86efac\">" + ((p.divisions && p.divisions.inf) || 0) + "</b></span>" +
+      '<button type="button" onclick="scQuickTrainInf()" style="font:11px system-ui;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid #166534;background:#052e16;color:#bbf7d0;cursor:pointer;">+ Piyade</button>' +
+      '<button type="button" onclick="scQuickBuildCiv()" style="font:11px system-ui;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid #a16207;background:#1c1917;color:#fde68a;cursor:pointer;">+ Sivil Fab</button>' +
+      '<button type="button" onclick="scQuickBuildMil()" style="font:11px system-ui;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid #9a3412;background:#1c1410;color:#fdba74;cursor:pointer;">+ Askeri Fab</button>' +
+      '<span style="font:10px system-ui;color:#64748b;margin-left:4px;">Hedef: ' + sel + "</span>" +
+      '<button type="button" onclick="scQuickJustifySelected()" style="font:11px system-ui;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid #c2410c;background:#1c1008;color:#fdba74;cursor:pointer;">Gerekçe</button>' +
+      '<button type="button" onclick="scQuickDeclareSelected()" style="font:11px system-ui;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid #b91c1c;background:' + (canDec ? "#450a0a" : "#1f1212") + ";color:#fecaca;cursor:pointer;" + (canDec ? "" : "opacity:.55;") + '">Savaş İlan</button>' +
+      "</div>";
+  }
+
+  // ---------- Campaign stages (post hour-one) ----------
+  function campaignStage(g, prog, dayApprox) {
+    // stage 2: industrial push
+    if (dayApprox > 120 && prog.stage < 2) {
+      prog.stage = 2;
+      slog("📈 SAFHA 2: Sanayi yarışı — fabrikalar ve ordu büyüt, komşular kıpırdanıyor.", "text-cyan-300 font-bold");
+      toast("Safha 2: Sanayi yarışı", "info");
+    }
+    if (dayApprox > 300 && prog.stage < 3) {
+      prog.stage = 3;
+      g.globalTension = Math.min(100, (g.globalTension || 0) + 10);
+      slog("🌋 SAFHA 3: Büyük güç rekabeti — gerilim tırmandı, harita yeniden çiziliyor.", "text-red-300 font-bold");
+      toast("Safha 3: Büyük güçler", "bad");
+    }
+    // coalition pressure if player too strong
+    if (prog.stage >= 2 && prog.rankId !== "minor" && Math.random() < 0.02) {
+      var po = owners();
+      var my = countProvs(po, g.player);
+      if (my > 40) {
+        g.globalTension = Math.min(100, (g.globalTension || 0) + 3);
+        if (!g.relations) g.relations = {};
+        Object.keys(g.countries).forEach(function (iso) {
+          if (iso === g.player) return;
+          if (Math.random() < 0.25) g.relations[iso] = Math.min(g.relations[iso] || 0, (g.relations[iso] || 0) - 4);
+        });
+        if (Math.random() < 0.5) slog("🤝 Koalisyon fısıltıları: büyük güçler seni dengelemek istiyor.", "text-orange-300");
+      }
+    }
+  }
+
+  // ---------- Hook tick ----------
+  function dayKeyOf(g) {
+    if (!g.date) return 0;
+    return Math.floor(g.date.getTime() / 86400000);
+  }
+
+  function progressionPulse() {
+    var g = GS();
+    if (!g || !g.running || g.gameOver) return;
+    var prog = ensureProg(g);
+    var dk = dayKeyOf(g);
+    checkRankUp(g, prog);
+    dripPlayerWars(g, prog);
+    aiExpand(g, prog, dk);
+    // hourOne day index if present
+    var dayApprox = 0;
+    if (g.hourOne && g.hourOne.startMs && g.date) {
+      dayApprox = Math.floor((g.date.getTime() - g.hourOne.startMs) / 86400000);
+    } else {
+      dayApprox = dk % 10000;
+    }
+    campaignStage(g, prog, dayApprox);
+    if (dk !== prog.lastDockRefresh) {
+      prog.lastDockRefresh = dk;
+      refreshDock();
+    }
+  }
+
+  // wrap gameTick
+  function wrapTick() {
+    var prev = window.gameTick;
+    if (typeof prev !== "function") return false;
+    if (prev._progWrapped) return true;
+    window.gameTick = function () {
+      try { prev.apply(this, arguments); } catch (e) { console.warn(e); }
+      try { progressionPulse(); } catch (e) { console.warn("[progression]", e); }
+    };
+    window.gameTick._progWrapped = true;
+    return true;
+  }
+  if (!wrapTick()) {
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (wrapTick() || tries > 50) clearInterval(iv);
+    }, 200);
+  }
+
+  // export helpers used by dock
+  try {
+    if (typeof trainDivision === "function") window.trainDivision = trainDivision;
+    if (typeof buildFactory === "function") window.buildFactory = buildFactory;
+    if (typeof startJustification === "function") window.startJustification = startJustification;
+  } catch (e) {}
+
+  // refresh dock often while running
+  setInterval(function () {
+    try {
+      var g = GS();
+      if (g && g.running && !g.gameOver) refreshDock();
+    } catch (e) {}
+  }, 2500);
+
+  // when province selected, refresh dock
+  var _hpc = window.handleProvinceClick;
+  // can't easily wrap declaration; poll selectedCountry
+  var lastSel = null;
+  setInterval(function () {
+    try {
+      var g = GS();
+      if (!g || !g.running) return;
+      if (g.selectedCountry !== lastSel) {
+        lastSel = g.selectedCountry;
+        refreshDock();
+      }
+    } catch (e) {}
+  }, 600);
+
+  console.log("[progression] rank · dock · AI expand · war drip online");
+})();
