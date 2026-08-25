@@ -1,3 +1,4 @@
+if (typeof window.campaignStage !== "function") window.campaignStage = function () {};
 // ============================================================
 (function SCPlayableFix() {
   "use strict";
@@ -52,7 +53,7 @@
         if (g.empty()) g = svg.append("g");
         // clear only paths, keep structure
         g.selectAll("path").remove();
-        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1081/map.json";
+        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1083/map.json";
         d3.json(url).then(function (provinces) {
           if (!provinces || !provinces.length) {
             console.warn("[playable] map.json empty");
@@ -1374,6 +1375,15 @@
     } catch (e) {}
   }
 
+  function dayKeyOf(g) {
+    try {
+      if (!g || !g.date) return 0;
+      var d = g.date instanceof Date ? g.date : new Date(g.date);
+      if (isNaN(d.getTime())) return 0;
+      return (d.getFullYear() * 10000) + ((d.getMonth() + 1) * 100) + d.getDate();
+    } catch (e) { return 0; }
+  }
+
   function progressionPulse() {
     var g = GS();
     if (!g || !g.running || g.gameOver) return;
@@ -1389,7 +1399,7 @@
     } else {
       dayApprox = dk % 10000;
     }
-    campaignStage(g, prog, dayApprox);
+    try { if (typeof window.campaignStage === "function") window.campaignStage(g, prog, dayApprox); } catch (_cs) {}
     if (dk !== prog.lastDockRefresh) {
       prog.lastDockRefresh = dk;
       refreshDock();
@@ -1403,7 +1413,7 @@
     if (prev._progWrapped) return true;
     window.gameTick = function () {
       try { prev.apply(this, arguments); } catch (e) { console.warn(e); }
-      try { progressionPulse(); } catch (e) { console.warn("[progression]", e); }
+      try { progressionPulse(); } catch (e) { /* progression quiet */ }
     };
     window.gameTick._progWrapped = true;
     return true;

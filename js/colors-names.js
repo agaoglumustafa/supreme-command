@@ -131,7 +131,9 @@
     ARM: "#b45309",
     SOM: "#0ea5e9",
     SML: "#fbbf24", // Somaliland
+    KTC: "#ffffff", // KKTC
     DJI: "#1e3a8a",
+    ATA: "#e2e8f0",
     CYP: "#fbbf24"
   };
 
@@ -139,7 +141,7 @@
     USA: "ABD", RUS: "Rusya", GBR: "BK", CHN: "Çin", ARE: "BAE",
     SAU: "S. Arabistan", DOM: "Dominik", CIV: "F. Sahili", MKD: "K. Makedonya",
     PRK: "K. Kore", KOR: "G. Kore", ZAF: "G. Afrika", SSD: "G. Sudan",
-    BIH: "Bosna", RKS: "Kosova", KOS: "Kosova", ABK: "Abhazya", SML: "Somaliland",
+    BIH: "Bosna", RKS: "Kosova", KOS: "Kosova", ABK: "Abhazya", SML: "Somaliland", KTC: "KKTC",
     COD: "Kongo", CAF: "O. Afrika", PNG: "P.Y.Gine", PSE: "Filistin"
   };
 
@@ -150,10 +152,11 @@
     RKS: { name: "Kosova", flag: "xk", color: "#eab308", ideology: "Demokrasi", pop: 1800000, civFactories: 3, milFactories: 1, money: 500, manpower: 15000, divisions: { inf: 2, art: 0, arm: 0 } },
     KOS: { name: "Kosova", flag: "xk", color: "#eab308", ideology: "Demokrasi", pop: 1800000, civFactories: 3, milFactories: 1, money: 500, manpower: 15000, divisions: { inf: 2, art: 0, arm: 0 } },
     SOM: { name: "Somali", flag: "so", color: "#0ea5e9", ideology: "Kabile", pop: 17000000, civFactories: 4, milFactories: 2, money: 300, manpower: 80000, divisions: { inf: 5, art: 1, arm: 0 } },
-    SML: { name: "Somaliland", flag: "so", color: "#fbbf24", ideology: "Cumhuriyet", pop: 4500000, civFactories: 3, milFactories: 1, money: 400, manpower: 25000, divisions: { inf: 3, art: 0, arm: 0 } },
-    ABK: { name: "Abhazya", flag: "ge", color: "#fb923c", ideology: "Cumhuriyet", pop: 245000, civFactories: 1, milFactories: 1, money: 200, manpower: 8000, divisions: { inf: 2, art: 0, arm: 0 } },
+    SML: { name: "Somaliland", flag: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Flag_of_Somaliland.svg/330px-Flag_of_Somaliland.svg.png&w=80", color: "#fbbf24", ideology: "Cumhuriyet", pop: 4500000, civFactories: 3, milFactories: 1, money: 400, manpower: 25000, divisions: { inf: 3, art: 0, arm: 0 } },
+    ABK: { name: "Abhazya", flag: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Flag_of_the_Republic_of_Abkhazia.svg/250px-Flag_of_the_Republic_of_Abkhazia.svg.png&w=80", color: "#fb923c", ideology: "Cumhuriyet", pop: 245000, civFactories: 1, milFactories: 1, money: 200, manpower: 8000, divisions: { inf: 2, art: 0, arm: 0 } },
     DJI: { name: "Cibuti", flag: "dj", color: "#1e3a8a", ideology: "Cumhuriyet", pop: 1100000, civFactories: 2, milFactories: 1, money: 500, manpower: 5000, divisions: { inf: 1, art: 0, arm: 0 } },
     CYP: { name: "Kıbrıs", flag: "cy", color: "#fbbf24", ideology: "Cumhuriyet", pop: 1200000, civFactories: 3, milFactories: 1, money: 800, manpower: 10000, divisions: { inf: 2, art: 0, arm: 0 } },
+    KTC: { name: "Kuzey Kıbrıs Türk Cumhuriyeti", flag: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg/250px-Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg.png&w=80", color: "#ffffff", ideology: "Cumhuriyet", pop: 380000, civFactories: 2, milFactories: 1, money: 500, manpower: 12000, divisions: { inf: 2, art: 0, arm: 0 } },
     MLT: { name: "Malta", flag: "mt", color: "#ef4444", ideology: "Demokrasi", pop: 500000, civFactories: 2, milFactories: 0, money: 600, manpower: 3000, divisions: { inf: 1, art: 0, arm: 0 } },
     PSE: { name: "Filistin", flag: "ps", color: "#15803d", ideology: "Ulusal", pop: 5000000, civFactories: 2, milFactories: 1, money: 200, manpower: 20000, divisions: { inf: 2, art: 0, arm: 0 } },
     COD: { name: "Kongo D.C.", flag: "cd", color: "#fbbf24", ideology: "Cumhuriyet", pop: 95000000, civFactories: 8, milFactories: 3, money: 800, manpower: 150000, divisions: { inf: 10, art: 2, arm: 0 } },
@@ -219,6 +222,8 @@
     NRU: { name: "Nauru", flag: "nr", color: "#eab308", ideology: "Cumhuriyet", pop: 12000, civFactories: 0, milFactories: 0, money: 30, manpower: 50, divisions: { inf: 0, art: 0, arm: 0 } },
     ATG: { name: "Antigua", flag: "ag", color: "#dc2626", ideology: "Demokrasi", pop: 100000, civFactories: 0, milFactories: 0, money: 100, manpower: 300, divisions: { inf: 0, art: 0, arm: 0 } },
     LCA: { name: "Saint Lucia", flag: "lc", color: "#1d4ed8", ideology: "Demokrasi", pop: 180000, civFactories: 0, milFactories: 0, money: 100, manpower: 400, divisions: { inf: 0, art: 0, arm: 0 } },
+    ATA: { name: "Antarktika", flag: "aq", color: "#e2e8f0", ideology: "Antlaşma", pop: 5000, civFactories: 1, milFactories: 0, money: 200, manpower: 2000, divisions: { inf: 1, art: 0, arm: 0 } },
+    NEUTRAL: { name: "Sahipsiz", flag: "un", color: "#94a3b8", ideology: "—", pop: 0, civFactories: 0, milFactories: 0, money: 0, manpower: 0, divisions: { inf: 0, art: 0, arm: 0 }, alive: false },
     SHN: { name: "Saint Helena", flag: "sh", color: "#1e3a8a", ideology: "Sömürge", pop: 5000, civFactories: 0, milFactories: 0, money: 20, manpower: 50, divisions: { inf: 0, art: 0, arm: 0 } }
   };
 
@@ -257,12 +262,19 @@
     try {
       var po = window.provinceOwners;
       if (!po) return;
-      // Abhazya
-      if (po.Abkhazia) po.Abkhazia = "ABK";
-      // Somaliland (kuzey)
-      if (po.Somaliland) po.Somaliland = "SML";
-      if (po.British_Somaliland) po.British_Somaliland = "SML";
-      // Jubaland / güney SOM kalır
+      var sid = (window.GameState && GameState.scenarioId) || "modern";
+      // Modern: Somaliland Somali'ye; Abhazya bağımsız
+      if (sid === "modern") {
+        if (po.Somaliland) po.Somaliland = "SML";
+        if (po.British_Somaliland) po.British_Somaliland = "SML";
+        if (po.Abkhazia) po.Abkhazia = "ABK";
+        if (po.North_Cyprus) po.North_Cyprus = "KTC";
+        if (po.South_Cyprus) po.South_Cyprus = "CYP";
+      } else {
+        // WW1/WW2: Abhazya ayrı devlet değil; KKTC yok
+        if (po.Abkhazia === "ABK") po.Abkhazia = "RUS";
+        if (po.North_Cyprus === "KTC") po.North_Cyprus = "GBR";
+      }
     } catch (e) {}
   }
 
@@ -365,7 +377,48 @@
       applyColors();
       paint();
     }, 2000);
-    console.log("[colors-names] palette · ABK/SML · missing states · low expand");
+    // senaryo renklerini yeniden uygula
+  setTimeout(function(){
+    try {
+      if (typeof window.scApplyScenarioNameLayout === "function" && window.SCENARIOS && GameState.scenarioId) {
+        window.scApplyScenarioNameLayout(SCENARIOS[GameState.scenarioId]);
+      }
+    } catch(e){}
+  }, 1200);
+  
+  // Custom wiki flags for unrecognized states
+  function applyCustomFlags() {
+    try {
+      var g = window.GameState; if (!g || !g.countries) return;
+      var map = {
+        KTC: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg/250px-Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg.png",
+        ABK: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Flag_of_the_Republic_of_Abkhazia.svg/250px-Flag_of_the_Republic_of_Abkhazia.svg.png",
+        SML: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Flag_of_Somaliland.svg/330px-Flag_of_Somaliland.svg.png",
+        DNZ: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/POL_Gda%C5%84sk_flag.svg/250px-POL_Gda%C5%84sk_flag.svg.png"
+      };
+      Object.keys(map).forEach(function (iso) {
+        if (g.countries[iso]) {
+          g.countries[iso].flag = map[iso];
+          if (iso === "KTC") g.countries[iso].color = "#ffffff";
+        }
+      });
+      // HUD refresh if player is one of these
+      var fl = document.getElementById("hud-flag");
+      if (fl && g.player && map[g.player]) fl.src = map[g.player];
+    } catch (e) {}
+  }
+  var _oldStart = window.startGame;
+  if (typeof _oldStart === "function") {
+    window.startGame = async function () {
+      var r = await _oldStart.apply(this, arguments);
+      try { reassignBreakaways(); ensureExtras(); applyCustomFlags(); } catch (e) {}
+      return r;
+    };
+  }
+  setTimeout(function(){ try { applyCustomFlags(); } catch(e){} }, 2000);
+  console.log("[colors-names] KTC/ABK/SML/DNZ flags + modern ownership");
+
+  console.log("[colors-names] palette · ABK/SML/KTC · custom flags");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

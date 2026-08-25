@@ -1,7 +1,7 @@
 // ===== SC Atmosphere Pack v1.2.0 =====
 // 1) National order voices (Web Speech API)
 // 2) Railways + supply hubs + attrition
-// 3) Ultimatums + formable nations
+// 3) Ultimatums + formable_disabled nations
 (function SCAtmosphere() {
   "use strict";
 
@@ -30,7 +30,9 @@
     if (!g.supplyHubs) g.supplyHubs = {}; // provinceName → true
     if (!g.ultimatums) g.ultimatums = [];
     if (!g.formedNations) g.formedNations = {};
-    if (g.voiceMuted == null) g.voiceMuted = false;
+    g.voiceMuted = true; // ses emirleri kaldırıldı
+  g.ultimatums = [];
+  g.formable_disabledsDisabled = true;
     return g;
   }
 
@@ -283,12 +285,13 @@
         var match = voices.find(function (v) { return v.lang && v.lang.toLowerCase().indexOf(p.lang.slice(0, 2)) === 0; });
         if (match) u.voice = match;
       } catch (e) {}
-      window.speechSynthesis.speak(u);
+      try { window.speechSynthesis.cancel(); } catch(e){}
+      /* voice off */
     } catch (e) {
       console.warn("[voice]", e);
     }
   }
-  window.scSpeakOrder = scSpeakOrder;
+  window.scSpeakOrder = function () {}; // disabled
 
   // Hook province click → select voice for owner if player's unit-like selection
   function wrapProvinceClick() {
@@ -755,7 +758,7 @@
       resolveUltimatum(ult.id);
     }, 4000);
   }
-  window.scSendUltimatum = sendUltimatum;
+  window.__deadUltimatum = sendUltimatum;
 
   function resolveUltimatum(id) {
     var g = ensureState();
@@ -1027,7 +1030,7 @@
     try {
       if (window.speechSynthesis) window.speechSynthesis.getVoices();
     } catch (e) {}
-    console.log("[atmosphere] voice + rails + ultimatum + formables ready");
+    console.log("[atmosphere] voice + rails + ultimatum + formable_disableds ready");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

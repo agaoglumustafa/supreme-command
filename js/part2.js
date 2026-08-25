@@ -936,7 +936,7 @@ if (typeof SCENARIOS !== "undefined") {
     if (SCENARIOS.ww1) {
         SCENARIOS.ww1.countryColors = SCENARIOS.ww1.countryColors || {
             TUR: "#dc2626", DEU: "#1a1a1a", RUS: "#1e3a5f", AUT: "#f5f5f4",
-            GBR: "#9f1239", FRA: "#1d4ed8", USA: "#1e40af", HUN: "#7f1d1d"
+            GBR: "#9f1239", FRA: "#1d4ed8", USA: "Virginia", HUN: "#7f1d1d"
         };
         SCENARIOS.ww1.countryFlags = SCENARIOS.ww1.countryFlags || {
             // Özel URL veya flagcdn kodu; URL ise http ile başlar
@@ -946,7 +946,7 @@ if (typeof SCENARIOS !== "undefined") {
     if (SCENARIOS.ww2) {
         SCENARIOS.ww2.countryColors = SCENARIOS.ww2.countryColors || {
             TUR: "#dc2626", DEU: "#171717", RUS: "#9f1239", GBR: "#b91c1c",
-            FRA: "#2563eb", USA: "#1e3a8a", JPN: "#991b1b", ITA: "#166534"
+            FRA: "#2563eb", USA: "Virginia", JPN: "#991b1b", ITA: "#166534"
         };
         SCENARIOS.ww2.countryFlags = SCENARIOS.ww2.countryFlags || {
             DEU: "de", RUS: "RU", ITA: "it", JPN: "jp"
@@ -1599,7 +1599,7 @@ function setCountryFlagUrl(iso, url) {
     TUV: ["Tuvalu", "tv", "#00247d"], OMN: ["Umman", "om", "#db161b"],
     VUT: ["Vanuatu", "vu", "#009543"], VAT: ["Vatikan", "va", "#ffe000"],
     NZL: ["Yeni Zelanda", "nz", "#00247d"], ZMB: ["Zambiya", "zm", "#198a00"],
-    ZWE: ["Zimbabve", "zw", "#ffd200"], CYP: ["Kıbrıs Rum Cumhuriyeti", "cy", "#4189dd"],
+    ZWE: ["Zimbabve", "zw", "#ffd200"], CYP: ["Güney Kıbrıs Rum Yönetimi", "cy", "#4189dd"], KTC: ["Kuzey Kıbrıs Türk Cumhuriyeti", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg/250px-Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg.png", "#ffffff"],
 GNB: ["Gine-Bissau","gw", "#008751"], GIN: ["Gine","gw", "#377e3f"], SHN: ["Birleşik Krallık Deniz Aşırı Toprakları","gb", "#0067c6"]
   };
   if (!GameState || !GameState.countries) return;
@@ -3662,6 +3662,15 @@ console.log("V27 Legendary systems loaded");
     const totalProvs = Object.keys(provinceOwners || {}).length || 1;
     const myProvs = Object.keys(provinceOwners || {}).filter(p => provinceOwners[p] === GameState.player).length;
     const share = myProvs / totalProvs;
+    // Hakimiyet %0 → anında game over
+    if (myProvs <= 0 || share <= 0) {
+      if (typeof triggerGameOver === "function") triggerGameOver("no_land");
+      else {
+        GameState.gameOver = true;
+        GameState.running = false;
+      }
+      return;
+    }
     // Domination
     if (share >= 0.35 || score >= 900) {
       s.victory = "domination";
@@ -4075,40 +4084,40 @@ console.log("V27 Legendary systems loaded");
   /** Senaryoya göre başkentler (eyalet adı = haritadaki province key) */
   const CAPITALS = {
     modern: {
-      TUR: "Ankara", DEU: "Brandenburg", USA: "District_of_Columbia", RUS: "Moscow",
+      TUR: "Ankara", DEU: "Brandenburg", USA: "Virginia", RUS: "Moscow",
       GBR: "Greater_London_Area", FRA: "Ile_de_France", ITA: "Lazio", JPN: "Kanto",
-      CHN: "Beijing", IND: "Delhi", BRA: "Goiás", POL: "Warszawa", ESP: "Madrid",
-      SAU: "Nejd", IRN: "Tehran", EGY: "Cairo", KOR: "South_Korea", PRK: "Pyongyang",
-      AUS: "New_South_Wales", CAN: "Southern_Ontario", MEX: "México", ARG: "Buenos_Aires",
-      NLD: "Holland", BEL: "Vlaanderen", SWE: "Svealand", NOR: "Ostlandet", FIN: "Uusimaa",
+      CHN: "Hebei", IND: "Delhi", BRA: "Goiás", POL: "Warszawa", ESP: "Madrid",
+      SAU: "Nejd", IRN: "Tehran", EGY: "Cairo", KOR: "Gyeonggi", PRK: "Pyongan-Hwanghae",
+      AUS: "New_South_Wales", CAN: "Southern_Ontario", MEX: "Mexico_City", ARG: "Buenos_Aires",
+      NLD: "Holland", BEL: "Vlaanderen", SWE: "Södermanland", NOR: "Oslofjord", FIN: "Uusimaa",
       GRC: "Attica", ROU: "Muntenia", HUN: "Northern_Hungary", CZE: "Bohemia",
-      AUT: "Ostmark", CHE: "Switzerland", PRT: "Lisbon", IRL: "Leinster",
-      UKR: "Kiev", BLR: "Minsk", SRB: "Serbia", BGR: "Sofia", HRV: "Croatia",
+      AUT: "Ostmark", CHE: "Swiss_Plateau", PRT: "Lisbon", IRL: "Leinster",
+      UKR: "Kyiv", BLR: "Minsk", SRB: "Serbia", BGR: "Sofia", HRV: "Croatia",
       ISR: "Palestine", IRQ: "Baghdad", SYR: "Damascus", JOR: "Jordan", LBN: "Lebanon",
       PAK: "West_Punjab", BGD: "East_Bengal", IDN: "Java", THA: "Siam", VNM: "Tonkin",
       MYS: "Malaya", SGP: "Singapore", PHL: "Luzon", NZL: "North_Island",
-      ZAF: "Transvaal", NGA: "Nigeria", ETH: "Ethiopia", KEN: "Kenya",
-      DZA: "Algiers", MAR: "Morocco", TUN: "Tunisia", LBY: "Tripoli",
+      ZAF: "Transvaal", NGA: "Lagos", ETH: "Shewa", KEN: "Nairobi",
+      DZA: "Algiers", MAR: "Casablanca", TUN: "Tunisia", LBY: "Tripoli",
       CHL: "Santiago", COL: "Cundinamarca", PER: "Lima", VEN: "Miranda",
-      TWN: "Taiwan", KAZ: "Alma-Ata", AZE: "Azerbaijan", GEO: "Georgia", ARM: "Armenia",
+      TWN: "Taiwan", KAZ: "Alma_Ata", AZE: "Azerbaijan", GEO: "Georgia", ARM: "Armenia",
       AFG: "Kabul", UZB: "Tashkent", CUB: "Cuba", PAN: "Panamá"
     },
     ww1: {
       TUR: "Istanbul", DEU: "Brandenburg", RUS: "Saint_Petersburg", AUT: "Ostmark",
       GBR: "Greater_London_Area", FRA: "Ile_de_France", ITA: "Lazio", USA: "District_of_Columbia",
       SRB: "Serbia", BEL: "Vlaanderen", NLD: "Holland", ROU: "Muntenia", BGR: "Sofia",
-      GRC: "Attica", JPN: "Kanto", CHN: "Beijing", POL: "Warszawa", HUN: "Northern_Hungary",
-      ESP: "Madrid", PRT: "Lisbon", SWE: "Svealand", NOR: "Ostlandet", DNK: "Denmark",
-      CHE: "Switzerland", IRN: "Tehran", EGY: "Cairo", MEX: "México", BRA: "Goiás"
+      GRC: "Attica", JPN: "Kanto", CHN: "Hebei", POL: "Warszawa", HUN: "Northern_Hungary",
+      ESP: "Madrid", PRT: "Lisbon", SWE: "Södermanland", NOR: "Oslofjord", DNK: "Denmark",
+      CHE: "Swiss_Plateau", IRN: "Tehran", EGY: "Cairo", MEX: "Mexico_City", BRA: "Goiás"
     },
     ww2: {
       TUR: "Ankara", DEU: "Brandenburg", RUS: "Moscow", GBR: "Greater_London_Area",
       FRA: "Ile_de_France", ITA: "Lazio", USA: "District_of_Columbia", JPN: "Kanto",
-      POL: "Warszawa", CHN: "Chongqing", ESP: "Madrid", FIN: "Uusimaa", ROU: "Muntenia",
+      POL: "Warszawa", CHN: "Hebei", ESP: "Madrid", FIN: "Uusimaa", ROU: "Muntenia",
       HUN: "Northern_Hungary", BGR: "Sofia", GRC: "Attica", YUG: "Serbia", SRB: "Serbia",
-      BEL: "Vlaanderen", NLD: "Holland", NOR: "Ostlandet", DNK: "Denmark", SWE: "Svealand",
-      CHE: "Switzerland", PRT: "Lisbon", IRN: "Tehran", IRQ: "Baghdad", EGY: "Cairo",
-      BRA: "Goiás", ARG: "Buenos_Aires", MEX: "México", CAN: "Southern_Ontario",
+      BEL: "Vlaanderen", NLD: "Holland", NOR: "Oslofjord", DNK: "Denmark", SWE: "Södermanland",
+      CHE: "Swiss_Plateau", PRT: "Lisbon", IRN: "Tehran", IRQ: "Baghdad", EGY: "Cairo",
+      BRA: "Goiás", ARG: "Buenos_Aires", MEX: "Mexico_City", CAN: "Southern_Ontario",
       AUS: "New_South_Wales", IND: "Delhi", SAU: "Nejd"
     }
   };
@@ -6253,28 +6262,28 @@ console.log("V27 Legendary systems loaded");
   // Alpha-3 → FlagCDN alpha-2 (oyun ülkeleri + yaygınlar)
   const ISO3_TO_2 = {
     TUR: "tr", USA: "us", DEU: "de", GBR: "gb", FRA: "fr", RUS: "ru", ITA: "it", JPN: "jp",
-    AZE: "az", UKR: "ua", POL: "pl", ESP: "es", PRT: "pt", NLD: "nl", BEL: "be", CHE: "ch",
+    AZE: "az", UKR: "Kyiv", POL: "pl", ESP: "es", PRT: "pt", NLD: "nl", BEL: "be", CHE: "ch",
     AUT: "at", HUN: "hu", ROU: "ro", BGR: "bg", GRC: "gr", SRB: "rs", HRV: "hr", CZE: "cz",
     SVK: "sk", SWE: "se", NOR: "no", DNK: "dk", FIN: "fi", IRL: "ie", CHN: "cn", IND: "in",
-    BRA: "br", ARG: "ar", MEX: "mx", CAN: "ca", AUS: "au", NZL: "nz", KOR: "kr", PRK: "kp",
+    BRA: "br", ARG: "ar", MEX: "mx", CAN: "ca", AUS: "au", NZL: "nz", KOR: "Gyeonggi", PRK: "Pyongan-Hwanghae",
     VNM: "vn", THA: "th", IDN: "id", MYS: "my", SGP: "sg", PHL: "ph", PAK: "pk", BGD: "bd",
-    IRN: "ir", IRQ: "iq", SAU: "sa", ISR: "il", EGY: "eg", ZAF: "za", NGA: "ng", ETH: "et",
-    KEN: "ke", MAR: "ma", DZA: "dz", TUN: "tn", LBY: "ly", SDN: "sd", AFG: "af", GEO: "ge",
-    ARM: "am", KAZ: "kz", UZB: "uz", TKM: "tm", KGZ: "kg", TJK: "tj", MNG: "mn", TWN: "tw",
+    IRN: "ir", IRQ: "iq", SAU: "sa", ISR: "il", EGY: "eg", ZAF: "za", NGA: "Lagos", ETH: "Shewa",
+    KEN: "Nairobi", MAR: "Casablanca", DZA: "dz", TUN: "tn", LBY: "ly", SDN: "sd", AFG: "af", GEO: "ge",
+    ARM: "am", KAZ: "Alma_Ata", UZB: "uz", TKM: "tm", KGZ: "kg", TJK: "tj", MNG: "mn", TWN: "tw",
     PRY: "py", URY: "uy", CHL: "cl", COL: "co", PER: "pe", VEN: "ve", BOL: "bo", ECU: "ec",
     CUB: "cu", DOM: "do", GTM: "gt", HND: "hn", SLV: "sv", NIC: "ni", CRI: "cr", PAN: "pa",
     LTU: "lt", LVA: "lv", EST: "ee", BLR: "by", MDA: "md", ALB: "al", MKD: "mk", BIH: "ba",
     SVN: "si", MNE: "me", LUX: "lu", ISL: "is", MLT: "mt", CYP: "cy", AND: "ad", MCO: "mc",
     LIE: "li", SMR: "sm", VAT: "va", QAT: "qa", ARE: "ae", KWT: "kw", BHR: "bh", OMN: "om",
     YEM: "ye", JOR: "jo", LBN: "lb", SYR: "sy", PSE: "ps", LKA: "lk", MMR: "mm", KHM: "kh",
-    LAO: "la", NPL: "np", BTN: "bt", MNG: "mn", PRK: "kp", TZA: "tz", UGA: "ug", GHA: "gh",
+    LAO: "la", NPL: "np", BTN: "bt", MNG: "mn", PRK: "Pyongan-Hwanghae", TZA: "tz", UGA: "ug", GHA: "gh",
     CIV: "ci", SEN: "sn", CMR: "cm", COD: "cd", COG: "cg", AGO: "ao", MOZ: "mz", ZWE: "zw",
     ZMB: "zm", BWA: "bw", NAM: "na", RWA: "rw", BDI: "bi", SOM: "so", ERI: "er", DJI: "dj",
     SSD: "ss", GAB: "ga", GNQ: "gq", CAF: "cf", TCD: "td", NER: "ne", MLI: "ml", BFA: "bf",
     GIN: "gn", GNB: "gw", SLE: "sl", LBR: "lr", TGO: "tg", BEN: "bj", GMB: "gm", CPV: "cv",
     MUS: "mu", SYC: "sc", COM: "km", MDG: "mg", MWI: "mw", LSO: "ls", SWZ: "sz", FJI: "fj",
-    PNG: "pg", SLB: "sb", VUT: "vu", WSM: "ws", TON: "to", KIR: "ki", TUV: "tv", NRU: "nr",
-    PLW: "pw", FSM: "fm", MHL: "mh", DNZ: "pl", // Danzig fallback
+    PNG: "pg", SLB: "sb", VUT: "vu", WSM: "ws", TON: "to", KIR: "ki", TUV: "tv", NRU: "nr", KTC: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg/250px-Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg.png", 		
+    PLW: "pw", FSM: "fm", MHL: "mh", DNZ: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/POL_Gda%C5%84sk_flag.svg/250px-POL_Gda%C5%84sk_flag.svg.png", // Danzig
     AUT: "at", HUN: "hu"
   };
 

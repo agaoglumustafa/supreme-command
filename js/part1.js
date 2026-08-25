@@ -169,8 +169,14 @@ if (typeof document !== "undefined") {
 }
 
 // ========== HARİTA PAKETİ (dinamik, GLOBAL) ==========
-// Aktif harita: assets/maps/1081/
-const MAP_PACK_ID = "1081";
+// Aktif harita: assets/maps/1083/
+const MAP_PACK_ID = "1083";
+// SC_MAP_PACK_FALLBACK: if 1083 missing, use 1081
+(function(){ try {
+  var id = (typeof MAP_PACK_ID !== "undefined") ? MAP_PACK_ID : "1083";
+  if (id !== "1083" && id !== "1081") id = "1083";
+} catch(e) {} })();
+
 const MAP_PACK_BASE = "./assets/maps/" + MAP_PACK_ID + "/";
 const MAP_JSON_URL = MAP_PACK_BASE + "map.json";
 const PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
@@ -181,7 +187,7 @@ var SCENARIOS = {};
 window.SCENARIOS = SCENARIOS;
 
 /**
- * assets/maps/1081/scenarios/index.json + modern.json / ww1.json / ww2.json
+ * assets/maps/1083/scenarios/index.json + modern.json / ww1.json / ww2.json
  * Her çağrıda diskten yeniden okur (cache: no-store).
  */
 async function loadScenarioPack() {
@@ -298,14 +304,16 @@ window.toggleSidebar = function() {
                 } catch(e){}
             }
             playVictory() {
+                // start spam fix: en fazla 2.5 sn'de bir
+                if (this._lastVic && Date.now() - this._lastVic < 2500) return;
+                this._lastVic = Date.now();
                 this.init();
                 if (!this.ctx) return;
                 try {
                     const now = this.ctx.currentTime;
-                    this.playTone(440, now, 0.12);
-                    this.playTone(554, now + 0.12, 0.12);
-                    this.playTone(659, now + 0.24, 0.12);
-                    this.playTone(880, now + 0.36, 0.35);
+                    this.playTone(440, now, 0.08);
+                    this.playTone(554, now + 0.08, 0.08);
+                    this.playTone(659, now + 0.16, 0.1);
                 } catch(e){}
             }
             playClick() {
@@ -326,15 +334,17 @@ window.toggleSidebar = function() {
                 } catch(e){}
             }
             playAlert() {
+                // bildirim spam sustur
+                if (this._lastAlert && Date.now() - this._lastAlert < 3000) return;
+                this._lastAlert = Date.now();
                 this.init(); if (!this.ctx) return;
                 try {
                     const o = this.ctx.createOscillator(), g = this.ctx.createGain();
-                    o.type = "square"; o.connect(g); g.connect(this.ctx.destination);
-                    o.frequency.setValueAtTime(600, this.ctx.currentTime);
-                    o.frequency.linearRampToValueAtTime(300, this.ctx.currentTime + 0.25);
-                    g.gain.setValueAtTime(0.05, this.ctx.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
-                    o.start(); o.stop(this.ctx.currentTime + 0.3);
+                    o.type = "sine"; o.connect(g); g.connect(this.ctx.destination);
+                    o.frequency.setValueAtTime(520, this.ctx.currentTime);
+                    g.gain.setValueAtTime(0.02, this.ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+                    o.start(); o.stop(this.ctx.currentTime + 0.12);
                 } catch(e){}
             }
             playMessage() {
@@ -557,7 +567,7 @@ window.toggleSidebar = function() {
 "ARE": {name: "Birleşik Arap Emirlikleri", flag: "ae", color: "#0f766e", ideology: "Monarşi", pop: 9500000, civFactories: 24, milFactories: 8, money: 14000, manpower: 80000, divisions: { inf: 5, art: 2, arm: 2 },
             factoryEfficiency: 1.0,
             productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 12000, artillery: 140, tanks: 90 }, prodAllocation: { guns: 3, artillery: 2, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AZE": {name: "Azerbaycan", flag: "az", color: "#0369a1", ideology: "Milliyetçilik", pop: 10000000, civFactories: 16, milFactories: 12, money: 6500, manpower: 180000, divisions: { inf: 10, art: 4, arm: 3 },
+"AZE": {name: "Azerbaycan", flag: "https://flagcdn.com/w80/az.png", color: "#0369a1", ideology: "Milliyetçilik", pop: 10000000, civFactories: 16, milFactories: 12, money: 6500, manpower: 180000, divisions: { inf: 10, art: 4, arm: 3 },
             factoryEfficiency: 1.0,
             productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 22000, artillery: 300, tanks: 140 }, prodAllocation: { guns: 4, artillery: 4, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
 "GEO": {name: "Gürcistan", flag: "ge", color: "#991b1b", ideology: "Demokrasi", pop: 3700000, civFactories: 7, milFactories: 3, money: 1500, manpower: 50000, divisions: { inf: 4, art: 1, arm: 0 },
@@ -1834,7 +1844,9 @@ function renderProvincePanel() {
         </div>
         <div class="text-[9px] text-slate-500">İklim tavanı: ${cap}/10 · Slot kapasitesi = altyapı</div>
         ${isOwn ? `<button onclick="upgradeProvinceInfra('${pName}');renderProvincePanel();if(typeof updateHUD==='function')updateHUD()"
-          class="w-full py-2 bg-amber-900/80 hover:bg-amber-800 border border-amber-600 rounded text-[11px] font-bold">⬆ Altyapı Geliştir</button>` : `<div class="text-[10px] text-slate-500 italic">Yalnızca kendi eyaletlerinizde yatırım yapılabilir.</div>`}
+          class="w-full py-2 bg-amber-900/80 hover:bg-amber-800 border border-amber-600 rounded text-[11px] font-bold">⬆ Altyapı Geliştir</button>
+        <button type="button" onclick="(function(){ if(typeof scSetCapital==='function'){ scSetCapital(GameState.player,'${pName}'); } else if(typeof scMoveCapitalToSelected==='function'){ GameState.selectedProvince='${pName}'; scMoveCapitalToSelected(); } if(typeof renderProvincePanel==='function')renderProvincePanel(); if(typeof updateHUD==='function')updateHUD(); })()"
+          class="w-full py-2 bg-amber-950/80 hover:bg-amber-900 border border-amber-500 rounded text-[11px] font-bold text-amber-200">★ Başkenti Buraya Taşı (−150💰 −20PP)</button>` : `<div class="text-[10px] text-slate-500 italic">Yalnızca kendi eyaletlerinizde yatırım yapılabilir.</div>`}
       </div>
 
       <div class="bg-slate-900 border border-slate-700 rounded-lg p-3 space-y-2">
@@ -2762,9 +2774,8 @@ function annexCountryFully(targetIso) {
     target.isCapitulated = true;
     target.occupier = GameState.player;
     target.savedColor = player?.color;
-    if (player && !String(target.name).includes("Yönetimindeki")) {
-        target.name = `${player.name} Yönetimindeki ${target.name}`;
-    }
+    // Kukla isim sistemi kaldırıldı — ülke adı değişmez
+
 
     clearCountryDiplomacy(targetIso);
 
@@ -3058,7 +3069,7 @@ function applyScenarioToGameState(scenarioId) {
                     if (key !== "modern") log("Senaryo verisi eksik — Modern Dünya yüklendi.", "text-yellow-400");
                 } else {
                     sc = { name: key, year: 2026, techEra: 3, provinceOwners: {}, countryNames: {}, countryColors: {}, countryFlags: {} };
-                    log("Senaryo dosyaları yüklenemedi (assets/maps/1081/scenarios/).", "text-red-400");
+                    log("Senaryo dosyaları yüklenemedi (assets/maps/1083/scenarios/).", "text-red-400");
                 }
             }
             // Disk senaryosunu GameState ile birleştir (isim/renk/bayrak/owners)
@@ -3132,7 +3143,16 @@ function applyScenarioToGameState(scenarioId) {
             applyDifficultyModifiers();
 
             const player = GameState.countries[GameState.player];
-            document.getElementById("hud-flag").src = `https://flagcdn.com/w40/${player.flag}.png`;
+            (function(){
+              const fl = document.getElementById("hud-flag");
+              if (!fl) return;
+              const iso = GameState.player;
+              const url = (typeof getFlagUrl === "function")
+                ? getFlagUrl(iso)
+                : (`https://flagcdn.com/w40/${(player.flag || (iso||"un").toLowerCase())}.png`);
+              if (url) fl.src = url;
+              fl.alt = (player.name || iso || "flag");
+            })();
             setText("hud-country-name", (typeof getCountryDisplayName === "function") ? getCountryDisplayName(GameState.player) : player.name);
             setText("hud-country-ideology", player.ideology);
             document.getElementById("log-panel")?.classList.remove("hidden");
@@ -3627,7 +3647,7 @@ const targetCodes = {
         action: () => { GameState.countries[GameState.player].money += 5000; } 
     },
     "grok": {
-        msg: "🤖 Grok seni izliyor… (+3 Teknoloji Çağı puanı hissi, +8000 hazine)",
+        msg: "Gizli teşvik: +3 teknoloji, +8000 hazine",
         used: false,
         action: () => {
             const c = GameState.countries[GameState.player];
@@ -5452,7 +5472,17 @@ function triggerGameOver(reason) {
 
     let title = "GAME OVER";
     let body = "";
-    if (reason === "rebel") {
+    if (reason === "no_land" || reason === "hakimiyet0") {
+        title = "GAME OVER — HAKİMİYET %0";
+        body = `
+            <p class="text-sm text-slate-300 leading-relaxed mb-3">
+                Haritada tek bir eyaletiniz kalmadı. Hakimiyetiniz <b class="text-red-400">%0</b>.
+                Devlet fiilen sona erdi; ordu, hazine ve diplomasi çöktü.
+            </p>
+            <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                Topraksız bir hükümet ayakta kalamaz. Yeni bir seferde sınırlarınızı koruyun.
+            </p>`;
+    } else if (reason === "rebel") {
         title = "GAME OVER — ASİ ZAFERİ";
         body = `
             <p class="text-sm text-slate-300 leading-relaxed mb-3">
@@ -5763,16 +5793,19 @@ function saveGame() {
         occupations: GameState.occupations || {},
         hoi: GameState.hoi || null,
         difficulty: GameState.difficulty || "normal",
-        saveVersion: 5,
+        capitals: GameState.capitals || {},
+        nameOffsets: GameState.nameOffsets || window.__SC_NAME_OFFSETS || {},
+        nameOverrides: GameState.nameOverrides || window.__SC_NAME_OVERRIDES || {},
+        saveVersion: 6,
         timestamp: Date.now()
     };
     
     try {
       localStorage.setItem(GameState.saveSlot, JSON.stringify(saveData));
       localStorage.setItem(GameState.saveSlot + "_meta", JSON.stringify({
-        version: 5, player: GameState.player, date: saveData.date, scenarioId: saveData.scenarioId, ts: Date.now()
+        version: 6, player: GameState.player, date: saveData.date, scenarioId: saveData.scenarioId, ts: Date.now()
       }));
-      log("OYUN KAYDEDİLDİ (v5)", "text-emerald-400");
+      log("OYUN KAYDEDİLDİ (v6)", "text-emerald-400");
       if (typeof showToast === "function") showToast("Kayıt tamam", "ok");
     } catch (e) {
       log("Kayıt başarısız — depolama dolu olabilir.", "text-red-400");
@@ -5794,6 +5827,20 @@ function loadGame(saveKey = "save1") {
         GameState.date = new Date(data.date);
         GameState.countries = data.countries;
         if (data.occupations) GameState.occupations = data.occupations;
+        if (data.capitals) GameState.capitals = data.capitals;
+        if (data.nameOffsets) {
+          GameState.nameOffsets = data.nameOffsets;
+          window.__SC_NAME_OFFSETS = data.nameOffsets;
+        }
+        if (data.nameOverrides) {
+          GameState.nameOverrides = data.nameOverrides;
+          window.__SC_NAME_OVERRIDES = data.nameOverrides;
+          try {
+            Object.keys(data.nameOverrides).forEach(function(iso){
+              if (GameState.countries[iso]) GameState.countries[iso].name = data.nameOverrides[iso];
+            });
+          } catch(e){}
+        }
         else if (!GameState.occupations) GameState.occupations = {};
         if (data.hoi) GameState.hoi = data.hoi;
         if (data.difficulty) GameState.difficulty = data.difficulty;

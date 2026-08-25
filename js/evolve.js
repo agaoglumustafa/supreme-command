@@ -311,7 +311,7 @@
   function refreshVictoryChip(g) {
     var po = owners();
     var my = countProvs(po, g.player);
-    var total = po ? Object.keys(po).length : 1081;
+    var total = po ? Object.keys(po).length : 1083;
     var share = total ? my / total : 0;
     var el = document.getElementById("sc-victory-chip");
     if (!el) {

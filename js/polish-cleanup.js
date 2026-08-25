@@ -156,17 +156,25 @@
       if (!passesLod(a, k)) return;
       if (a.n < 1) return;
       var label = (typeof window.scCountryLabel === "function") ? window.scCountryLabel(iso, "auto") : countryDisplayName(g, iso);
+      try {
+        var ren2 = (GameState.nameOverrides && GameState.nameOverrides[iso]) || (window.__SC_NAME_OVERRIDES && window.__SC_NAME_OVERRIDES[iso]);
+        if (ren2) label = ren2;
+      } catch (e) {}
       if (!label) return; // silinen / topraksız ülke ismi yok
       if (a.n < 2 && a.area < 40 && k < 2.5) return;
       var cx = a.ax / a.area;
       var cy = a.ay / a.area;
-      // az eyaletli devletlerde isim hafif kayabilir (centroid gürültüsü)
-      if (a.n <= 4) {
-        var h = 0;
-        for (var hi = 0; hi < iso.length; hi++) h = (h * 31 + iso.charCodeAt(hi)) | 0;
-        cx += ((h % 7) - 3) * 0.35;
-        cy += (((h >> 3) % 7) - 3) * 0.35;
-      }
+      // İsim ofset istisnaları (howareu editörü)
+      try {
+        var off = null;
+        try {
+          if (GameState.nameOffsets && GameState.nameOffsets[iso]) off = GameState.nameOffsets[iso];
+          else if (window.__SC_NAME_OFFSETS && window.__SC_NAME_OFFSETS[iso]) off = window.__SC_NAME_OFFSETS[iso];
+        } catch (e2) {}
+        if (off) { cx += (+off.dx || 0); cy += (+off.dy || 0); }
+        var ren = (GameState.nameOverrides && GameState.nameOverrides[iso]) || (window.__SC_NAME_OVERRIDES && window.__SC_NAME_OVERRIDES[iso]);
+        if (ren) { /* label text handled below */ }
+      } catch (e) {}
       var boxW = Math.max(4, (a.maxX || cx + 2) - (a.minX || cx - 2));
       var boxH = Math.max(3, (a.maxY || cy + 2) - (a.minY || cy - 2));
       var byArea = Math.sqrt(a.area) * 0.22;

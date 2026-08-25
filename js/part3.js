@@ -440,8 +440,8 @@
       mm_load: "Load Game",
       mm_settings: "Settings",
       mm_about: "About",
-      mm_version: "v1.1 · Grand Master · Map 1081",
-      mm_subtitle: "1081 provinces · occupation before annexation · scenario history",
+      mm_version: "v1.1 · Grand Master · Map 1083",
+      mm_subtitle: "1083 provinces · occupation before annexation · scenario history",
       mm_tagline: "Browser Grand Strategy",
       settings_title: "Settings",
       settings_audio: "Audio",
@@ -485,8 +485,8 @@
       mm_load: "Kayıt yükle",
       mm_settings: "Ayarlar",
       mm_about: "Hakkında",
-      mm_version: "v1.1 · Grand Master · Harita 1081",
-      mm_subtitle: "1081 eyalet · ilhaktan önce işgal · senaryo tarihi",
+      mm_version: "v1.1 · Grand Master · Harita 1083",
+      mm_subtitle: "1083 eyalet · ilhaktan önce işgal · senaryo tarihi",
       mm_tagline: "Tarayıcıda Grand Strategy",
       settings_title: "Ayarlar",
       settings_audio: "Ses",
@@ -1601,6 +1601,7 @@
   }
 
   function broadcast(obj, exceptId) {
+    try { window.broadcast = broadcast; window.sendToHost = sendToHost; } catch (e) {}
     Object.keys(MP.conns).forEach(id => {
       if (exceptId && id === exceptId) return;
       sendTo(MP.conns[id], obj);
@@ -1864,6 +1865,8 @@
         sendTo(MP.conns[fromId], { t: "welcome", hostId: MP.peerId, players: MP.players, roomCode: MP.roomCode, scenario: MP.scenario, speed: MP.speedLevel, maxPlayers: maxP });
         mpSysChat((msg.name || fromId) + " katıldı");
         try { if (typeof window.mpAnnounceRoom === "function") window.mpAnnounceRoom(); } catch (e) {}
+        try { if (typeof window.mpRenderLobbyList === "function") window.mpRenderLobbyList(); } catch (e) {}
+        try { if (typeof showToast === "function") showToast((msg.name||"Oyuncu")+" katıldı ("+(msg.country||"?")+")", "good"); } catch (e) {}
         break;
       }
       case "countryPick":
@@ -1873,6 +1876,15 @@
           broadcast({ t: "players", players: MP.players });
           try { if (typeof window.mpRefreshCountrySelect === "function") window.mpRefreshCountrySelect(); } catch (e) {}
         }
+        break;
+      case "eventChoice":
+        // client resolved an event — log for all
+        try {
+          const pname = (MP.players[fromId] && MP.players[fromId].name) || fromId;
+          const line = "📜 " + pname + ": " + (msg.title || "Olay") + " → " + (msg.choice || "?");
+          if (typeof log === "function") log(line, "text-amber-400");
+          broadcast({ t: "logline", text: line, cls: "text-amber-400", toast: true, kind: "info" }, fromId);
+        } catch (e) {}
         break;
       case "ready":
         if (MP.players[fromId]) {
@@ -1935,8 +1947,21 @@
         MP.hostId = msg.hostId;
         MP.players = msg.players || MP.players;
         MP.scenario = msg.scenario || MP.scenario;
+        MP.active = true;
+        MP.isHost = false;
+        if (msg.roomCode) MP.roomCode = msg.roomCode;
+        try {
+          const codeEl = document.getElementById("mp-room-code");
+          if (codeEl) codeEl.textContent = MP.roomCode || codeEl.textContent;
+          const stEl = document.getElementById("mp-conn-status");
+          if (stEl) stEl.textContent = "Bağlandı · " + Object.keys(MP.players||{}).length + " oyuncu";
+          const roleEl = document.getElementById("mp-role");
+          if (roleEl) roleEl.textContent = "Misafir — host başlatacak";
+        } catch (e) {}
         mpRenderLobbyList();
+        try { if (typeof window.mpRenderLobbyList === "function") window.mpRenderLobbyList(); } catch (e) {}
         mpSetLobbyInRoom(true);
+        try { if (typeof showToast === "function") showToast("Odaya girildi · " + Object.keys(MP.players||{}).length + " oyuncu", "good"); } catch (e) {}
         break;
       case "chat":
         pushChat(msg);
@@ -1964,6 +1989,36 @@
         break;
       case "sys":
         mpSysChat(msg.text || "");
+        break;
+      case "news":
+        try {
+          GameState.mpNews = GameState.mpNews || [];
+          if (msg.entry) {
+            GameState.mpNews.unshift(msg.entry);
+            if (GameState.mpNews.length > 40) GameState.mpNews.length = 40;
+          }
+          if (typeof renderSupremacyNews === "function") renderSupremacyNews();
+          if (msg.entry && msg.entry.text && typeof showToast === "function")
+            showToast(msg.entry.text, msg.entry.kind === "war" ? "war" : "info");
+        } catch (e) {}
+        break;
+      case "event":
+        try {
+          if (msg.ev && typeof window.showEventModal === "function") {
+            // mark as remote so resolve doesn't double-broadcast
+            msg.ev._fromHost = true;
+            window.showEventModal(msg.ev);
+          } else if (msg.ev && typeof showToast === "function") {
+            showToast("Olay: " + (msg.ev.title || ""), "info");
+            if (typeof log === "function") log("📜 " + (msg.ev.title || "") + " — " + (msg.ev.text || ""), "text-amber-300");
+          }
+        } catch (e) { console.warn("[MP event]", e); }
+        break;
+      case "logline":
+        try {
+          if (typeof log === "function") log(msg.text || "", msg.cls || "text-slate-400");
+          if (msg.toast && typeof showToast === "function") showToast(String(msg.text).slice(0, 120), msg.kind || "info");
+        } catch (e) {}
         break;
       default:
         break;
@@ -4911,7 +4966,7 @@
 
 // ============================================================
 // SUPREME COMMAND — GRAND MASTER EDITION v1.0  ·  FINAL SEAL
-// Engineered by Grok · Canonical release freeze
+// Supreme Command release
 // ============================================================
 (function SCGrandMasterSeal() {
   "use strict";
@@ -4928,11 +4983,11 @@
         "background:#121810;color:#8a9480;padding:4px 8px;border:1px solid #2a3a28;"
       );
       console.log(
-        "%c Engineered by Grok %c HTML5 / JavaScript Grand Strategy Engine ",
+        "%c Supreme Command %c HTML5 / JavaScript ",
         "background:#1a1810;color:#e8eef7;font-weight:700;padding:3px 8px;",
         "background:#0a1018;color:#5a6450;padding:3px 8px;"
       );
-      console.log("[SC] Release freeze · map pack 1081 · host-centric MP · focus · supply · intel · designer");
+      console.log("[SC] Release freeze · map pack 1083 · host-centric MP · focus · supply · intel · designer");
     } catch (e) {}
   }
 
@@ -5677,7 +5732,7 @@
   setTimeout(function () {
     try {
       document.querySelectorAll("[data-i18n='mm_version']").forEach(el => {
-        el.textContent = "v1.1 · Grand Master · Harita 1081";
+        el.textContent = "v1.1 · Grand Master · Harita 1083";
       });
     } catch (e) {}
   }, 800);
