@@ -169,8 +169,14 @@ if (typeof document !== "undefined") {
 }
 
 // ========== HARİTA PAKETİ (dinamik, GLOBAL) ==========
-// Aktif harita: assets/maps/1081/
-const MAP_PACK_ID = "1081";
+// Aktif harita: assets/maps/1083/
+const MAP_PACK_ID = "1083";
+// SC_MAP_PACK_FALLBACK: if 1083 missing, use 1081
+(function(){ try {
+  var id = (typeof MAP_PACK_ID !== "undefined") ? MAP_PACK_ID : "1083";
+  if (id !== "1083" && id !== "1081") id = "1083";
+} catch(e) {} })();
+
 const MAP_PACK_BASE = "./assets/maps/" + MAP_PACK_ID + "/";
 const MAP_JSON_URL = MAP_PACK_BASE + "map.json";
 const PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
@@ -181,7 +187,7 @@ var SCENARIOS = {};
 window.SCENARIOS = SCENARIOS;
 
 /**
- * assets/maps/1081/scenarios/index.json + modern.json / ww1.json / ww2.json
+ * assets/maps/1083/scenarios/index.json + modern.json / ww1.json / ww2.json
  * Her çağrıda diskten yeniden okur (cache: no-store).
  */
 async function loadScenarioPack() {
@@ -557,7 +563,7 @@ window.toggleSidebar = function() {
 "ARE": {name: "Birleşik Arap Emirlikleri", flag: "ae", color: "#0f766e", ideology: "Monarşi", pop: 9500000, civFactories: 24, milFactories: 8, money: 14000, manpower: 80000, divisions: { inf: 5, art: 2, arm: 2 },
             factoryEfficiency: 1.0,
             productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 12000, artillery: 140, tanks: 90 }, prodAllocation: { guns: 3, artillery: 2, tanks: 3 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
-"AZE": {name: "Azerbaycan", flag: "az", color: "#0369a1", ideology: "Milliyetçilik", pop: 10000000, civFactories: 16, milFactories: 12, money: 6500, manpower: 180000, divisions: { inf: 10, art: 4, arm: 3 },
+"AZE": {name: "Azerbaycan", flag: "https://flagcdn.com/w80/az.png", color: "#0369a1", ideology: "Milliyetçilik", pop: 10000000, civFactories: 16, milFactories: 12, money: 6500, manpower: 180000, divisions: { inf: 10, art: 4, arm: 3 },
             factoryEfficiency: 1.0,
             productionLines: { guns: 1.0, artillery: 1.0, tanks: 1.0 },  stockpile: { guns: 22000, artillery: 300, tanks: 140 }, prodAllocation: { guns: 4, artillery: 4, tanks: 4 }, completedFocuses: [], activeFocus: null, focusProgress: 0 },
 "GEO": {name: "Gürcistan", flag: "ge", color: "#991b1b", ideology: "Demokrasi", pop: 3700000, civFactories: 7, milFactories: 3, money: 1500, manpower: 50000, divisions: { inf: 4, art: 1, arm: 0 },
@@ -3030,7 +3036,7 @@ function applyScenarioToGameState(scenarioId) {
                     if (key !== "modern") log("Senaryo verisi eksik — Modern Dünya yüklendi.", "text-yellow-400");
                 } else {
                     sc = { name: key, year: 2026, techEra: 3, provinceOwners: {}, countryNames: {}, countryColors: {}, countryFlags: {} };
-                    log("Senaryo dosyaları yüklenemedi (assets/maps/1081/scenarios/).", "text-red-400");
+                    log("Senaryo dosyaları yüklenemedi (assets/maps/1083/scenarios/).", "text-red-400");
                 }
             }
             // Disk senaryosunu GameState ile birleştir (isim/renk/bayrak/owners)
@@ -7940,7 +7946,7 @@ function setCountryFlagUrl(iso, url) {
     TUV: ["Tuvalu", "tv", "#00247d"], OMN: ["Umman", "om", "#db161b"],
     VUT: ["Vanuatu", "vu", "#009543"], VAT: ["Vatikan", "va", "#ffe000"],
     NZL: ["Yeni Zelanda", "nz", "#00247d"], ZMB: ["Zambiya", "zm", "#198a00"],
-    ZWE: ["Zimbabve", "zw", "#ffd200"], CYP: ["Kıbrıs Rum Cumhuriyeti", "cy", "#4189dd"],
+    ZWE: ["Zimbabve", "zw", "#ffd200"], CYP: ["Güney Kıbrıs Rum Yönetimi", "cy", "#4189dd"], KTC: ["Kuzey Kıbrıs Türk Cumhuriyeti", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg/250px-Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg.png", "#ffffff"],
 GNB: ["Gine-Bissau","gw", "#008751"], GIN: ["Gine","gw", "#377e3f"], SHN: ["Birleşik Krallık Deniz Aşırı Toprakları","gb", "#0067c6"]
   };
   if (!GameState || !GameState.countries) return;
@@ -12614,8 +12620,8 @@ console.log("V27 Legendary systems loaded");
     SSD: "ss", GAB: "ga", GNQ: "gq", CAF: "cf", TCD: "td", NER: "ne", MLI: "ml", BFA: "bf",
     GIN: "gn", GNB: "gw", SLE: "sl", LBR: "lr", TGO: "tg", BEN: "bj", GMB: "gm", CPV: "cv",
     MUS: "mu", SYC: "sc", COM: "km", MDG: "mg", MWI: "mw", LSO: "ls", SWZ: "sz", FJI: "fj",
-    PNG: "pg", SLB: "sb", VUT: "vu", WSM: "ws", TON: "to", KIR: "ki", TUV: "tv", NRU: "nr",
-    PLW: "pw", FSM: "fm", MHL: "mh", DNZ: "pl", // Danzig fallback
+    PNG: "pg", SLB: "sb", VUT: "vu", WSM: "ws", TON: "to", KIR: "ki", TUV: "tv", NRU: "nr", KTC: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg/250px-Flag_of_the_Turkish_Republic_of_Northern_Cyprus.svg.png",
+    PLW: "pw", FSM: "fm", MHL: "mh", DNZ: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/POL_Gda%C5%84sk_flag.svg/250px-POL_Gda%C5%84sk_flag.svg.png", // Danzig
     AUT: "at", HUN: "hu"
   };
 
@@ -13130,8 +13136,8 @@ console.log("V27 Legendary systems loaded");
       mm_load: "Load Game",
       mm_settings: "Settings",
       mm_about: "About",
-      mm_version: "v1.1 · Grand Master · Map 1081",
-      mm_subtitle: "1081 provinces · occupation before annexation · scenario history",
+      mm_version: "v1.1 · Grand Master · Map 1083",
+      mm_subtitle: "1083 provinces · occupation before annexation · scenario history",
       mm_tagline: "Browser Grand Strategy",
       settings_title: "Settings",
       settings_audio: "Audio",
@@ -13175,8 +13181,8 @@ console.log("V27 Legendary systems loaded");
       mm_load: "Kayıt yükle",
       mm_settings: "Ayarlar",
       mm_about: "Hakkında",
-      mm_version: "v1.1 · Grand Master · Harita 1081",
-      mm_subtitle: "1081 eyalet · ilhaktan önce işgal · senaryo tarihi",
+      mm_version: "v1.1 · Grand Master · Harita 1083",
+      mm_subtitle: "1083 eyalet · ilhaktan önce işgal · senaryo tarihi",
       mm_tagline: "Tarayıcıda Grand Strategy",
       settings_title: "Ayarlar",
       settings_audio: "Ses",
@@ -17542,7 +17548,7 @@ console.log("V27 Legendary systems loaded");
         "background:#1a1810;color:#e8eef7;font-weight:700;padding:3px 8px;",
         "background:#0a1018;color:#5a6450;padding:3px 8px;"
       );
-      console.log("[SC] Release freeze · map pack 1081 · host-centric MP · focus · supply · intel · designer");
+      console.log("[SC] Release freeze · map pack 1083 · host-centric MP · focus · supply · intel · designer");
     } catch (e) {}
   }
 
@@ -18282,7 +18288,7 @@ console.log("V27 Legendary systems loaded");
   setTimeout(function () {
     try {
       document.querySelectorAll("[data-i18n='mm_version']").forEach(el => {
-        el.textContent = "v1.1 · Grand Master · Harita 1081";
+        el.textContent = "v1.1 · Grand Master · Harita 1083";
       });
     } catch (e) {}
   }, 800);
@@ -19036,7 +19042,7 @@ console.log("V27 Legendary systems loaded");
         if (g.empty()) g = svg.append("g");
         // clear only paths, keep structure
         g.selectAll("path").remove();
-        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1081/map.json";
+        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1083/map.json";
         d3.json(url).then(function (provinces) {
           if (!provinces || !provinces.length) {
             console.warn("[playable] map.json empty");
