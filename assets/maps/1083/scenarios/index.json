@@ -1,0 +1,17 @@
+{
+  "packId": "1081",
+  "scenarios": [
+    {
+      "id": "modern",
+      "file": "modern.json"
+    },
+    {
+      "id": "ww1",
+      "file": "ww1.json"
+    },
+    {
+      "id": "ww2",
+      "file": "ww2.json"
+    }
+  ]
+}
