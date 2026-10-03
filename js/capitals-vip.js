@@ -1,3 +1,18 @@
+
+(function(){ var _lastCap=0; var _n=0;
+  var _log=console.log.bind(console);
+  console.log = function() {
+    try {
+      var a=arguments[0];
+      if (typeof a==="string" && a.indexOf("[capitals-vip] assigned")===0) {
+        _n++;
+        if (Date.now()-_lastCap < 8000) return;
+        _lastCap=Date.now();
+      }
+    } catch(e){}
+    return _log.apply(console, arguments);
+  };
+})();
 // ===== Capitals VIP · full assignment · name over capital · move capital =====
 (function SCCapitalsVIP() {
   "use strict";

@@ -1,0 +1,183 @@
+
+/* SC Command Theme — v1.9.0 (komuta arayüzü) */
+:root {
+  --hoi-bg: #0b1018;
+  --hoi-panel: #121a24;
+  --hoi-panel2: #1a2433;
+  --hoi-border: #2a3a4e;
+  --hoi-border-hi: #3d5a73;
+  --hoi-gold: #c9a227;
+  --hoi-gold-hi: #e8c547;
+  --hoi-text: #d6dce6;
+  --hoi-muted: #7a8799;
+  --hoi-green: #3d8f5a;
+  --hoi-red: #c43c3c;
+  --hoi-cyan: #5b9fd4;
+  --hoi-orange: #d4893a;
+}
+
+html, body {
+  background: var(--hoi-bg) !important;
+  color: var(--hoi-text) !important;
+  font-family: "Segoe UI", system-ui, sans-serif !important;
+}
+
+#top-bar {
+  background: linear-gradient(180deg, #1a2433, #121a24) !important;
+  border-bottom: 1px solid var(--hoi-border-hi) !important;
+  min-height: 44px !important;
+  position: relative !important;
+}
+#top-bar::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--hoi-gold), transparent);
+  pointer-events: none;
+}
+#hud-country-name {
+  color: var(--hoi-gold-hi) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  letter-spacing: 0.06em !important;
+  font-weight: 700 !important;
+}
+.hoi-res {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border: 1px solid var(--hoi-border);
+  background: rgba(10,16,24,0.7); font-family: ui-monospace, monospace;
+  font-size: 11px; border-radius: 1px;
+}
+.hoi-res .k { color: var(--hoi-muted); font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; font-family: "Segoe UI", sans-serif; font-weight: 700; }
+
+#left-panel {
+  background: linear-gradient(180deg, #121a24, #0e1520) !important;
+  border-right: 1px solid var(--hoi-border-hi) !important;
+}
+#left-panel .tab-btn {
+  background: linear-gradient(180deg, #1a2433, #141c28) !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-muted) !important;
+  border-radius: 1px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-size: 10px !important;
+}
+#left-panel .tab-btn.active {
+  border-color: var(--hoi-gold) !important;
+  color: var(--hoi-gold-hi) !important;
+  box-shadow: inset 0 -2px 0 var(--hoi-gold) !important;
+}
+
+#main-menu-screen {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61,90,115,0.22), transparent 55%),
+    linear-gradient(165deg, #070b12, #0e1520 50%, #0a1018) !important;
+}
+#main-menu-screen .sc-menu-card {
+  border: 1px solid var(--hoi-border-hi) !important;
+  background: linear-gradient(180deg, #1a2433, #121a24) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7) !important;
+}
+#main-menu-screen .sc-menu-title {
+  color: var(--hoi-gold-hi) !important;
+  font-family: Georgia, serif !important;
+  letter-spacing: 0.18em !important;
+}
+.mm-btn {
+  background: linear-gradient(180deg, #1e2a38, #15202c) !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-text) !important;
+  border-radius: 1px !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  font-weight: 700 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+.mm-btn:hover { border-color: var(--hoi-gold) !important; color: var(--hoi-gold-hi) !important; }
+.mm-btn-primary {
+  border-color: #2d5a40 !important;
+  background: linear-gradient(180deg, #1e3d2c, #14281c) !important;
+}
+
+#map-container, main[style*="031a5c"] {
+  background: radial-gradient(ellipse at 50% 40%, #0a2a6a, #031a5c 60%, #020f38) !important;
+}
+.country-path { stroke: rgba(6,10,18,0.75) !important; }
+.country-path:hover { filter: brightness(1.12) !important; }
+
+#hoi-mapmodes {
+  position: absolute; left: 10px; bottom: 12px; z-index: 25;
+  display: flex; flex-direction: column; gap: 3px; pointer-events: auto;
+}
+#hoi-mapmodes button {
+  min-width: 40px; height: 28px; padding: 0 8px;
+  background: linear-gradient(180deg, #1e2a38, #15202c);
+  border: 1px solid var(--hoi-border); color: var(--hoi-text);
+  font-size: 10px; font-weight: 800; letter-spacing: 0.04em;
+  cursor: pointer; border-radius: 1px; font-family: "Segoe UI", sans-serif;
+}
+#hoi-mapmodes button.active, #hoi-mapmodes button:hover {
+  border-color: var(--hoi-gold); color: var(--hoi-gold-hi);
+}
+
+#hoi-event-card {
+  position: fixed; top: 56px; left: 50%; transform: translateX(-50%);
+  z-index: 120; width: min(420px, 92vw);
+  background: linear-gradient(180deg, #1a2433, #121a24);
+  border: 1px solid var(--hoi-gold);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.65);
+  padding: 14px 16px; display: none;
+}
+#hoi-event-card .title {
+  font-family: Georgia, serif; color: var(--hoi-gold-hi);
+  letter-spacing: 0.08em; font-size: 14px; margin-bottom: 8px;
+}
+#hoi-event-card .body { font-size: 12px; color: var(--hoi-text); line-height: 1.45; margin-bottom: 12px; }
+#hoi-event-card .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+#hoi-event-card .actions button {
+  flex: 1; min-width: 100px; padding: 8px 10px;
+  background: linear-gradient(180deg, #1e2a38, #15202c);
+  border: 1px solid var(--hoi-border); color: var(--hoi-text);
+  font-weight: 700; font-size: 11px; cursor: pointer; text-transform: uppercase;
+}
+#hoi-event-card .actions button:hover { border-color: var(--hoi-gold); color: var(--hoi-gold-hi); }
+
+#hoi-politics-strip {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px;
+}
+#hoi-politics-strip .hoi-pol {
+  background: linear-gradient(180deg, #1a2433, #121a24);
+  border: 1px solid var(--hoi-border); padding: 8px; text-align: center;
+}
+#hoi-politics-strip .k { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hoi-muted); font-weight: 700; }
+#hoi-politics-strip .v { font-family: ui-monospace, monospace; font-size: 15px; color: var(--hoi-gold-hi); font-weight: 700; }
+
+.stat-tile {
+  background: linear-gradient(180deg, #1a2433, #121a24) !important;
+  border: 1px solid var(--hoi-border) !important; border-radius: 1px !important; padding: 10px !important;
+}
+.stat-label { font-size: 10px !important; color: var(--hoi-muted) !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; }
+.stat-value { font-family: ui-monospace, monospace !important; font-size: 17px !important; color: var(--hoi-gold-hi) !important; }
+
+#log-panel {
+  background: rgba(12,18,28,0.92) !important;
+  border: 1px solid var(--hoi-border) !important;
+  border-radius: 1px !important;
+}
+
+#sc-country-names text {
+  paint-order: stroke fill;
+  stroke: rgba(8,12,20,0.9);
+  stroke-width: 1.1px;
+  fill: #f3f6fa !important;
+  font-weight: 800 !important;
+  font-family: Georgia, serif !important;
+}
+
+
+/* gfx hooks */
+#map-container.sc-map-host {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 45%, #0a3d7a 0%, #052a5c 40%, #031a45 70%, #020f2e 100%) !important;
+}

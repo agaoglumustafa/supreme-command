@@ -30,7 +30,7 @@
     if (!g.supplyHubs) g.supplyHubs = {}; // provinceName → true
     if (!g.ultimatums) g.ultimatums = [];
     if (!g.formedNations) g.formedNations = {};
-    g.voiceMuted = true; // ses emirleri kaldırıldı
+    g.voiceMuted = true; window.scSpeakOrder = function(){};
   g.ultimatums = [];
   g.formable_disabledsDisabled = true;
     return g;

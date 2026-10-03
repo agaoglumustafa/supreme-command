@@ -23,7 +23,7 @@
   }
 
   // =====================================================================
-  // 1) HOI-style country names on map
+  // 1) command country names on map
   // =====================================================================
   function mapZoomGroup() {
     var svg = document.querySelector("#game-map");
@@ -38,14 +38,19 @@
     var parent = mapZoomGroup();
     if (!parent) return null;
     var layer = document.getElementById("sc-country-names");
-    if (layer && layer.parentNode !== parent) {
-      try { parent.appendChild(layer); } catch (e) {}
-    }
     if (!layer) {
       layer = document.createElementNS("http://www.w3.org/2000/svg", "g");
       layer.setAttribute("id", "sc-country-names");
       layer.setAttribute("pointer-events", "none");
+      layer.setAttribute("class", "sc-name-layer-top");
+    }
+    // ALWAYS last child → eyalet path'lerinin üstünde
+    try {
       parent.appendChild(layer);
+    } catch (e) {
+      if (layer.parentNode !== parent) {
+        try { parent.appendChild(layer); } catch (e2) {}
+      }
     }
     return layer;
   }
@@ -92,21 +97,75 @@
     return 1;
   }
 
-  /** Nearer zoom → smaller countries get labels */
-  function passesLod(a, k) {
-    if (k >= 3.5) return a.n >= 1 || a.area >= 8;
-    if (k >= 2.2) return a.n >= 2 || a.area >= 25;
-    if (k >= 1.4) return a.n >= 4 || a.area >= 60;
-    if (k >= 0.9) return a.n >= 8 || a.area >= 120;
-    if (k >= 0.55) return a.n >= 16 || a.area >= 220;
-    return a.n >= 28 || a.area >= 400; // far: only big nations
+  /**
+   * İsim kuralı:
+   * - Zoom çok yakınsa (k >= ZOOM_HIDE) hiç isim yok
+   * - Aksi halde: 5+ eyalet VEYA en az 2 "Ankara büyüklüğünde" eyalet
+   */
+  var ZOOM_HIDE_NAMES = 2.6;
+  var _ankaraAreaCache = null;
+
+  function ankaraRefArea() {
+    if (_ankaraAreaCache && _ankaraAreaCache > 0) return _ankaraAreaCache;
+    var ref = 0;
+    try {
+      var paths = document.querySelectorAll("#game-map path.country-path");
+      for (var i = 0; i < paths.length; i++) {
+        var n = (paths[i].getAttribute("data-name") || "").toLowerCase();
+        if (n === "ankara" || n.indexOf("ankara") === 0) {
+          try {
+            var b = paths[i].getBBox();
+            var ar = Math.max(0.01, b.width * b.height);
+            if (ar > ref) ref = ar;
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+    // Ankara yoksa medyan büyük eyalet yaklaşık değeri
+    if (ref < 1) {
+      var areas = [];
+      try {
+        document.querySelectorAll("#game-map path.country-path").forEach(function (el) {
+          try {
+            var b = el.getBBox();
+            areas.push(b.width * b.height);
+          } catch (e2) {}
+        });
+      } catch (e3) {}
+      areas.sort(function (a, b) { return a - b; });
+      if (areas.length) ref = areas[Math.floor(areas.length * 0.72)] || 40;
+    }
+    _ankaraAreaCache = ref;
+    return ref;
   }
 
+  function isMajorCountry(a) {
+    if (!a) return false;
+    // 5+ eyalet
+    if (a.n >= 5) return true;
+    // 2 büyük eyalet (Ankara kadar veya daha büyük)
+    if ((a.bigN || 0) >= 2) return true;
+    return false;
+  }
+
+  function passesLod(a, k) {
+    // Yakın zoom: isimler tamamen kapansın
+    if (k >= ZOOM_HIDE_NAMES) return false;
+    return isMajorCountry(a);
+  }
+
+  function raiseNameLayer(layer) {
+    try {
+      var parent = mapZoomGroup();
+      if (parent && layer) parent.appendChild(layer);
+    } catch (e) {}
+  }
   function refreshCountryNames(force) {
     var g = GS();
     var po = owners();
     var layer = ensureNameLayer();
     if (!layer) return;
+    raiseNameLayer(layer);
 
     if (!namesEnabled()) {
       while (layer.firstChild) layer.removeChild(layer.firstChild);
@@ -129,11 +188,13 @@
       try {
         var b = el.getBBox();
         var area = Math.max(0.01, b.width * b.height);
-        if (!agg[iso]) agg[iso] = { ax: 0, ay: 0, area: 0, n: 0, minX: b.x, minY: b.y, maxX: b.x + b.width, maxY: b.y + b.height };
+        if (!agg[iso]) agg[iso] = { ax: 0, ay: 0, area: 0, n: 0, bigN: 0, minX: b.x, minY: b.y, maxX: b.x + b.width, maxY: b.y + b.height };
         agg[iso].ax += (b.x + b.width / 2) * area;
         agg[iso].ay += (b.y + b.height / 2) * area;
         agg[iso].area += area;
         agg[iso].n += 1;
+        var ank = ankaraRefArea();
+        if (area >= ank * 0.92) agg[iso].bigN += 1;
         if (b.x < agg[iso].minX) agg[iso].minX = b.x;
         if (b.y < agg[iso].minY) agg[iso].minY = b.y;
         if (b.x + b.width > agg[iso].maxX) agg[iso].maxX = b.x + b.width;
@@ -161,7 +222,7 @@
         if (ren2) label = ren2;
       } catch (e) {}
       if (!label) return; // silinen / topraksız ülke ismi yok
-      if (a.n < 2 && a.area < 40 && k < 2.5) return;
+      if (!isMajorCountry(a)) return;
       var cx = a.ax / a.area;
       var cy = a.ay / a.area;
       // İsim ofset istisnaları (howareu editörü)

@@ -1,0 +1,35 @@
+
+/* v1.9.3 sade paneller */
+#left-panel .tab-btn {
+  font-size: 9px !important;
+  padding: 6px 4px !important;
+  letter-spacing: 0.04em !important;
+}
+#hoi-sys-root, #hoi-politics-strip {
+  font-size: 11px;
+}
+#hoi-sys-root .border {
+  border-color: rgba(42,58,78,0.7) !important;
+}
+#hoi-sys-laws button, #hoi-sys-focus button {
+  font-size: 9px !important;
+  padding: 4px 6px !important;
+  line-height: 1.25 !important;
+}
+#hoi-sys-prod input[type=range] {
+  height: 4px;
+}
+.stat-tile {
+  padding: 8px !important;
+}
+.stat-value {
+  font-size: 15px !important;
+}
+#content-dashboard {
+  gap: 0.5rem;
+}
+/* less visual noise */
+#log-panel {
+  font-size: 11px;
+  opacity: 0.95;
+}

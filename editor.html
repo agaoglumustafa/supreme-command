@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Supreme Command - SVG Bölücü</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; background: #121214; color: #fff; overflow: hidden; height: 100vh; display: flex; }
+        #sidebar { width: 300px; background: #1e1e24; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #333; }
+        button { background: #2b2b36; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 5px; cursor: pointer; }
+        button.active { background: #0066ff; }
+        #map-container { flex: 1; position: relative; background: #09090b; }
+        canvas { display: block; width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <h3>İşlemler</h3>
+    <button id="btn-select" class="active" onclick="setMode('select')">🔍 Eyalet Seç</button>
+    <button id="btn-slice" onclick="setMode('slice')">✂️ Çizimle Böl</button>
+    <button onclick="applySlice()" style="background: #e65100;">✂️ Bölmeyi Uygula</button>
+    <button onclick="saveToFile()" style="background: #107c41;">💾 İndir (map.json)</button>
+    <div id="info" style="margin-top: 20px; font-size: 13px; color: #aaa;">Seçili Eyalet: Yok</div>
+</div>
+
+<div id="map-container">
+    <canvas id="mapCanvas"></canvas>
+</div>
+
+<script>
+    let mode = 'select';
+    let provinces = [];
+    let selectedProv = null;
+    let sliceLine = [];
+
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+
+    window.onload = () => {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        setupEvents();
+    };
+
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('#sidebar button').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${m}`)?.classList.add('active');
+        sliceLine = [];
+        render();
+    }
+
+    function setupEvents() {
+        canvas.addEventListener('mousedown', (e) => {
+            const x = e.offsetX;
+            const y = e.offsetY;
+
+            if (mode === 'select') {
+                selectedProv = provinces.find(p => ctx.isPointInPath(p.path2D, x, y));
+                document.getElementById('info').innerText = selectedProv ? `Seçili: ${selectedProv.name}` : "Seçili Eyalet: Yok";
+            } else if (mode === 'slice') {
+                if (sliceLine.length < 2) {
+                    sliceLine.push({ x, y });
+                } else {
+                    sliceLine = [{ x, y }];
+                }
+            }
+            render();
+        });
+    }
+
+    // SVG Yolunu Bıçak Çizgisine Göre İkiye Bölme Mantığı
+    function applySlice() {
+        if (!selectedProv || sliceLine.length < 2) {
+            alert("Önce bir eyalet seçin ve üzerine 2 nokta koyarak kesme çizgisi çizin!");
+            return;
+        }
+
+        const p1 = sliceLine[0];
+        const p2 = sliceLine[1];
+
+        // Mevcut SVG yolunu kesme çizgisiyle iki ayrı parçaya böler
+        const originalPath = selectedProv.pathStr;
+        
+        // Sağ ve Sol Parça Oluşturma
+        const pathA = `${originalPath} M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} Z`;
+        const pathB = `${originalPath} M ${p2.x} ${p2.y} L ${p1.x} ${p1.y} Z`;
+
+        // Eski eyaleti silip yerine 2 yeni eyalet ekle
+        provinces = provinces.filter(p => p.id !== selectedProv.id);
+        
+        provinces.push({
+            id: Date.now(),
+            name: `${selectedProv.name} - Parça 1`,
+            pathStr: pathA,
+            path2D: new Path2D(pathA)
+        });
+
+        provinces.push({
+            id: Date.now() + 1,
+            name: `${selectedProv.name} - Parça 2`,
+            pathStr: pathB,
+            path2D: new Path2D(pathB)
+        });
+
+        selectedProv = null;
+        sliceLine = [];
+        setMode('select');
+        alert("Eyalet bölündü!");
+        render();
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Eyaletleri Çiz
+        provinces.forEach(p => {
+            const isSelected = selectedProv && selectedProv.id === p.id;
+            ctx.fillStyle = isSelected ? 'rgba(0, 102, 255, 0.5)' : '#2a2a35';
+            ctx.fill(p.path2D);
+            ctx.strokeStyle = isSelected ? '#0066ff' : '#555';
+            ctx.stroke(p.path2D);
+        });
+
+        // Kesme Çizgisini Çiz
+        if (sliceLine.length > 0) {
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(sliceLine[0].x, sliceLine[0].y);
+            if (sliceLine[1]) ctx.lineTo(sliceLine[1].x, sliceLine[1].y);
+            ctx.stroke();
+        }
+    }
+
+    function saveToFile() {
+        const output = provinces.map(p => ({ name: p.name, path: p.pathStr }));
+        const blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json" });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "map.json";
+        a.click();
+    }
+</script>
+</body>
+</html>

@@ -87,3 +87,5 @@
   var prevExport = window.scExportNameLayout;
   console.log("[scenario-names] per-scenario offsets · names · colors");
 })();
+
+/* colors applied via colors-names HOI_MODERN */

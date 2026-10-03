@@ -5,7 +5,7 @@
 
 
 // ============================================================
-// V47 — HOI4-inspired combat (Org / Strength / Soft-Hard / Width)
+// V47 — SC-inspired combat (Org / Strength / Soft-Hard / Width)
 // Günlük tick içinde birden fazla "saatlik" tur simüle edilir.
 // ============================================================
 (function V47HoiCombat() {
@@ -281,7 +281,7 @@
     };
   }
 
-  console.log("V47 HOI combat: Org/HP, soft-hard, armor-pierce, combat width, daily multi-round");
+  console.log("V47 SC combat: Org/HP, soft-hard, armor-pierce, combat width, daily multi-round");
 })();
 
 
@@ -440,9 +440,9 @@
       mm_load: "Load Game",
       mm_settings: "Settings",
       mm_about: "About",
-      mm_version: "v1.1 · Grand Master · Map 1083",
-      mm_subtitle: "1083 provinces · occupation before annexation · scenario history",
-      mm_tagline: "Browser Grand Strategy",
+      mm_version: "v1.8.3 · Dünya / Avrupa haritası",
+      mm_subtitle: "Büyük strateji · İşgal · Barış masası · Çok oyunculu",
+      mm_tagline: "Browser grand strategy",
       settings_title: "Settings",
       settings_audio: "Audio",
       settings_sfx: "Sound effects",
@@ -485,9 +485,9 @@
       mm_load: "Kayıt yükle",
       mm_settings: "Ayarlar",
       mm_about: "Hakkında",
-      mm_version: "v1.1 · Grand Master · Harita 1083",
-      mm_subtitle: "1083 eyalet · ilhaktan önce işgal · senaryo tarihi",
-      mm_tagline: "Tarayıcıda Grand Strategy",
+      mm_version: "v1.8.3 · Dünya / Avrupa haritası",
+      mm_subtitle: "Büyük strateji · İşgal · Barış masası · Çok oyunculu",
+      mm_tagline: "Tarayıcıda büyük strateji",
       settings_title: "Ayarlar",
       settings_audio: "Ses",
       settings_sfx: "Ses efektleri",
@@ -1375,7 +1375,7 @@
 
 
 // ============================================================
-// SUPREME COMMAND — HOI4-STYLE MULTIPLAYER ENGINE (clean rebuild)
+// SUPREME COMMAND — SC-STYLE MULTIPLAYER ENGINE (clean rebuild)
 // Host-centric authority · shared clock · diplo · chat · ping · spectator
 // Replaces all prior V54/V55 layered patches.
 // ============================================================
@@ -2864,7 +2864,7 @@
   const _origWarn = console.warn;
   // (no console override needed — we simply never surface peer IPs)
 
-  console.log("[MP] HOI4-style host-centric engine online");
+  console.log("[MP] SC-style host-centric engine online");
 })();
 
 // ============================================================
@@ -2933,7 +2933,7 @@
       if (a.a === iso) set.add(a.b);
       if (a.b === iso) set.add(a.a);
     });
-    // Faction mates if HOI factions exist
+    // Faction mates if SC factions exist
     try {
       if (GameState.hoi && GameState.hoi.factions && typeof getFactionOf === "function") {
         const f = getFactionOf(iso);
@@ -3352,7 +3352,7 @@
     ).length;
     const casEnemy = (war && war.enemyCasualties) || 0;
     const casOwn = (war && war.casualties) || 0;
-    // HOI-ish: score from progress + occupation + casualties dealt
+    // SC-ish: score from progress + occupation + casualties dealt
     let vp = Math.floor(progress * 0.6) + occ * 3 + Math.floor(casEnemy / 5000) - Math.floor(casOwn / 8000);
     vp = Math.max(5, Math.min(200, vp));
     return {
@@ -3481,7 +3481,7 @@
 
 // ============================================================
 // GRAND EXPANSION — Focus Trees · Divisions/Width · Cabinet · Tech/Prod
-// HOI4-inspired systems layered on existing GameState without breaking SP/MP
+// SC-inspired systems layered on existing GameState without breaking SP/MP
 // ============================================================
 (function SCGrandExpansion() {
   "use strict";
@@ -3537,7 +3537,7 @@
   }
 
   // ============================================================
-  // 1) NATIONAL FOCUS TREES (HOI-style chains)
+  // 1) NATIONAL FOCUS TREES (command chains)
   // ============================================================
   function focusReward(iso, fn) {
     return function () {
@@ -4987,7 +4987,7 @@
         "background:#1a1810;color:#e8eef7;font-weight:700;padding:3px 8px;",
         "background:#0a1018;color:#5a6450;padding:3px 8px;"
       );
-      console.log("[SC] Release freeze · map pack 1083 · host-centric MP · focus · supply · intel · designer");
+      console.log("[SC] Release freeze · map pack Europe3728 · host-centric MP · focus · supply · intel · designer");
     } catch (e) {}
   }
 
@@ -5729,13 +5729,8 @@
   }, 2000);
 
   // Fix version label after i18n
-  setTimeout(function () {
-    try {
-      document.querySelectorAll("[data-i18n='mm_version']").forEach(el => {
-        el.textContent = "v1.1 · Grand Master · Harita 1083";
-      });
-    } catch (e) {}
-  }, 800);
+  // v1.8.3: eski menü metni zorlaması kaldırıldı (titreme / sonradan değişme yok)
+  /* setTimeout mm_version override disabled */
 
   // FOG stay off
   window.FOG_ENABLED = false;
@@ -5751,11 +5746,31 @@
 
   window.startGame = async function startGameSafe() {
     try {
+      var pid = (document.getElementById("sc-map-pack-select") || {}).value
+        || window.MAP_PACK_ID
+        || (localStorage.getItem("sc_map_pack"))
+        || "1095";
+      if (String(pid).indexOf("Europe") === 0) pid = "Europe3728";
+      window.MAP_PACK_ID = pid;
+      try { localStorage.setItem("sc_map_pack", pid); sessionStorage.setItem("sc_map_pack", pid); } catch (e) {}
+      console.log("%c[startGameSafe] PACK=" + pid, "color:#ff0;font-size:14px;font-weight:bold");
+      if (typeof window.scLoadMapPack === "function") {
+        var loaded = await window.scLoadMapPack(pid);
+        var n = (loaded && loaded.length) || (window._scMapProvinceList && window._scMapProvinceList.length) || 0;
+        console.log("[startGameSafe] provinces after load:", n);
+        if (pid === "Europe3728" && n < 2500) {
+          alert("Avrupa haritası yüklenemedi (eyalet=" + n + ").\nKonsolu kontrol et.\nYol: assets/maps/Europe3728/map.json");
+          throw new Error("Europe map failed count=" + n);
+        }
+      }
+    } catch (ePack) { console.error("[startGameSafe] pack FAIL", ePack); throw ePack; }
+
+    try {
       try { if (window._mapPackReady) await window._mapPackReady; } catch (e) {}
       try { await loadScenarioPack(); } catch (e) { console.error("scenario pack", e); }
 
       try { if (window.MusicPlayer && MusicPlayer.start) MusicPlayer.start(); } catch (e) {}
-      try { if (typeof sfx !== "undefined" && sfx.playVictory) sfx.playVictory(); } catch (e) {}
+      try { /* start victory sfx muted v1.8.5 */ } catch (e) {}
 
       const lobbySelect = document.getElementById("lobby-country-select");
       let iso = (lobbySelect && lobbySelect.value) || GameState.player || "TUR";

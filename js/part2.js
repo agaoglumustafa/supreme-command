@@ -4972,7 +4972,7 @@ console.log("V27 Legendary systems loaded");
 
 
 // ============================================================
-// V38 — HOI4 tarzı çekirdek katman
+// V38 — SC tarzı çekirdek katman
 // Fraksiyonlar · Call to Arms · WT · Ordu XP · Araştırma slotları
 // · Ekipman açığı · Odak hızı · AI fraksiyon davranışı
 // ============================================================
@@ -5127,7 +5127,7 @@ console.log("V27 Legendary systems loaded");
     return d;
   };
 
-  // Focus progress HOI-like: ~70 days default already in game - boost with PP
+  // Focus progress command: ~70 days default already in game - boost with PP
   window.hoiTick = function() {
     try {
       const h = st();
@@ -5236,7 +5236,7 @@ console.log("V27 Legendary systems loaded");
 
   // Button row for faction join in diplomacy when viewing self - inject via renderHoiFactions only
 
-  console.log("V38 HOI4 layer: factions, CTA, WT, XP, research slots, equipment factor");
+  console.log("V38 SC layer: factions, CTA, WT, XP, research slots, equipment factor");
 })();
 
 

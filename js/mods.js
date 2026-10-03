@@ -1,3 +1,5 @@
+window.progressionPulse = function(){};
+window.campaignStage = function () {};
 if (typeof window.campaignStage !== "function") window.campaignStage = function () {};
 // ============================================================
 (function SCPlayableFix() {
@@ -53,8 +55,14 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
         if (g.empty()) g = svg.append("g");
         // clear only paths, keep structure
         g.selectAll("path").remove();
-        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1083/map.json";
+        var pack = window.MAP_PACK_ID || (typeof MAP_PACK_ID !== "undefined" ? MAP_PACK_ID : null) || "1095";
+        if (String(pack).indexOf("Europe") === 0) pack = "Europe3728";
+        var url = (window.MAP_JSON_URL) || ("./assets/maps/" + pack + "/map.json");
+        console.log("[playable] scRedrawMap", pack, url);
         d3.json(url).then(function (provinces) {
+          window._scMapProvinceList = (provinces || []).map(function (p) { return p.name; });
+          window._scMapProvinceObjs = provinces || [];
+
           if (!provinces || !provinces.length) {
             console.warn("[playable] map.json empty");
             return resolve(false);
@@ -215,6 +223,9 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
   setInterval(function () {
     try {
       if (!GameState || !GameState.running || GameState.gameOver) return;
+      // Europe uses viewport cull — low path count is normal, never force 1095 redraw
+      var pack = window.MAP_PACK_ID || "";
+      if (String(pack).indexOf("Europe") === 0) return;
       if (scCountMapPaths() >= 100) { _wdOnce = false; return; }
       if (_wdOnce) return;
       _wdOnce = true;
@@ -493,7 +504,7 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
       document.body.classList.add("sc-ingame");
       ["main-menu-screen", "lobby-screen", "credits-modal", "mp-lobby-modal", "sc-tutorial"].forEach(hideEl);
     } catch (e) {}
-  }, 500);
+  }, 2000);
 
   console.log("[release v1.1.3] menu nav + forcePlay + lock");
 })();
@@ -503,6 +514,8 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
 // Goal: player should not stare at a quiet map for the first ~1h of real play.
 (function SCHourOne() {
   "use strict";
+  console.log("[hour-one] DISABLED v15");
+  return;
 
   var DAY_MS = 24 * 3600 * 1000;
   var WINDOW_DAYS = 120; // first ~4 game months = dense opening
@@ -1384,7 +1397,7 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
     } catch (e) { return 0; }
   }
 
-  function progressionPulse() {
+  function progressionPulse_disabled_spam() {
     var g = GS();
     if (!g || !g.running || g.gameOver) return;
     var prog = ensureProg(g);
@@ -1411,10 +1424,7 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
     var prev = window.gameTick;
     if (typeof prev !== "function") return false;
     if (prev._progWrapped) return true;
-    window.gameTick = function () {
-      try { prev.apply(this, arguments); } catch (e) { console.warn(e); }
-      try { progressionPulse(); } catch (e) { /* progression quiet */ }
-    };
+    window.gameTick = prev; /* progression wrap disabled v15 */
     window.gameTick._progWrapped = true;
     return true;
   }
@@ -1442,5 +1452,5 @@ if (typeof window.campaignStage !== "function") window.campaignStage = function 
   var lastSel = null;
   /* interval removed (hourPulse/refreshDock blink) */
 
-  console.log("[progression] rank · dock · AI expand · war drip online");
+  console.log("[progression] DISABLED v15");
 })();

@@ -1,75 +1,614 @@
-/* Supreme Command — MP + Stage1 UI */
-#mp-hud { backdrop-filter: blur(6px); }
+
+/* =========================================================
+   SUPREME COMMAND — SC-inspired Grand Strategy UI
+   Release theme v1.8.0
+   ========================================================= */
+
+:root {
+  --hoi-bg: #0b1018;
+  --hoi-bg2: #121a24;
+  --hoi-panel: #151d28;
+  --hoi-panel2: #1a2433;
+  --hoi-border: #2a3a4e;
+  --hoi-border-hi: #3d5a73;
+  --hoi-gold: #c9a227;
+  --hoi-gold-dim: #8a7020;
+  --hoi-gold-hi: #e8c547;
+  --hoi-text: #d6dce6;
+  --hoi-muted: #7a8799;
+  --hoi-cyan: #5b9fd4;
+  --hoi-red: #c43c3c;
+  --hoi-green: #3d8f5a;
+  --hoi-orange: #d4893a;
+  --hoi-map-ocean: #031a5c;
+  --hoi-shadow: 0 12px 40px rgba(0,0,0,0.55);
+  --hoi-inset: inset 0 1px 0 rgba(255,255,255,0.04);
+  --font-title: Georgia, "Times New Roman", serif;
+  --font-ui: "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+}
+
+html, body {
+  background: var(--hoi-bg) !important;
+  color: var(--hoi-text) !important;
+  font-family: var(--font-ui) !important;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Scrollbars ---- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0a0e14; }
+::-webkit-scrollbar-thumb { background: #2a3a4e; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #3d5a73; }
+
+/* ---- MAIN MENU ---- */
+#main-menu-screen {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61,90,115,0.25), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(201,162,39,0.06), transparent 50%),
+    linear-gradient(165deg, #070b12 0%, #0e1520 45%, #0a1018 100%) !important;
+}
+#main-menu-screen::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+  opacity: 0.5;
+}
+#main-menu-screen .sc-menu-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(30,40,55,0.95) 0%, rgba(18,26,36,0.98) 100%);
+  border: 1px solid var(--hoi-border-hi);
+  box-shadow:
+    0 0 0 1px rgba(201,162,39,0.12),
+    0 25px 60px rgba(0,0,0,0.75),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  border-radius: 2px;
+  max-width: 420px;
+  width: 100%;
+  overflow: hidden;
+}
+#main-menu-screen .sc-menu-card::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--hoi-gold), transparent);
+}
+#main-menu-screen .sc-menu-title {
+  font-family: var(--font-title) !important;
+  letter-spacing: 0.22em !important;
+  color: var(--hoi-gold-hi) !important;
+  text-shadow: 0 2px 0 #000, 0 0 28px rgba(201,162,39,0.2);
+  font-size: 1.65rem !important;
+}
+#main-menu-screen .sc-menu-sub {
+  color: var(--hoi-muted) !important;
+  letter-spacing: 0.28em !important;
+  font-size: 10px !important;
+  text-transform: uppercase;
+  font-family: var(--font-ui);
+}
+.mm-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 13px 18px !important;
+  margin: 0 !important;
+  background: linear-gradient(180deg, #1e2a38, #15202c) !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-text) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-ui) !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  border-radius: 1px !important;
+  transition: border-color .15s, background .15s, color .15s, box-shadow .15s !important;
+  box-shadow: var(--hoi-inset);
+}
+.mm-btn:hover {
+  border-color: var(--hoi-gold-dim) !important;
+  color: var(--hoi-gold-hi) !important;
+  background: linear-gradient(180deg, #243448, #1a2736) !important;
+  box-shadow: 0 0 12px rgba(201,162,39,0.12), var(--hoi-inset) !important;
+}
+.mm-btn-primary {
+  border-color: #2d5a40 !important;
+  background: linear-gradient(180deg, #1e3d2c, #14281c) !important;
+  color: #e8f0e8 !important;
+}
+.mm-btn-primary:hover {
+  border-color: var(--hoi-green) !important;
+  background: linear-gradient(180deg, #2a4f38, #1a3324) !important;
+  color: #fff !important;
+}
+
+/* ---- LOBBY ---- */
+#lobby-screen {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(50,80,110,0.2), transparent 50%),
+    #0a1018 !important;
+}
+#lobby-screen .sc-lobby-card {
+  background: linear-gradient(180deg, #161e2a, #101820) !important;
+  border: 1px solid var(--hoi-border-hi) !important;
+  border-radius: 2px !important;
+  box-shadow: var(--hoi-shadow) !important;
+}
+#lobby-screen select,
+#lobby-screen input,
+#sc-map-pack-select,
+#lobby-scenario-select,
+#lobby-country-select {
+  background: #0e1520 !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-text) !important;
+  border-radius: 2px !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 600 !important;
+}
+#lobby-screen select:focus,
+#sc-map-pack-select:focus {
+  outline: none !important;
+  border-color: var(--hoi-gold-dim) !important;
+  box-shadow: 0 0 0 1px rgba(201,162,39,0.25) !important;
+}
+
+/* ---- TOP BAR (SC resource strip) ---- */
+#top-bar {
+  background: linear-gradient(180deg, #1a2433 0%, #121a24 100%) !important;
+  border-bottom: 1px solid var(--hoi-border-hi) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45) !important;
+  font-family: var(--font-ui) !important;
+  min-height: 42px !important;
+}
+#top-bar::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 5%, var(--hoi-gold-dim) 50%, transparent 95%);
+  pointer-events: none;
+}
+#hud-country-name {
+  font-family: var(--font-title) !important;
+  letter-spacing: 0.08em !important;
+  color: var(--hoi-gold-hi) !important;
+  font-size: 13px !important;
+}
+#hud-gold, #hud-manpower, #hud-factories, #hud-tension, #hud-date,
+#v27-ws, #hud-pp {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+#hud-flag {
+  border: 1px solid var(--hoi-border-hi) !important;
+  box-shadow: 0 0 0 1px #000 !important;
+  border-radius: 1px !important;
+}
+#btn-speed, #btn-inbox, #top-bar button {
+  background: linear-gradient(180deg, #1e2a38, #15202c) !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-text) !important;
+  border-radius: 1px !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+}
+#btn-speed:hover, #btn-inbox:hover, #top-bar button:hover {
+  border-color: var(--hoi-gold-dim) !important;
+  color: var(--hoi-gold-hi) !important;
+}
+
+/* ---- LEFT PANEL ---- */
+#left-panel {
+  background: linear-gradient(180deg, #121a24 0%, #0e1520 100%) !important;
+  border-right: 1px solid var(--hoi-border-hi) !important;
+  box-shadow: 8px 0 24px rgba(0,0,0,0.35) !important;
+  font-family: var(--font-ui) !important;
+}
+#left-panel .tab-btn {
+  background: linear-gradient(180deg, #1a2433, #141c28) !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-muted) !important;
+  border-radius: 1px !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  font-size: 10px !important;
+  transition: all .12s !important;
+}
+#left-panel .tab-btn:hover {
+  color: var(--hoi-text) !important;
+  border-color: var(--hoi-border-hi) !important;
+}
+#left-panel .tab-btn.active {
+  background: linear-gradient(180deg, #2a3a28, #1e2e20) !important;
+  border-color: var(--hoi-gold-dim) !important;
+  color: var(--hoi-gold-hi) !important;
+  box-shadow: inset 0 -2px 0 var(--hoi-gold) !important;
+}
+#left-panel [id^="content-"] {
+  font-size: 13px !important;
+}
+#left-panel h2, #left-panel h3 {
+  font-family: var(--font-title) !important;
+  color: var(--hoi-gold) !important;
+  letter-spacing: 0.1em !important;
+  font-size: 13px !important;
+}
+
+/* ---- MAP ---- */
+#map-container {
+  background: var(--hoi-map-ocean) !important;
+  position: relative !important;
+}
+#map-container::after {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(42,58,78,0.5);
+}
+#game-map {
+  filter: contrast(1.05) saturate(1.08);
+}
+.country-path {
+  stroke: rgba(8,12,20,0.65) !important;
+  transition: fill 0.25s ease, filter 0.2s ease !important;
+  cursor: pointer;
+}
+.country-path:hover {
+  filter: brightness(1.18) !important;
+  stroke: rgba(201,162,39,0.45) !important;
+}
+
+/* Europe thicker borders already handled elsewhere */
+body[data-pack="Europe3728"] .country-path,
+html.pack-europe .country-path {
+  stroke-width: 1.1px !important;
+}
+
+/* ---- LOG PANEL ---- */
+#log-panel {
+  background: rgba(12,18,28,0.92) !important;
+  border: 1px solid var(--hoi-border) !important;
+  border-radius: 2px !important;
+  box-shadow: var(--hoi-shadow) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  backdrop-filter: blur(8px);
+  left: auto !important;
+  right: 0.5rem !important;
+  bottom: 0.5rem !important;
+  width: min(300px, 42vw) !important;
+  height: 96px !important;
+}
+
+/* ---- MODALS ---- */
+#credits-modal, #mp-lobby-modal, #mp-trade-modal, #mp-vote-modal,
+#sc-gameover-modal, #settings-overlay {
+  background: rgba(5,8,14,0.88) !important;
+  backdrop-filter: blur(6px);
+}
+.sc-about-card, .sc-settings-card,
+#mp-lobby-modal > div,
+#credits-modal > div {
+  background: linear-gradient(180deg, #1a2433, #121a24) !important;
+  border: 1px solid var(--hoi-border-hi) !important;
+  border-radius: 2px !important;
+  box-shadow: var(--hoi-shadow) !important;
+}
+
+/* ---- GENERIC BUTTONS / INPUTS in game ---- */
+#game-root button:not(.tab-btn):not(.mm-btn) {
+  border-radius: 1px !important;
+  font-family: var(--font-ui) !important;
+}
+#game-root input, #game-root select {
+  background: #0e1520 !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-text) !important;
+  border-radius: 1px !important;
+}
+
+/* ---- SIDEBAR EDGE ---- */
+#sidebar-edge-btn {
+  background: linear-gradient(180deg, #1e2a38, #15202c) !important;
+  border: 1px solid var(--hoi-border) !important;
+  color: var(--hoi-gold) !important;
+  border-radius: 0 2px 2px 0 !important;
+}
+
+/* ---- MP ---- */
+#mp-hud {
+  backdrop-filter: blur(8px);
+  background: rgba(15,22,32,0.9) !important;
+  border: 1px solid var(--hoi-border) !important;
+}
 #mp-chat-log .mine { color: #7dd3fc; }
 #mp-chat-log .sys { color: #6a7460; font-style: italic; }
 #mp-chat-log .dm { color: #c4a35a; }
-.mp-ping-marker { pointer-events: none; animation: mpPing 1.6s ease-out forwards; }
-@keyframes mpPing {
-  0% { opacity: 1; transform: scale(0.6); }
-  100% { opacity: 0; transform: scale(1.4); }
+
+/* ---- RELEASE badge ---- */
+.sc-release-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border: 1px solid rgba(201,162,39,0.35);
+  background: rgba(26,24,16,0.85);
+  border-radius: 1px;
 }
-#mp-btn-create:disabled,
-#mp-btn-join:disabled,
-#mp-btn-create.opacity-40,
-#mp-btn-join.opacity-40 {
-  opacity: 0.4;
-  pointer-events: none;
-  cursor: not-allowed;
+.sc-release-badge .ver {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--hoi-muted);
 }
-#mp-pre-room-btns.hidden { display: none !important; }
-#mp-btn-leave.hidden { display: none !important; }
-#mp-room-info.hidden { display: none !important; }
+.sc-release-badge .tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hoi-gold);
+}
+
+/* ---- Game over / toast polish ---- */
 #sc-gameover-modal { animation: scFadeIn 0.25s ease; }
 @keyframes scFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* Stage 3 — FoW / Desync / Peace VP */
+/* Keep prior functional CSS */
+.mp-ping-marker { pointer-events: none; animation: mpPing 1.6s ease-out forwards; }
+@keyframes mpPing {
+  0% { opacity: 1; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+#mp-btn-create:disabled, #mp-btn-join:disabled,
+#mp-btn-create.opacity-40, #mp-btn-join.opacity-40 {
+  opacity: 0.4; pointer-events: none; cursor: not-allowed;
+}
+#mp-pre-room-btns.hidden, #mp-btn-leave.hidden, #mp-room-info.hidden,
+#mp-desync-modal.hidden { display: none !important; }
 .country-path.prov-fog {
   filter: brightness(0.35) saturate(0.4);
-  pointer-events: auto;
-}
-#mp-desync-modal.hidden { display: none !important; }
-#mp-ping-strip { max-width: 100%; }
-#peace-vp-banner button:active { transform: scale(0.98); }
-
-/* Grand Expansion */
-.focus-node.locked { cursor: not-allowed; }
-#grand-div-designer, #grand-cabinet { margin-top: 0.5rem; }
-#hud-pp { color: #fbbf24; }
-
-/* Mastermind */
-#master-map-modes { pointer-events: auto; }
-#master-map-modes .map-mode-btn { backdrop-filter: blur(4px); }
-#master-div-designer button:active { transform: scale(0.98); }
-.country-path { transition: fill 0.35s ease; }
-
-
-/* v1.1 */
-.country-path {
-  stroke-width: 0.012px !important;
-}
-.country-path.prov-border, .country-path[data-border="1"] {
-  stroke-width: 0.12px !important;
-}
-#log-panel {
-  left: auto !important;
-  right: 0.5rem !important;
-  bottom: 0.5rem !important;
-  transform: none !important;
-  width: min(280px, 42vw) !important;
-  height: 88px !important;
-  max-width: 280px !important;
 }
 #master-map-modes, .map-mode-btn { display: none !important; }
-.prov-fog { filter: none !important; opacity: 1 !important; }
+#hud-pp { color: #fbbf24; }
 
+/* Focus tree nodes if present */
+.focus-node.locked { cursor: not-allowed; opacity: 0.55; }
 
-/* Province split editor */
-#sc-split-badge { animation: scSplitPulse 2s ease-in-out infinite; }
-@keyframes scSplitPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(167,139,250,.45); }
-  50% { box-shadow: 0 0 0 8px rgba(167,139,250,0); }
+/* Occupation / selection ring */
+.country-path.selected-prov {
+  stroke: var(--hoi-gold-hi) !important;
+  stroke-width: 1.5px !important;
+  filter: brightness(1.15);
 }
-body.sc-split-on #game-map path.country-path { cursor: crosshair; }
+
+
+/* ========== SC depth pass v1.8.1 ========== */
+.stat-tile {
+  background: linear-gradient(180deg, #1a2433, #121a24) !important;
+  border: 1px solid #2a3a4e !important;
+  border-radius: 1px !important;
+  padding: 10px 12px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.stat-label {
+  font-size: 10px !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: #7a8799 !important;
+  font-weight: 700 !important;
+}
+.stat-value {
+  font-family: ui-monospace, monospace !important;
+  font-size: 18px !important;
+  color: #e8c547 !important;
+  font-weight: 700 !important;
+  margin-top: 2px !important;
+}
+
+.panel-title, #left-panel .panel-title {
+  font-family: Georgia, serif !important;
+  color: #c9a227 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+}
+
+/* command rows */
+.hoi-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, rgba(26,36,51,0.9), rgba(14,21,32,0.95));
+  border: 1px solid #2a3a4e;
+  margin-bottom: 4px;
+}
+.hoi-row:hover { border-color: #3d5a73; }
+.hoi-bar {
+  height: 6px;
+  background: #0a1018;
+  border: 1px solid #2a3a4e;
+  flex: 1;
+  overflow: hidden;
+}
+.hoi-bar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #3d8f5a, #c9a227);
+}
+.hoi-bar.warn > i { background: linear-gradient(90deg, #c43c3c, #d4893a); }
+
+/* National focus card */
+.hoi-focus-card {
+  border: 1px solid #2a3a4e;
+  background: linear-gradient(135deg, #1a2433, #121a24);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.hoi-focus-card.active {
+  border-color: #c9a227;
+  box-shadow: 0 0 12px rgba(201,162,39,0.15);
+}
+
+/* Top bar resource chips */
+.hoi-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(10,16,24,0.65);
+  border: 1px solid #2a3a4e;
+  border-radius: 1px;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 11px;
+}
+.hoi-chip .lbl { color: #7a8799; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-family: Segoe UI, system-ui, sans-serif; font-weight: 700; }
+
+/* Decision / politics strip */
+#hoi-politics-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#hoi-politics-strip .hoi-pol {
+  background: linear-gradient(180deg, #1a2433, #121a24);
+  border: 1px solid #2a3a4e;
+  padding: 8px;
+  text-align: center;
+}
+#hoi-politics-strip .hoi-pol .k {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #7a8799; font-weight: 700;
+}
+#hoi-politics-strip .hoi-pol .v {
+  font-family: "Share Tech Mono", monospace; font-size: 15px; color: #e8c547; font-weight: 700;
+}
+
+/* Production queue look */
+.hoi-prod-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid #2a3a4e;
+  background: #0e1520;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+/* Map mode strip bottom-left */
+#hoi-mapmodes {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: auto;
+}
+#hoi-mapmodes button {
+  width: 36px; height: 28px;
+  background: linear-gradient(180deg, #1e2a38, #15202c);
+  border: 1px solid #2a3a4e;
+  color: #d6dce6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: 1px;
+  font-family: Segoe UI, system-ui, sans-serif;
+}
+#hoi-mapmodes button:hover, #hoi-mapmodes button.active {
+  border-color: #c9a227;
+  color: #e8c547;
+}
+
+/* Alert ticker */
+#hoi-alert-ticker {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  max-width: min(520px, 70vw);
+  pointer-events: none;
+  font-family: Segoe UI, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #e8c547;
+  text-shadow: 0 1px 2px #000;
+  background: rgba(12,18,28,0.85);
+  border: 1px solid rgba(201,162,39,0.35);
+  padding: 4px 14px;
+  border-radius: 1px;
+  display: none;
+}
+
+/* Division template cards */
+.hoi-div-card {
+  border: 1px solid #2a3a4e;
+  background: #121a24;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+.hoi-div-card .name { color: #e8c547; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; }
+
+/* Research slots */
+.hoi-research-slot {
+  border: 1px dashed #3d5a73;
+  min-height: 48px;
+  padding: 8px;
+  background: rgba(14,21,32,0.8);
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: #7a8799;
+}
+.hoi-research-slot.busy {
+  border-style: solid;
+  border-color: #3d8f5a;
+  color: #d6dce6;
+}
+
+
+/* Country names always above provinces */
+#sc-country-names,
+g#sc-country-names,
+.sc-name-layer-top {
+  pointer-events: none !important;
+}
+#sc-country-names text {
+  paint-order: stroke fill;
+  stroke: rgba(8, 12, 20, 0.9);
+  stroke-width: 1.2px;
+  stroke-linejoin: round;
+  fill: #f3f6fa !important;
+  font-weight: 800 !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  letter-spacing: 0.06em;
+  opacity: 0.95;
+}
+
+/* realism-map-v185 */
+#map-container, main[style*="031a5c"] {
+  background: radial-gradient(ellipse at 50% 40%, #0a2a6a 0%, #031a5c 55%, #020f38 100%) !important;
+}
+.country-path {
+  stroke: rgba(6, 10, 18, 0.75) !important;
+  stroke-opacity: 0.9 !important;
+}
+.country-path:hover {
+  filter: brightness(1.12) contrast(1.05) !important;
+}
+#game-map {
+  filter: contrast(1.06) saturate(1.12) !important;
+}

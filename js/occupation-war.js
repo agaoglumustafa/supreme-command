@@ -74,7 +74,13 @@
       }
 
       var fullOcc = occList.length >= total && total > 0;
-      var progressForce = (w.progress || 0) >= 100;
+      // progress alone should NOT force white peace (oyuncu reddetsin)
+      var progressForce = false;
+      // reject cooldown
+      try {
+        if (g._peaceRejectUntil && g._peaceRejectUntil[target] && Date.now() < g._peaceRejectUntil[target]) return;
+        if (w.peaceRejected && (w.progress || 0) < 99) return;
+      } catch (e) {}
 
       if (capTaken || fullOcc || progressForce) {
         lastPeaceCheck[key] = now;

@@ -1,0 +1,12 @@
+{
+  "packId": "Europe3728",
+  "provinceCount": 3728,
+  "scenarios": [
+    {
+      "id": "europe_modern",
+      "name": "Avrupa — Modern Dünya (2026)",
+      "file": "europe_modern.json",
+      "year": 2026
+    }
+  ]
+}

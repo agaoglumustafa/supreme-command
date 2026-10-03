@@ -1,65 +1,30 @@
-// Quiet SFX — hard cooldowns (global + per-type)
+
 (function SCSFXQuiet() {
   "use strict";
-  var GLOBAL_GAP = 350;
-  var lastGlobal = 0;
-  var GAPS = {
-    playVictory: 5000,
-    playAlert: 6000,
-    playSiren: 8000,
-    playBlip: 900,
-    playMessage: 2500,
-    playBuild: 1200,
-    playClick: 200,
-    playTone: 80
-  };
-
-  function wrap() {
-    var s = window.sfx;
-    if (!s) return;
-    if (s._quietHard) return;
-    s._quietHard = true;
-    Object.keys(GAPS).forEach(function (fn) {
-      if (typeof s[fn] !== "function") return;
-      var prev = s[fn].bind(s);
-      var last = 0;
-      var gap = GAPS[fn];
-      s[fn] = function () {
-        var n = Date.now();
-        if (n - lastGlobal < GLOBAL_GAP) return;
-        if (n - last < gap) return;
-        last = n;
-        lastGlobal = n;
-        try {
-          return prev.apply(this, arguments);
-        } catch (e) {}
-      };
-    });
+  function muteAll() {
     try {
       if (window.speechSynthesis) {
-        var sp = window.speechSynthesis.speak.bind(window.speechSynthesis);
-        var lastSpeak = 0;
-        window.speechSynthesis.speak = function (u) {
-          var n = Date.now();
-          if (n - lastSpeak < 4000) return;
-          lastSpeak = n;
-          try {
-            window.speechSynthesis.cancel();
-          } catch (e) {}
-          return sp(u);
-        };
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+        window.speechSynthesis.speak = function () {};
       }
     } catch (e) {}
-    console.log("[sfx-quiet] hard cooldowns");
+    try {
+      var s = window.sfx;
+      if (s) {
+        ["playVictory","playAlert","playSiren","playBlip","playMessage","playBuild","playClick","playTone"].forEach(function (fn) {
+          s[fn] = function () {};
+        });
+      }
+    } catch (e) {}
+    try {
+      if (window.MusicPlayer && MusicPlayer.audio) {
+        MusicPlayer.audio.pause();
+        MusicPlayer.audio.volume = 0;
+      }
+    } catch (e) {}
   }
-
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(wrap, 80);
-    });
-  else setTimeout(wrap, 80);
-  window.addEventListener("sc-ready", function () {
-    setTimeout(wrap, 40);
-    setTimeout(wrap, 1500);
-  });
+  muteAll();
+  [50, 200, 500, 1000, 2000, 5000].forEach(function (t) { setTimeout(muteAll, t); });
+  setInterval(muteAll, 3000);
+  console.log("[sfx-quiet] ALL SFX MUTED v15");
 })();

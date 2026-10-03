@@ -169,31 +169,61 @@ if (typeof document !== "undefined") {
 }
 
 // ========== HARİTA PAKETİ (dinamik, GLOBAL) ==========
-// Aktif harita: assets/maps/1083/
-const MAP_PACK_ID = "1083";
-// SC_MAP_PACK_FALLBACK: if 1083 missing, use 1081
-(function(){ try {
-  var id = (typeof MAP_PACK_ID !== "undefined") ? MAP_PACK_ID : "1083";
-  if (id !== "1083" && id !== "1081") id = "1083";
-} catch(e) {} })();
-
-const MAP_PACK_BASE = "./assets/maps/" + MAP_PACK_ID + "/";
-const MAP_JSON_URL = MAP_PACK_BASE + "map.json";
-const PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
-const SCENARIOS_DIR = MAP_PACK_BASE + "scenarios/";
+var MAP_PACK_ID = (function () {
+  function norm(p) {
+    if (!p) return null;
+    p = String(p);
+    if (p === "Europe4449" || p === "Europe" || p === "europe" || (p.indexOf("Europe") === 0 && p !== "Europe3728")) return "Europe3728";
+    if (p === "1095" || p === "Europe3728") return p;
+    return null;
+  }
+  try {
+    // ONLY URL forces Europe; default is always 1095 world map
+    var q = null;
+    try { q = new URLSearchParams(location.search).get("pack"); } catch (e) {}
+    var n = norm(q);
+    if (n) return n;
+  } catch (e) {}
+  return "1095";
+})();
+window.MAP_PACK_ID = MAP_PACK_ID;
+var MAP_PACK_BASE = "./assets/maps/" + MAP_PACK_ID + "/";
+var MAP_JSON_URL = MAP_PACK_BASE + "map.json";
+var PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
+var SCENARIOS_DIR = MAP_PACK_BASE + "scenarios/";
+window.MAP_PACK_BASE = MAP_PACK_BASE;
+window.MAP_JSON_URL = MAP_JSON_URL;
+window.PROVINCE_DATA_URL = PROVINCE_DATA_URL;
+window.SCENARIOS_DIR = SCENARIOS_DIR;
+try {
+  var _qpack = new URLSearchParams(location.search).get("pack");
+  if (_qpack && (_qpack === "Europe3728" || String(_qpack).indexOf("Europe") === 0)) {
+    MAP_PACK_ID = "Europe3728";
+    window.MAP_PACK_ID = "Europe3728";
+    MAP_PACK_BASE = "./assets/maps/Europe3728/";
+    MAP_JSON_URL = MAP_PACK_BASE + "map.json";
+    PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
+    SCENARIOS_DIR = MAP_PACK_BASE + "scenarios/";
+    window.MAP_PACK_BASE = MAP_PACK_BASE;
+    window.MAP_JSON_URL = MAP_JSON_URL;
+    window.PROVINCE_DATA_URL = PROVINCE_DATA_URL;
+    window.SCENARIOS_DIR = SCENARIOS_DIR;
+  }
+} catch (e) {}
+console.log("%c[map-pack] active " + MAP_PACK_ID + " " + MAP_JSON_URL, "color:#0f0;font-size:14px;font-weight:bold");
 
 // Senaryolar SADECE diskten — gömülü veri YOK
 var SCENARIOS = {};
 window.SCENARIOS = SCENARIOS;
 
 /**
- * assets/maps/1083/scenarios/index.json + modern.json / ww1.json / ww2.json
+ * assets/maps/1095/scenarios/index.json + modern.json / ww1.json / ww2.json
  * Her çağrıda diskten yeniden okur (cache: no-store).
  */
 async function loadScenarioPack() {
     const loaded = {};
     try {
-        const idxUrl = SCENARIOS_DIR + "index.json";
+        const idxUrl = (window.SCENARIOS_DIR || SCENARIOS_DIR) + "index.json";
         const idxRes = await fetch(idxUrl, { cache: "no-store" });
         if (!idxRes.ok) {
             throw new Error("index.json HTTP " + idxRes.status + " @ " + idxUrl);
@@ -202,7 +232,7 @@ async function loadScenarioPack() {
         const list = idx.scenarios || [];
         for (const entry of list) {
             const file = entry.file || (entry.id + ".json");
-            const url = SCENARIOS_DIR + file;
+            const url = (window.SCENARIOS_DIR || SCENARIOS_DIR) + file;
             try {
                 const res = await fetch(url, { cache: "no-store" });
                 if (!res.ok) {
@@ -271,6 +301,9 @@ window.toggleSidebar = function() {
                 }
             }
             playBlip() {
+                if (window.__SC_SFX_MUTED || window.__SC_BLIP_MUTE) return;
+                if (window.__SC_BLIP_LAST && Date.now()-window.__SC_BLIP_LAST<500) return;
+                window.__SC_BLIP_LAST = Date.now();
                 this.init();
                 if (!this.ctx) return;
                 try {
@@ -1360,7 +1393,7 @@ let PROVINCE_DATA = {};
 let provinceDataReady = false;
 
 function loadProvinceData() {
-    return fetch(PROVINCE_DATA_URL)
+    return fetch(window.PROVINCE_DATA_URL || PROVINCE_DATA_URL, { cache: "no-store" })
         .then(r => {
             if (!r.ok) throw new Error("PROVINCE_DATA.json yüklenemedi: " + r.status);
             return r.json();
@@ -1499,55 +1532,128 @@ function getProvinceOwner(provinceName) {
     return provinceOwners[provinceName] || "NEUTRAL";
 }
 
-d3.json(MAP_JSON_URL).then(provinces => {
-    // Her eyaleti path olarak çiz
+
+function scApplyProvincePaths(provinces) {
+    if (!provinces || !provinces.length) {
+        console.error("[map] empty provinces");
+        return;
+    }
+    try {
+        g.selectAll("path.country-path").remove();
+        g.selectAll("path").remove();
+    } catch (e) {}
     g.selectAll("path")
         .data(provinces)
         .enter()
         .append("path")
         .attr("d", d => d.path)
         .attr("class", "country-path")
-        .attr("id", d => d.name.replace(/[^a-zA-Z0-9_]/g, "_"))  // id güvenli olsun
+        .attr("id", d => String(d.name).replace(/[^a-zA-Z0-9_]/g, "_"))
         .attr("data-name", d => d.name)
         .style("fill", d => {
             const owner = getProvinceOwner(d.name);
             return (GameState.countries[owner] && GameState.countries[owner].color) || "#1e293b";
         })
-.style("stroke", "rgba(7,10,19,0.55)")
-.style("stroke-width", 0.03)
-.on("click", function(event, d) {
-    handleProvinceClick(event, d);
-})
-.on("contextmenu", function(event, d) {
-    event.preventDefault();
-    handleProvinceClick(event, d);
-})
-.on("mouseover", function(event, d) {
-    if (mapEditorOpen && typeof editorBrushMode !== "undefined" && editorBrushMode && typeof editorPainting !== "undefined" && editorPainting) {
-        paintProvince(d.name, this);
-    }
-})
-.on("mousemove", function(event, d) {
-    if (mapEditorOpen && editorBrushMode && editorPainting) {
-        paintProvince(d.name, this);
-    }
-});
+        .style("stroke", (window.MAP_PACK_ID||"").indexOf("Europe")===0 ? "#0b1220" : "rgba(7,10,19,0.55)")
+        .style("stroke-width", (window.MAP_PACK_ID||"").indexOf("Europe")===0 ? "1.15px" : 0.03)
+        .attr("vector-effect", (window.MAP_PACK_ID||"").indexOf("Europe")===0 ? "non-scaling-stroke" : null)
+        .on("click", function(event, d) {
+            if (typeof handleProvinceClick === "function") handleProvinceClick(event, d);
+        })
+        .on("contextmenu", function(event, d) {
+            event.preventDefault();
+            if (typeof handleProvinceClick === "function") handleProvinceClick(event, d);
+        })
+        .on("mouseover", function(event, d) {
+            if (typeof mapEditorOpen !== "undefined" && mapEditorOpen && typeof editorBrushMode !== "undefined" && editorBrushMode && typeof editorPainting !== "undefined" && editorPainting) {
+                if (typeof paintProvince === "function") paintProvince(d.name, this);
+            }
+        })
+        .on("mousemove", function(event, d) {
+            if (typeof mapEditorOpen !== "undefined" && mapEditorOpen && typeof editorBrushMode !== "undefined" && editorBrushMode && typeof editorPainting !== "undefined" && editorPainting) {
+                if (typeof paintProvince === "function") paintProvince(d.name, this);
+            }
+        });
+    try {
+        const bounds = g.node().getBBox();
+        const scale = Math.min(
+            (window.innerWidth - 100) / Math.max(bounds.width, 1),
+            (window.innerHeight - 100) / Math.max(bounds.height, 1)
+        ) * 0.9;
+        if (typeof zoom !== "undefined" && typeof svg !== "undefined") {
+            svg.call(zoom.transform, d3.zoomIdentity
+                .translate(window.innerWidth / 2, window.innerHeight / 2)
+                .scale(scale)
+                .translate(-bounds.x - bounds.width / 2, -bounds.y - bounds.height / 2));
+        }
+    } catch (e) { console.warn("[map] fit", e); }
+    window._scMapProvinceList = provinces.map(p => p.name);
+    window._scMapProvinceObjs = provinces;
+    try { if (typeof window.scEnableViewportCull === "function" && (window.MAP_PACK_ID||"").indexOf("Europe")===0) window.scEnableViewportCull(provinces); } catch(e){}
+    console.log("Harita yüklendi →", provinces.length, "eyalet · pack", window.MAP_PACK_ID || MAP_PACK_ID);
+}
 
-    // Haritayı biraz ortala (bu map'in koordinat aralığına göre)
-    const bounds = g.node().getBBox();
-    const scale = Math.min(
-        (window.innerWidth - 100) / bounds.width,
-        (window.innerHeight - 100) / bounds.height
-    ) * 0.9;
-    
-    svg.call(zoom.transform, d3.zoomIdentity
-        .translate(window.innerWidth / 2, window.innerHeight / 2)
-        .scale(scale)
-        .translate(-bounds.x - bounds.width / 2, -bounds.y - bounds.height / 2)
-    );
+window.scLoadMapPack = function scLoadMapPack(packId) {
+    packId = packId || window.MAP_PACK_ID || MAP_PACK_ID || "1095";
+    window.MAP_PACK_ID = packId;
+    MAP_PACK_ID = packId;
+    MAP_PACK_BASE = "./assets/maps/" + packId + "/";
+    MAP_JSON_URL = MAP_PACK_BASE + "map.json";
+    PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
+    SCENARIOS_DIR = MAP_PACK_BASE + "scenarios/";
+    window.MAP_PACK_BASE = MAP_PACK_BASE;
+    window.MAP_JSON_URL = MAP_JSON_URL;
+    window.PROVINCE_DATA_URL = PROVINCE_DATA_URL;
+    window.SCENARIOS_DIR = SCENARIOS_DIR;
+    try { localStorage.setItem("sc_map_pack", packId); } catch (e) {}
+    console.log("%c[scLoadMapPack] " + packId + " → " + MAP_JSON_URL, "color:#0ff;font-weight:bold");
+    if (packId !== "1095" && packId !== "Europe3728") {
+      console.warn("[scLoadMapPack] unknown pack, forcing check");
+    }
+    var pdPromise = fetch(PROVINCE_DATA_URL)
+        .then(r => r.ok ? r.json() : {})
+        .then(data => {
+            try {
+                Object.keys(PROVINCE_DATA || {}).forEach(k => { try { delete PROVINCE_DATA[k]; } catch(e){} });
+                Object.assign(PROVINCE_DATA, data || {});
+            } catch (e) { window.PROVINCE_DATA = data || {}; }
+            return data;
+        })
+        .catch(() => ({}));
+    return Promise.all([d3.json(window.MAP_JSON_URL || MAP_JSON_URL), pdPromise]).then(function(pair) {
+        var plist = pair[0] || [];
+        console.log("%c[scLoadMapPack] loaded " + plist.length + " provinces for " + packId, "color:#0f0;font-weight:bold");
+        if (packId === "Europe3728" && plist.length < 2500) {
+          console.error("[scLoadMapPack] Europe expected ~3728, got", plist.length);
+        }
+        if (packId === "1095" && plist.length > 2000) {
+          console.error("[scLoadMapPack] 1095 expected ~1095, got", plist.length);
+        }
+        scApplyProvincePaths(plist);
+        return plist;
+    }).catch(function(err) {
+        console.error("[scLoadMapPack] FAIL", packId, err);
+        throw err;
+    });
+};
+window.scReloadMapGeometry = function() {
+    return window.scLoadMapPack(window.MAP_PACK_ID || MAP_PACK_ID || "1095");
+};
 
-    console.log("Harita yüklendi →", provinces.length, "eyalet");
-});
+// initial load (pack already resolved)
+(function(){
+  var pid = MAP_PACK_ID;
+  try {
+    var q = new URLSearchParams(location.search).get("pack");
+    if (q && (q === "Europe3728" || q.indexOf("Europe") === 0)) pid = "Europe3728";
+    else if (q === "1095") pid = "1095";
+  } catch (e) {}
+  console.log("%c[initial-map] loading pack " + pid, "color:#ff0;font-size:16px;font-weight:bold");
+  scLoadMapPack(pid).then(function(list){
+    console.log("%c[initial-map] OK " + (list&&list.length) + " eyalet pack=" + pid, "color:#0f0;font-size:16px;font-weight:bold");
+  }).catch(function(e){ console.error("initial map load", e); });
+})();
+
 
 // Tıklama
 
@@ -1583,7 +1689,7 @@ function refreshMapColors() {
             // İşgal = renk karışımı (yasal sahip + işgalci); ele geçirme barışta
             const oColor = (GameState.countries[occupier] && GameState.countries[occupier].color) || "#fbbf24";
             const blended = (typeof blendHexColors === "function")
-              ? blendHexColors(color, oColor, 0.48)
+              ? blendHexColors(color, oColor, 0.5)
               : oColor;
             path.style("fill", blended);
             path.classed("prov-occupied", true);
@@ -1601,9 +1707,17 @@ function refreshMapColors() {
             if (o2 && o2 !== owner) { isCountryBorder = true; break; }
         }
         if (isCountryBorder) {
+            if ((window.MAP_PACK_ID||"").indexOf("Europe")===0) {
+            path.style("stroke", "#0b1220").style("stroke-width", "1.25px").attr("vector-effect", "non-scaling-stroke");
+          } else {
             path.style("stroke", "rgba(0,0,0,0.55)").style("stroke-width", 0.28);
+          }
         } else {
+            if ((window.MAP_PACK_ID||"").indexOf("Europe")===0) {
+            path.style("stroke", "#0b1220").style("stroke-width", "1.15px").attr("vector-effect", "non-scaling-stroke");
+          } else {
             path.style("stroke", "rgba(0,0,0,0.15)").style("stroke-width", 0.025);
+          }
         }
     });
     if (typeof updateCapitalMarkers === "function") updateCapitalMarkers();
@@ -2618,6 +2732,32 @@ function finalizePeaceNoClaim(targetIso) {
     if (typeof switchTab === "function") switchTab("dashboard");
 }
 
+
+function rejectWhitePeace(targetIso) {
+    window.peaceMode = false;
+    window.peaceTargetIso = null;
+    window.peaceSelected = new Set();
+    const modal = document.getElementById("territory-demand-modal");
+    if (modal) modal.remove();
+    // Cooldown: aynı savaş için otomatik barış masası bir süre açılmasın
+    if (!GameState._peaceRejectUntil) GameState._peaceRejectUntil = {};
+    GameState._peaceRejectUntil[targetIso] = Date.now() + 180000; // 3 dk gerçek zaman
+    try {
+      if (GameState.activeWars) {
+        GameState.activeWars.forEach(function(w) {
+          if (w && w.target === targetIso) {
+            w.peaceRejected = true;
+            w.progress = Math.min(w.progress || 0, 85); // zorla bitmiş sayılmasın
+          }
+        });
+      }
+    } catch(e) {}
+    try { log("⛔ Beyaz barış reddedildi — savaş devam ediyor: " + ((GameState.countries[targetIso]&&GameState.countries[targetIso].name)||targetIso), "text-red-400 font-bold"); } catch(e) {}
+    try { if (typeof sfx !== "undefined" && sfx.playClick) sfx.playClick(); } catch(e) {}
+    try { if (typeof refreshMapColors === "function") refreshMapColors(); } catch(e) {}
+}
+window.rejectWhitePeace = rejectWhitePeace;
+
 function showTerritoryDemandModal(targetIso) {
     const target = GameState.countries[targetIso];
     const player = GameState.countries[GameState.player];
@@ -2634,7 +2774,7 @@ function showTerritoryDemandModal(targetIso) {
       (GameState._lastWonWar && GameState._lastWonWar.target === targetIso ? GameState._lastWonWar : null);
     const warScore = war ? Math.floor(war.progress || 100) : 100;
     let maxClaim = 0, claimLevel = "none";
-    // HOI-benzeri: savaş skoru + güç oranı + işgal edilenler
+    // komuta: savaş skoru + güç oranı + işgal edilenler
     if (warScore >= 100 && ratio >= 1.35) { maxClaim = provCount; claimLevel = "full"; }
     else if (warScore >= 100 || ratio >= 1.5) { maxClaim = Math.max(occList.length, Math.floor(provCount * 0.75)); claimLevel = "major"; }
     else if (warScore >= 75 || ratio >= 1.25) { maxClaim = Math.max(occList.length, Math.floor(provCount / 2)); claimLevel = "half"; }
@@ -2699,6 +2839,7 @@ function showTerritoryDemandModal(targetIso) {
           <button onclick="makePuppet('${targetIso}'); finalizePeaceNoClaim('${targetIso}');" class="w-full py-2 bg-purple-800 hover:bg-purple-700 border border-purple-500 rounded font-bold text-white text-[10px]">🎭 Kukla Devlet Yap</button>
           <button onclick="takeReparations('${targetIso}'); finalizePeaceNoClaim('${targetIso}');" class="w-full py-2 bg-yellow-900/80 hover:bg-yellow-800 border border-yellow-600 rounded font-bold text-white text-[10px]">💰 Savaş Tazminatı Al</button>
           <button onclick="finalizePeaceNoClaim('${targetIso}')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded font-bold text-[10px]">🕊️ Hiçbir Şey Alma / Bırak</button>
+          <button type="button" onclick="rejectWhitePeace('${targetIso}')" class="w-full py-3 mt-1 bg-red-900 hover:bg-red-800 border-2 border-red-500 rounded font-black text-white text-xs tracking-wide">⛔ Beyaz Barışı Reddet — Savaş Devam Etsin</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
@@ -2963,10 +3104,18 @@ function getFlagHtml(iso, sizeClass = "w-8 h-5") {
  */
 function applyScenarioToGameState(scenarioId) {
     const pack = (typeof SCENARIOS !== "undefined" && SCENARIOS) ? SCENARIOS : {};
-    const sc = pack[scenarioId];
+    let sc = pack[scenarioId];
+    if (!sc && (scenarioId === "__sandbox__" || scenarioId === "sandbox")) {
+        sc = (typeof window.scBuildSandboxScenario === "function") ? window.scBuildSandboxScenario() : null;
+        if (sc) { pack["__sandbox__"] = sc; try { window.SCENARIOS = pack; } catch(e){} }
+    }
     if (!sc) {
-        console.error("Senaryo bulunamadı (diskte yok veya yüklenmedi):", scenarioId, "mevcut:", Object.keys(pack));
-        return null;
+        // son çare: sandbox üret, çökme
+        sc = (typeof window.scBuildSandboxScenario === "function") ? window.scBuildSandboxScenario() : {
+            id: "__sandbox__", name: "Senaryosuz", provinceOwners: {}, countryNames: { NEUTRAL: "Tarafsız", TUR: "Türkiye" },
+            countryColors: { NEUTRAL: "#94a3b8", TUR: "#dc2626" }, countryFlags: {}
+        };
+        console.warn("Senaryo yok → sandbox:", scenarioId, "mevcut:", Object.keys(pack));
     }
 
     // 1) provinceOwners
@@ -3069,7 +3218,7 @@ function applyScenarioToGameState(scenarioId) {
                     if (key !== "modern") log("Senaryo verisi eksik — Modern Dünya yüklendi.", "text-yellow-400");
                 } else {
                     sc = { name: key, year: 2026, techEra: 3, provinceOwners: {}, countryNames: {}, countryColors: {}, countryFlags: {} };
-                    log("Senaryo dosyaları yüklenemedi (assets/maps/1083/scenarios/).", "text-red-400");
+                    log("Senaryo dosyaları yüklenemedi (assets/maps/1095/scenarios/).", "text-red-400");
                 }
             }
             // Disk senaryosunu GameState ile birleştir (isim/renk/bayrak/owners)
@@ -3117,12 +3266,34 @@ function applyScenarioToGameState(scenarioId) {
         // OYUN BAŞLANGICI VE ENGINE TETİKLEYİCİSİ
         async function startGame() {
             try { if (window._mapPackReady) await window._mapPackReady; } catch(e){}
+            // Map pack URLs — seçilen paketi senkronla
+            try {
+              var pid = (document.getElementById("sc-map-pack-select") || {}).value || window.MAP_PACK_ID || "1095";
+              window.MAP_PACK_ID = pid;
+              window.MAP_PACK_BASE = "./assets/maps/" + pid + "/";
+              window.MAP_JSON_URL = window.MAP_PACK_BASE + "map.json";
+              window.PROVINCE_DATA_URL = window.MAP_PACK_BASE + "PROVINCE_DATA.json";
+              window.SCENARIOS_DIR = window.MAP_PACK_BASE + "scenarios/";
+              // part1 var bindings
+              try { MAP_PACK_ID = pid; MAP_PACK_BASE = window.MAP_PACK_BASE; MAP_JSON_URL = window.MAP_JSON_URL; PROVINCE_DATA_URL = window.PROVINCE_DATA_URL; SCENARIOS_DIR = window.SCENARIOS_DIR; } catch (e2) {}
+            } catch (e) {}
+            // Geometri güncel değilse yeniden yükle
+            try {
+              if (typeof window.scReloadMapGeometry === "function") await window.scReloadMapGeometry();
+            } catch (e) { console.warn("map reload", e); }
             // Senaryoları her seferinde diskten zorunlu yükle
             try {
                 await loadScenarioPack();
             } catch (e) {
                 console.error("Senaryo yükleme hatası (startGame):", e);
             }
+            // sandbox her zaman hazır
+            try {
+              if (typeof SCENARIOS !== "undefined") {
+                SCENARIOS["__sandbox__"] = (typeof window.scBuildSandboxScenario === "function") ? window.scBuildSandboxScenario() : SCENARIOS["__sandbox__"];
+                window.SCENARIOS = SCENARIOS;
+              }
+            } catch (e) {}
             try { MusicPlayer.start(); } catch (e) { console.warn(e); }
             sfx.playVictory();
             const lobbySelect = document.getElementById("lobby-country-select");
@@ -3455,7 +3626,7 @@ function gameTick() {
                             terrainDef = sample.reduce((s, p) => s + getTerrainDefenseBonus(p), 0) / sample.length;
                         }
                     }
-                    // V47 HOI-tarzı muharebe turu (org/HP/soft-hard/width)
+                    // V47 komuta muharebe turu (org/HP/soft-hard/width)
                     if (typeof resolveHoiCombatDay === "function") {
                       resolveHoiCombatDay(war, attackerC, target, {
                         airBonus, oilPen, terrainDef, gen, doc, infMul, armMul, globalThreatBonus
@@ -4927,7 +5098,7 @@ function pushInboxMessage(msg) {
     });
     if (GameState.inbox.length > 40) GameState.inbox.length = 40;
     updateInboxBadge();
-    if (!GameState.settings || GameState.settings.sfx !== false) sfx.playBlip();
+    /* inbox blip muted */
 }
 
 function toggleInbox() {
@@ -5685,7 +5856,7 @@ function toggleMusicEnabled(on) {
         if (!MusicPlayer.audio) return;
         if (on) {
             if (!MusicPlayer.started) MusicPlayer.start();
-            else MusicPlayer.audio.play().catch(()=>{});
+            else /* music autoplay muted */
             MusicPlayer.audio.muted = false;
         } else {
             MusicPlayer.audio.pause();
@@ -6136,7 +6307,7 @@ function refreshMapColors() {
     });
 }
 
-// ====================== HOI SİSTEMLERİ: HAVA / PETROL / KUKLA / ULTİM ======================
+// ====================== KOMUTA SİSTEMLERİ: HAVA / PETROL / KUKLA / ULTİM ======================
 function ensureStratResources(c) {
     if (!c) return;
     if (!c.strat) {

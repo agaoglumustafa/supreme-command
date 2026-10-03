@@ -1,0 +1,16 @@
+
+/* v1.9.3 ülke isimleri — %25 küçük, gölge yarı */
+#sc-country-names text,
+.sc-country-label,
+g#sc-country-names text {
+  font-size: 75% !important;
+  paint-order: stroke fill;
+  stroke: rgba(6, 10, 18, 0.75) !important;
+  stroke-width: 1.2px !important;
+  stroke-linejoin: round;
+  fill: #f0f3f8 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em;
+  font-family: Georgia, "Times New Roman", serif !important;
+  pointer-events: none;
+}

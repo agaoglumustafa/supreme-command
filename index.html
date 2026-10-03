@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr" class="dark">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supreme Command — Playable Release v1.6.4</title>
+    <title>Supreme Command</title>
     <link rel="icon" href="https://i.imgur.com/U9Yw62b.png" type="image/png">
     
     <!-- TAILWIND CSS, D3.JS VE TOPOJSON ENTEGRASYONLARI -->
@@ -651,7 +654,21 @@
       opacity: 1 !important;
       z-index: 60 !important;
     }
-</style>
+
+    /* Europe province borders - always visible (screen pixels) */
+    #game-map path.country-path {
+      stroke: #0b1220 !important;
+      stroke-width: 1.15px !important;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+      paint-order: stroke fill;
+    }
+    #game-map path.country-path:hover {
+      stroke: #f8fafc !important;
+      stroke-width: 2px !important;
+    }
+
+    </style>
 
     <!-- Mevcut kodların, title ve tailwind cdn'lerin duracak, onların hemen altına ekle: -->
 
@@ -719,7 +736,11 @@
 
     <!-- manifest/sw opsiyonel; localhost'ta 404 üretmesin diye kaldırıldı -->
   <!-- PeerJS lazy-loaded on multiplayer open -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css?v=193">
+  <link rel="stylesheet" href="./style-hoi4.css?v=193"/>
+  <link rel="stylesheet" href="./style-map-gfx.css?v=193"/>
+  <link rel="stylesheet" href="./style-names-scale.css?v=193"/>
+  <link rel="stylesheet" href="./style-panels-clean.css?v=193"/>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden">
     <div id="orientation-lock" aria-hidden="true">
@@ -740,31 +761,28 @@
     <div id="main-menu-screen" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
         <div class="sc-menu-card overflow-hidden">
             <div class="px-8 pt-9 pb-5 text-center border-b border-[#2a3a28]">
-                <div class="sc-menu-sub mb-3">Browser Grand Strategy</div>
+                <div class="sc-menu-sub mb-3">Büyük strateji · Tarayıcıda</div>
                 <h1 class="sc-menu-title text-2xl md:text-3xl font-bold uppercase">Supreme Command</h1>
                 <div class="mt-2 inline-block px-3 py-1 rounded border border-[#c4a35a]/35 bg-[#1a1810]/80">
-                    <span class="text-[10px] font-black tracking-[0.2em] uppercase text-[#c4a35a]">Grand Master Edition</span>
-                    <span class="text-[10px] text-[#8a9480] ml-2 font-mono">v1.6.4</span>
+                    <span class="sc-release-badge"><span class="tag">RELEASE</span><span class="ver">v1.9.13</span></span>
                 </div>
                 <p class="text-[11px] text-[#7a8470] mt-3 leading-relaxed max-w-xs mx-auto">
-                    1083 provinces · host-centric MP · focus · supply · intel · division designer
+                    Büyük Strateji · 1095 Dünya · Europe3728 · Çok oyunculu
                 </p>
             </div>
             <div class="p-5 space-y-2">
-                <button type="button" id="mm-continue" onclick="mainMenuContinue()" class="mm-btn mm-btn-primary hidden" data-i18n="mm_continue">Continue</button>
+                <button type="button" id="mm-continue" onclick="mainMenuContinue()" class="mm-btn mm-btn-primary hidden" data-i18n="mm_continue">Devam et</button>
                 <button type="button" onclick="mainMenuNewGame()" class="mm-btn mm-btn-primary" data-i18n="mm_new">Yeni oyun</button>
                 <button type="button" id="mm-quick-play" onclick="(window.scForcePlay||window.scQuickPlay||mainMenuNewGame)()" class="mm-btn mm-btn-primary" style="background:linear-gradient(180deg,#1a4a2e,#0f2a1a);border-color:#2d6b52;">Hızlı Başla</button>
-                <button type="button" onclick="mainMenuMultiplayer()" class="mm-btn mm-btn-primary">Çok oyunculu</button>
+                <button type="button" onclick="mainMenuÇok oyunculu()" class="mm-btn mm-btn-primary">Çok oyunculu</button>
                 <button type="button" onclick="mainMenuLoad()" class="mm-btn" data-i18n="mm_load">Kayıt yükle</button>
-                <button type="button" onclick="(openSettingsModal||toggleSettings)()" class="mm-btn" data-i18n="mm_settings">Settings</button>
-                <button type="button" onclick="mainMenuCredits()" class="mm-btn" data-i18n="mm_about">About</button>
+                <button type="button" onclick="(openSettingsModal||toggleSettings)()" class="mm-btn" data-i18n="mm_settings">Ayarlar</button>
+                <button type="button" onclick="mainMenuCredits()" class="mm-btn" data-i18n="mm_about">Hakkında</button>
             </div>
             <div class="px-5 pb-4 text-center space-y-1">
-                <div class="text-[10px] text-[#5a6450] tracking-[0.15em] uppercase" data-i18n="mm_version">
-                    v1.6.4 · 1082 eyalet
-                </div>
+                <div class="text-[10px] text-[#5a6450] tracking-[0.15em] uppercase" data-i18n="mm_version">v1.9.13 · Dünya / Avrupa haritası</div>
                 <div class="text-[9px] text-[#6a7460] tracking-wide">
-                    HTML5 / JavaScript · Büyük Strateji
+                    Tarayıcıda büyük strateji
                 </div>
             </div>
         </div>
@@ -772,14 +790,14 @@
     <div id="credits-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/75 p-4" onclick="if(event.target===this)this.classList.add('hidden')">
         <div class="sc-about-card w-full max-w-md p-0 overflow-hidden" onclick="event.stopPropagation()">
             <div class="px-5 py-3 border-b border-[#2a3a28] flex justify-between items-center bg-[#1a2218]">
-                <h3 class="text-sm font-bold text-[#c4a35a] uppercase tracking-[0.2em]">About</h3>
+                <h3 class="text-sm font-bold text-[#c4a35a] uppercase tracking-[0.2em]">Hakkında</h3>
                 <button type="button" onclick="document.getElementById('credits-modal').classList.add('hidden')" class="text-[#7a8470] hover:text-[#c4a35a] text-xs font-bold px-2">✕</button>
             </div>
             <div class="px-5 py-4 space-y-3 text-[12px] text-[#b8c0a8] leading-relaxed max-h-[70vh] overflow-y-auto">
-                <p><b class="text-[#c4a35a]">Supreme Command v1.6.4</b></p>
+                <p><b class="text-[#c4a35a]">Supreme Command v1.9.13</b></p>
                 <p class="text-[#8a9480] text-[11px]">Eyalet tabanlı harita, odak ağaçları, üretim, diplomasi ve host merkezli çok oyunculu ile tarayıcıda büyük strateji.</p>
                 <ul class="text-[11px] text-[#9aa890] space-y-1 list-disc pl-4">
-                    <li>1082 eyalet · D3 harita · Modern / 1914 / 1939</li>
+                    <li>1095 / Europe3728 · D3 harita · Modern / 1914 / 1939</li>
                     <li>Çok oyunculu: host zamanı yönetir, kod ile katılım</li>
                     <li>Milli odak · fabrika · teknoloji · tümen tasarımı</li>
                     <li>İşgal / barış masası · ülke isimleri · senaryolar</li>
@@ -788,11 +806,11 @@
                     Supreme Command — tarayıcıda büyük strateji
                 </p>
                 <p class="text-[10px] text-[#6a7460]">
-                    Tek oyunculu ve çok oyunculu · 1082 eyalet · Modern / 1914 / 1939
+                    Tek oyunculu ve çok oyunculu · 1095 / Europe3728 · Modern / 1914 / 1939
                 </p>
             </div>
             <div class="px-5 py-3 border-t border-[#2a3a28]">
-                <button type="button" onclick="document.getElementById('credits-modal').classList.add('hidden')" class="mm-btn mm-btn-primary w-full">Close</button>
+                <button type="button" onclick="document.getElementById('credits-modal').classList.add('hidden')" class="mm-btn mm-btn-primary w-full">Kapat</button>
             </div>
         </div>
     </div>
@@ -803,11 +821,11 @@
             <div class="flex-1 flex flex-col justify-between">
                 <div>
                     <button type="button" onclick="mainMenuBack()" class="text-[10px] text-slate-500 hover:text-slate-300 mb-2 tracking-wider uppercase">← Ana menü</button>
-                    <h1 class="text-2xl font-black tracking-widest text-slate-100 uppercase border-b border-slate-700 pb-3">Yeni sefer</h1>
-                    <p class="text-xs text-slate-500 mt-2 tracking-wide">Senaryo, ülke ve zorluk seçin</p>
+                    <h1 class="text-2xl font-black tracking-widest text-slate-100 uppercase border-b border-slate-700 pb-3">Yeni oyun</h1>
+                    <p class="text-xs text-slate-500 mt-2 tracking-wide">Senaryo, ülke ve zorluk seç</p>
                     
                     <div class="mt-6 space-y-3">
-                        <label class="text-xs text-cyan-400 uppercase tracking-wider font-bold block">Yöneteceğiniz Devleti Seçin:</label>
+                        <label class="text-xs text-cyan-400 uppercase tracking-wider font-bold block">Ülkeni seç:</label>
                         <select id="lobby-country-select" onchange="selectLobbyCountry(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded p-3 text-sm font-bold text-slate-200 uppercase tracking-widest outline-none focus:border-cyan-500">
                             <option value="TUR" selected>Türkiye</option>
                             <option value="DEU">Almanya</option>
@@ -946,9 +964,20 @@
                     </div>
                 </div>
 
-                <div class="mt-6">
+
+                    <div class="mt-6" id="sc-map-pack-block">
+                        <label class="text-xs text-cyan-400 uppercase tracking-wider font-bold block mb-2">Harita Paketi</label>
+                        <select id="sc-map-pack-select" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-slate-100">
+                            <option value="1095" selected>1095 · Dünya haritası</option>
+                            <option value="Europe3728">Europe3728 · Avrupa haritası</option>
+                        </select>
+                        <p id="sc-map-pack-status" class="text-[10px] text-slate-500 mt-1">Haritayı seç, sonra senaryo (veya senaryosuz)</p>
+                    </div>
+
+                <div class="mt-4">
                     <label class="text-xs text-cyan-400 uppercase tracking-wider font-bold block mb-2">Senaryo Seç</label>
                     <select id="lobby-scenario-select" onchange="previewScenario(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded p-2.5 text-sm font-bold text-slate-200 outline-none focus:border-cyan-500 mb-3">
+                        <option value="__sandbox__">Senaryosuz (boş harita)</option>
                         <option value="modern" selected>Modern Dünya (2026)</option>
                         <option value="ww1">1. Dünya Savaşı (1914)</option>
                         <option value="ww2">2. Dünya Savaşı (1939)</option>
@@ -1253,7 +1282,7 @@
                     <div id="v47-combat-panel" class="rounded-lg border border-slate-700 bg-slate-950/60 p-3 space-y-2 text-[10px]">
                         <div class="flex justify-between items-center">
                             <h3 class="panel-title text-[11px] text-amber-600/90">Muharebe (Org / HP)</h3>
-                            <span class="text-[9px] text-slate-500">HOI tarzı tur</span>
+                            <span class="text-[9px] text-slate-500">komuta tur</span>
                         </div>
                         <div id="v47-combat-body" class="text-slate-400 space-y-2">Savaş yok — org/HP burada görünür.</div>
                     </div>
@@ -1481,9 +1510,30 @@
 
     <!-- SİMÜLASYON MOTORU VE PROGRAMMATİK MANTIK -->
     
-    <script src="./js/loader.js" defer></script>
+    <script>
+(function(){
+  function norm(p){
+    p = String(p||"").trim();
+    if (!p) return null;
+    if (p === "Europe3728" || p === "Europe" || p === "europe" || (p.indexOf("Europe")===0 && p !== "Europe3728")) return "Europe3728";
+    if (p === "1095" || p === "Europe3728") return p;
+    return null;
+  }
+  var p = null;
+  try { p = norm(new URLSearchParams(location.search).get("pack")); } catch(e){}
+  if (!p) p = "1095";
+  window.MAP_PACK_ID = p;
+  try { localStorage.setItem("sc_map_pack", p); sessionStorage.setItem("sc_map_pack", p); } catch(e){}
+  window.MAP_PACK_BASE = "./assets/maps/" + p + "/";
+  window.MAP_JSON_URL = window.MAP_PACK_BASE + "map.json";
+  window.PROVINCE_DATA_URL = window.MAP_PACK_BASE + "PROVINCE_DATA.json";
+  window.SCENARIOS_DIR = window.MAP_PACK_BASE + "scenarios/";
+  console.log("%c[boot] MAP PACK = " + p, "color:#0f0;font-size:14px;font-weight:bold", window.MAP_JSON_URL);
+})();
+</script>
+<script src="./js/loader.js?v=1913" defer></script>
 
-    <!-- V53 Multiplayer Lobby -->
+    <!-- V53 Çok oyunculu Lobby -->
         <div id="mp-lobby-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-black/85 p-3">
       <div class="w-full max-w-3xl rounded border-2 border-[#2a3a28] overflow-hidden shadow-2xl" style="background:linear-gradient(180deg,#1a2218,#0e120e)">
         <div class="px-4 py-3 border-b border-[#2a3a28] flex justify-between items-center bg-[#141a14]">
@@ -1636,16 +1686,17 @@ window.loadPeerJS = function () {
 };
 // Wrap multiplayer menu when ready
 document.addEventListener("sc-ready", function () {
-  var prev = window.mainMenuMultiplayer;
+  var prev = window.mainMenuÇok oyunculu;
   if (typeof prev === "function" && !prev._peerLazy) {
-    window.mainMenuMultiplayer = async function () {
+    window.mainMenuÇok oyunculu = async function () {
       try { await window.loadPeerJS(); } catch (e) { console.warn(e); alert("Çok oyunculu kütüphanesi yüklenemedi."); return; }
       return prev.apply(this, arguments);
     };
-    window.mainMenuMultiplayer._peerLazy = true;
+    window.mainMenuÇok oyunculu._peerLazy = true;
   }
 });
 </script>
+
 
 </body>
 </html>

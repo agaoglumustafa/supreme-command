@@ -1,0 +1,24 @@
+{
+  "packId": "1095",
+  "provinceCount": 1095,
+  "scenarios": [
+    {
+      "id": "modern",
+      "name": "Modern Dünya",
+      "file": "modern.json",
+      "year": 2026
+    },
+    {
+      "id": "ww1",
+      "name": "1. Dünya Savaşı (1914)",
+      "file": "ww1.json",
+      "year": 1914
+    },
+    {
+      "id": "ww2",
+      "name": "2. Dünya Savaşı (1939)",
+      "file": "ww2.json",
+      "year": 1939
+    }
+  ]
+}

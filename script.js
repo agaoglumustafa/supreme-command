@@ -169,25 +169,42 @@ if (typeof document !== "undefined") {
 }
 
 // ========== HARİTA PAKETİ (dinamik, GLOBAL) ==========
-// Aktif harita: assets/maps/1083/
-const MAP_PACK_ID = "1083";
-// SC_MAP_PACK_FALLBACK: if 1083 missing, use 1081
+// Aktif harita: assets/maps/1095/
+var MAP_PACK_ID = (function () {
+  function norm(p) {
+    if (!p) return null;
+    if (p === "Europe3728" || p === "Europe" || (String(p).indexOf("Europe") === 0 && p !== "Europe3728")) return "Europe3728";
+    if (p === "1095" || p === "Europe3728") return p;
+    return null;
+  }
+  try {
+    var q = null;
+    try { q = new URLSearchParams(typeof location !== "undefined" ? location.search : "").get("pack"); } catch (e) {}
+    var n = norm(q) || norm(typeof window !== "undefined" ? window.MAP_PACK_ID : null);
+    if (!n) { try { n = norm(localStorage.getItem("sc_map_pack")); } catch (e) {} }
+    if (n) return n;
+  } catch (e) {}
+  return "1095";
+})();
+window.MAP_PACK_ID = MAP_PACK_ID;
+// SC_MAP_PACK_RUNTIME
+// SC_MAP_PACK_FALLBACK: if 1095 missing, use 1095
 (function(){ try {
-  var id = (typeof MAP_PACK_ID !== "undefined") ? MAP_PACK_ID : "1083";
-  if (id !== "1083" && id !== "1081") id = "1083";
+  var id = (typeof MAP_PACK_ID !== "undefined") ? MAP_PACK_ID : "1095";
+  if (id === "Europe3728") id = "Europe3728";
 } catch(e) {} })();
 
-const MAP_PACK_BASE = "./assets/maps/" + MAP_PACK_ID + "/";
-const MAP_JSON_URL = MAP_PACK_BASE + "map.json";
-const PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
-const SCENARIOS_DIR = MAP_PACK_BASE + "scenarios/";
+var MAP_PACK_BASE = "./assets/maps/" + MAP_PACK_ID + "/";
+var MAP_JSON_URL = MAP_PACK_BASE + "map.json";
+var PROVINCE_DATA_URL = MAP_PACK_BASE + "PROVINCE_DATA.json";
+var SCENARIOS_DIR = MAP_PACK_BASE + "scenarios/";
 
 // Senaryolar SADECE diskten — gömülü veri YOK
 var SCENARIOS = {};
 window.SCENARIOS = SCENARIOS;
 
 /**
- * assets/maps/1083/scenarios/index.json + modern.json / ww1.json / ww2.json
+ * assets/maps/1095/scenarios/index.json + modern.json / ww1.json / ww2.json
  * Her çağrıda diskten yeniden okur (cache: no-store).
  */
 async function loadScenarioPack() {
@@ -2600,7 +2617,7 @@ function showTerritoryDemandModal(targetIso) {
       (GameState._lastWonWar && GameState._lastWonWar.target === targetIso ? GameState._lastWonWar : null);
     const warScore = war ? Math.floor(war.progress || 100) : 100;
     let maxClaim = 0, claimLevel = "none";
-    // HOI-benzeri: savaş skoru + güç oranı + işgal edilenler
+    // komuta: savaş skoru + güç oranı + işgal edilenler
     if (warScore >= 100 && ratio >= 1.35) { maxClaim = provCount; claimLevel = "full"; }
     else if (warScore >= 100 || ratio >= 1.5) { maxClaim = Math.max(occList.length, Math.floor(provCount * 0.75)); claimLevel = "major"; }
     else if (warScore >= 75 || ratio >= 1.25) { maxClaim = Math.max(occList.length, Math.floor(provCount / 2)); claimLevel = "half"; }
@@ -2930,10 +2947,18 @@ function getFlagHtml(iso, sizeClass = "w-8 h-5") {
  */
 function applyScenarioToGameState(scenarioId) {
     const pack = (typeof SCENARIOS !== "undefined" && SCENARIOS) ? SCENARIOS : {};
-    const sc = pack[scenarioId];
+    let sc = pack[scenarioId];
+    if (!sc && (scenarioId === "__sandbox__" || scenarioId === "sandbox")) {
+        sc = (typeof window.scBuildSandboxScenario === "function") ? window.scBuildSandboxScenario() : null;
+        if (sc) { pack["__sandbox__"] = sc; try { window.SCENARIOS = pack; } catch(e){} }
+    }
     if (!sc) {
-        console.error("Senaryo bulunamadı (diskte yok veya yüklenmedi):", scenarioId, "mevcut:", Object.keys(pack));
-        return null;
+        // son çare: sandbox üret, çökme
+        sc = (typeof window.scBuildSandboxScenario === "function") ? window.scBuildSandboxScenario() : {
+            id: "__sandbox__", name: "Senaryosuz", provinceOwners: {}, countryNames: { NEUTRAL: "Tarafsız", TUR: "Türkiye" },
+            countryColors: { NEUTRAL: "#94a3b8", TUR: "#dc2626" }, countryFlags: {}
+        };
+        console.warn("Senaryo yok → sandbox:", scenarioId, "mevcut:", Object.keys(pack));
     }
 
     // 1) provinceOwners
@@ -3036,7 +3061,7 @@ function applyScenarioToGameState(scenarioId) {
                     if (key !== "modern") log("Senaryo verisi eksik — Modern Dünya yüklendi.", "text-yellow-400");
                 } else {
                     sc = { name: key, year: 2026, techEra: 3, provinceOwners: {}, countryNames: {}, countryColors: {}, countryFlags: {} };
-                    log("Senaryo dosyaları yüklenemedi (assets/maps/1083/scenarios/).", "text-red-400");
+                    log("Senaryo dosyaları yüklenemedi (assets/maps/1095/scenarios/).", "text-red-400");
                 }
             }
             // Disk senaryosunu GameState ile birleştir (isim/renk/bayrak/owners)
@@ -3084,12 +3109,34 @@ function applyScenarioToGameState(scenarioId) {
         // OYUN BAŞLANGICI VE ENGINE TETİKLEYİCİSİ
         async function startGame() {
             try { if (window._mapPackReady) await window._mapPackReady; } catch(e){}
+            // Map pack URLs — seçilen paketi senkronla
+            try {
+              var pid = (document.getElementById("sc-map-pack-select") || {}).value || window.MAP_PACK_ID || "1095";
+              window.MAP_PACK_ID = pid;
+              window.MAP_PACK_BASE = "./assets/maps/" + pid + "/";
+              window.MAP_JSON_URL = window.MAP_PACK_BASE + "map.json";
+              window.PROVINCE_DATA_URL = window.MAP_PACK_BASE + "PROVINCE_DATA.json";
+              window.SCENARIOS_DIR = window.MAP_PACK_BASE + "scenarios/";
+              // part1 var bindings
+              try { MAP_PACK_ID = pid; MAP_PACK_BASE = window.MAP_PACK_BASE; MAP_JSON_URL = window.MAP_JSON_URL; PROVINCE_DATA_URL = window.PROVINCE_DATA_URL; SCENARIOS_DIR = window.SCENARIOS_DIR; } catch (e2) {}
+            } catch (e) {}
+            // Geometri güncel değilse yeniden yükle
+            try {
+              if (typeof window.scReloadMapGeometry === "function") await window.scReloadMapGeometry();
+            } catch (e) { console.warn("map reload", e); }
             // Senaryoları her seferinde diskten zorunlu yükle
             try {
                 await loadScenarioPack();
             } catch (e) {
                 console.error("Senaryo yükleme hatası (startGame):", e);
             }
+            // sandbox her zaman hazır
+            try {
+              if (typeof SCENARIOS !== "undefined") {
+                SCENARIOS["__sandbox__"] = (typeof window.scBuildSandboxScenario === "function") ? window.scBuildSandboxScenario() : SCENARIOS["__sandbox__"];
+                window.SCENARIOS = SCENARIOS;
+              }
+            } catch (e) {}
             try { MusicPlayer.start(); } catch (e) { console.warn(e); }
             sfx.playVictory();
             const lobbySelect = document.getElementById("lobby-country-select");
@@ -3413,7 +3460,7 @@ function gameTick() {
                             terrainDef = sample.reduce((s, p) => s + getTerrainDefenseBonus(p), 0) / sample.length;
                         }
                     }
-                    // V47 HOI-tarzı muharebe turu (org/HP/soft-hard/width)
+                    // V47 komuta muharebe turu (org/HP/soft-hard/width)
                     if (typeof resolveHoiCombatDay === "function") {
                       resolveHoiCombatDay(war, attackerC, target, {
                         airBonus, oilPen, terrainDef, gen, doc, infMul, armMul, globalThreatBonus
@@ -6014,7 +6061,7 @@ function refreshMapColors() {
     });
 }
 
-// ====================== HOI SİSTEMLERİ: HAVA / PETROL / KUKLA / ULTİM ======================
+// ====================== KOMUTA SİSTEMLERİ: HAVA / PETROL / KUKLA / ULTİM ======================
 function ensureStratResources(c) {
     if (!c) return;
     if (!c.strat) {
@@ -11310,7 +11357,7 @@ console.log("V27 Legendary systems loaded");
 
 
 // ============================================================
-// V38 — HOI4 tarzı çekirdek katman
+// V38 — SC tarzı çekirdek katman
 // Fraksiyonlar · Call to Arms · WT · Ordu XP · Araştırma slotları
 // · Ekipman açığı · Odak hızı · AI fraksiyon davranışı
 // ============================================================
@@ -11465,7 +11512,7 @@ console.log("V27 Legendary systems loaded");
     return d;
   };
 
-  // Focus progress HOI-like: ~70 days default already in game - boost with PP
+  // Focus progress command: ~70 days default already in game - boost with PP
   window.hoiTick = function() {
     try {
       const h = st();
@@ -11574,7 +11621,7 @@ console.log("V27 Legendary systems loaded");
 
   // Button row for faction join in diplomacy when viewing self - inject via renderHoiFactions only
 
-  console.log("V38 HOI4 layer: factions, CTA, WT, XP, research slots, equipment factor");
+  console.log("V38 SC layer: factions, CTA, WT, XP, research slots, equipment factor");
 })();
 
 
@@ -12701,7 +12748,7 @@ console.log("V27 Legendary systems loaded");
 
 
 // ============================================================
-// V47 — HOI4-inspired combat (Org / Strength / Soft-Hard / Width)
+// V47 — SC-inspired combat (Org / Strength / Soft-Hard / Width)
 // Günlük tick içinde birden fazla "saatlik" tur simüle edilir.
 // ============================================================
 (function V47HoiCombat() {
@@ -12977,7 +13024,7 @@ console.log("V27 Legendary systems loaded");
     };
   }
 
-  console.log("V47 HOI combat: Org/HP, soft-hard, armor-pierce, combat width, daily multi-round");
+  console.log("V47 SC combat: Org/HP, soft-hard, armor-pierce, combat width, daily multi-round");
 })();
 
 
@@ -13136,8 +13183,8 @@ console.log("V27 Legendary systems loaded");
       mm_load: "Load Game",
       mm_settings: "Settings",
       mm_about: "About",
-      mm_version: "v1.1 · Grand Master · Map 1083",
-      mm_subtitle: "1083 provinces · occupation before annexation · scenario history",
+      mm_version: "v1.1 · Grand Master · Map 1095",
+      mm_subtitle: "1095 provinces · occupation before annexation · scenario history",
       mm_tagline: "Browser Grand Strategy",
       settings_title: "Settings",
       settings_audio: "Audio",
@@ -13181,8 +13228,8 @@ console.log("V27 Legendary systems loaded");
       mm_load: "Kayıt yükle",
       mm_settings: "Ayarlar",
       mm_about: "Hakkında",
-      mm_version: "v1.1 · Grand Master · Harita 1083",
-      mm_subtitle: "1083 eyalet · ilhaktan önce işgal · senaryo tarihi",
+      mm_version: "v1.1 · Grand Master · Harita 1095",
+      mm_subtitle: "1095 eyalet · ilhaktan önce işgal · senaryo tarihi",
       mm_tagline: "Tarayıcıda Grand Strategy",
       settings_title: "Ayarlar",
       settings_audio: "Ses",
@@ -14071,7 +14118,7 @@ console.log("V27 Legendary systems loaded");
 
 
 // ============================================================
-// SUPREME COMMAND — HOI4-STYLE MULTIPLAYER ENGINE (clean rebuild)
+// SUPREME COMMAND — SC-STYLE MULTIPLAYER ENGINE (clean rebuild)
 // Host-centric authority · shared clock · diplo · chat · ping · spectator
 // Replaces all prior V54/V55 layered patches.
 // ============================================================
@@ -15425,7 +15472,7 @@ console.log("V27 Legendary systems loaded");
   const _origWarn = console.warn;
   // (no console override needed — we simply never surface peer IPs)
 
-  console.log("[MP] HOI4-style host-centric engine online");
+  console.log("[MP] SC-style host-centric engine online");
 })();
 
 // ============================================================
@@ -15494,7 +15541,7 @@ console.log("V27 Legendary systems loaded");
       if (a.a === iso) set.add(a.b);
       if (a.b === iso) set.add(a.a);
     });
-    // Faction mates if HOI factions exist
+    // Faction mates if SC factions exist
     try {
       if (GameState.hoi && GameState.hoi.factions && typeof getFactionOf === "function") {
         const f = getFactionOf(iso);
@@ -15913,7 +15960,7 @@ console.log("V27 Legendary systems loaded");
     ).length;
     const casEnemy = (war && war.enemyCasualties) || 0;
     const casOwn = (war && war.casualties) || 0;
-    // HOI-ish: score from progress + occupation + casualties dealt
+    // SC-ish: score from progress + occupation + casualties dealt
     let vp = Math.floor(progress * 0.6) + occ * 3 + Math.floor(casEnemy / 5000) - Math.floor(casOwn / 8000);
     vp = Math.max(5, Math.min(200, vp));
     return {
@@ -16042,7 +16089,7 @@ console.log("V27 Legendary systems loaded");
 
 // ============================================================
 // GRAND EXPANSION — Focus Trees · Divisions/Width · Cabinet · Tech/Prod
-// HOI4-inspired systems layered on existing GameState without breaking SP/MP
+// SC-inspired systems layered on existing GameState without breaking SP/MP
 // ============================================================
 (function SCGrandExpansion() {
   "use strict";
@@ -16098,7 +16145,7 @@ console.log("V27 Legendary systems loaded");
   }
 
   // ============================================================
-  // 1) NATIONAL FOCUS TREES (HOI-style chains)
+  // 1) NATIONAL FOCUS TREES (command chains)
   // ============================================================
   function focusReward(iso, fn) {
     return function () {
@@ -17548,7 +17595,7 @@ console.log("V27 Legendary systems loaded");
         "background:#1a1810;color:#e8eef7;font-weight:700;padding:3px 8px;",
         "background:#0a1018;color:#5a6450;padding:3px 8px;"
       );
-      console.log("[SC] Release freeze · map pack 1083 · host-centric MP · focus · supply · intel · designer");
+      console.log("[SC] Release freeze · map pack 1095 · host-centric MP · focus · supply · intel · designer");
     } catch (e) {}
   }
 
@@ -18288,7 +18335,7 @@ console.log("V27 Legendary systems loaded");
   setTimeout(function () {
     try {
       document.querySelectorAll("[data-i18n='mm_version']").forEach(el => {
-        el.textContent = "v1.1 · Grand Master · Harita 1083";
+        el.textContent = "v1.1 · Grand Master · Harita 1095";
       });
     } catch (e) {}
   }, 800);
@@ -19042,7 +19089,7 @@ console.log("V27 Legendary systems loaded");
         if (g.empty()) g = svg.append("g");
         // clear only paths, keep structure
         g.selectAll("path").remove();
-        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1083/map.json";
+        var url = (typeof MAP_JSON_URL !== "undefined") ? MAP_JSON_URL : "./assets/maps/1095/map.json";
         d3.json(url).then(function (provinces) {
           if (!provinces || !provinces.length) {
             console.warn("[playable] map.json empty");
